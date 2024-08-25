@@ -1,0 +1,39 @@
+{
+    "name": "meadow-graph-client",
+    "version": "1.0.0",
+    "description": "Meadow graph client for pulling sets of records and comprehensions.",
+    "main": "source/Meadow-Graph-Client.js",
+    "scripts": {
+        "start": "node source/Meadow-Graph-Client.js",
+        "test": "npx mocha -u tdd -R spec",
+        "tests": "npx mocha -u tdd --exit -R spec --grep",
+        "coverage": "npx nyc --reporter=lcov --reporter=text-lcov npx mocha -- -u tdd -R spec",
+        "build": "npx quack build"
+    },
+    "author": "steven velozo <steven@velozo.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "quackage": "^1.0.33"
+    },
+    "dependencies": {
+        "fable-serviceproviderbase": "^3.0.13"
+    },
+    "mocha": {
+        "diff": true,
+        "extension": [
+            "js"
+        ],
+        "package": "./package.json",
+        "reporter": "spec",
+        "slow": "75",
+        "timeout": "5000",
+        "ui": "tdd",
+        "watch-files": [
+            "source/**/*.js",
+            "test/**/*.js"
+        ],
+        "watch-ignore": [
+            "lib/vendor"
+        ]
+    }
+}
