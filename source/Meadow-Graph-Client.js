@@ -226,6 +226,47 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		return tmpFilterObject;
 	}
 
+
+	gatherConnectedEntityData(pEntityContainer, pEntityContainerHash, pDestinationEntityName, pDestinationIDEntity, pEntityToGather, fCallback, pSilent)
+	{
+		let tmpFilter = `FBV~ID${pDestinationEntityName}~EQ~${pDestinationIDEntity}`;
+		this.fable.HeadlightRestClient.getEntitySetWithPages(pEntityToGather, tmpFilter,
+			(pRecordCount) =>
+			{
+				//console.log(`Matched ${pRecordCount} ${pEntityToGather} for ${pDestinationEntity} [${pDestinationIDEntity}]`);
+				let tmpRecordCount = pRecordCount > 0 ? pRecordCount : 1;
+				if (pRecordCount < 1)
+				{
+					pSilent = true;
+				}
+				this.progressTracker.createProgressTracker(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`, tmpRecordCount);
+				this.progressTracker.startProgressTracker(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`);
+			},
+			(pPageLength, pPageRecords) =>
+			{
+				this.progressTracker.incrementProgressTracker(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`, pPageLength);
+				if (!pSilent)
+				{
+					this.progressTracker.logProgressTrackerStatus(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`);
+				}
+			},
+			(pError, pRecords) =>
+			{
+				if (pError)
+				{
+					this.log.error(`Error getting ${pEntityToGather} records: ${pError}`, pError);
+				}
+				//console.log(`...decorated ${pRecords.length} ${pEntityToGather} records for ${pDestinationEntity} [${pDestinationIDEntity}].`);
+				pEntityContainer[pEntityContainerHash] = pRecords;
+				this.progressTracker.endProgressTracker(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`);
+				if (!pSilent)
+				{
+					this.progressTracker.logProgressTrackerStatus(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`);
+				}
+				return fCallback(pError);
+			});
+	}
+
 	/**
 	 * Retrieves a bundle of graph data from the server.
 	 *
@@ -263,6 +304,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			{
 				if (pError)
 				{
+					this.log.error(`Meadow Graph Client: There was an error getting records for ${pEntityName}.`);
 				}
 				return fCallback(pError, tmpDataOutputObject, tmpFilterObject);
 			});
