@@ -15,15 +15,23 @@ const _DefaultGraphClientConfiguration = (
 	// The Weights for Graph Path Evaluation
 	"StartingWeight": 100000,
 
+	"HintWeight": 200000,
+
 	// What to add per depth
-	"TraversalHopWeightDifference": -100,
+	"TraversalHopWeight": -100,
 
 	// What to add if a direct outgoing join exists
-	"OutgoingJoinWeightDifference": 25,
+	"OutgoingJoinWeight": 25,
 
 	// What to add if the word "Join" is in the external table name
 	// Joins to Joins is valid, and, an odd one.... can work (and accelerate the traversal) .... which can be used to great advantage.........
-	"JoinInTableNameWeightDifference": 25
+	"JoinInTableNameWeight": 25,
+
+	// Any default manual paths to load on initialization
+	"DefaultManualPaths": {},
+
+	// Any default hints to load on initialization
+	"DefaultHints": {}
 });
 
 /**
@@ -46,7 +54,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		// Map of incoming connections for Entities (Entity->Incoming Entities)
 		this._IncomingEntityConnections = {};
 
-		// Map of solved joins so we don't solve them every time... ostensibly other than hints these are sEntity.
+		// Map of solved joins so we don't solve them every time... ostensibly other than hints these are solvable.
 		// Well, if a developer decides to use this dynamically and add/remove joins at runtime it could break
 		// these paths.
 		// TODO: Discuss if we want this to be a living/breathing data model or just a static needs to reload
@@ -59,6 +67,17 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		// the filter will have a *potential* bug if we wrap over the integer boundary and the Entities match data type
 		// but that would be absurd and problematic and out of scope for this design.
 		this._ParameterIndex = 0;
+
+		// These are default manual paths to take.  They use the syntax of EdgeTraversalEndpoints which is a string
+		// with the `PrimaryEntity->DestinationEntity` format.  This allows a developer to define manual routes with
+		// custom filter expressions.  This is useful for complex joins that are not easily solved by the graph solver
+		// that only uses ID columns, when we want to join across other data.
+		//
+		// These manual paths are required to be in the entity graph path format.
+		this._DefaultManualPaths = (typeof(this.options.DefaultManualPaths) === 'object') ? this.options.DefaultManualPaths : {};
+
+		// Hints are array of strings based on EdgeTraverslEndpoints syntax.
+		this._DefaultHints = (typeof(this.options.DefaultHints) === 'object') ? this.options.DefaultHints : {};
 
 		if (this.options.DataModel)
 		{
@@ -521,7 +540,8 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 * 
 	 * @param {string} pStartEntityName - the entity to solve the graph path from
 	 * @param {string} pDestinationEntity - the entity to solve the graph path to
-	 * @param {Object} pEntityPathHints - any hinted paths to use (these are used for subpaths as well)
+	 * @param {Object} pEntityPathHints - any hinted paths to use
+	 * @param {Object} pManualPaths - any manual paths to use
 	 * @param {Object} pBaseGraphConnection - the "root" of the tree; used for metrics mostly
 	 * @param {Object} pTraversalObject - a specialized traversal object for the breadth-first search.
 	 * @param {number} pDepth - the current depth of the tree; used to bail out if we pass a threshold
@@ -530,9 +550,22 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	solveGraphConnections(pStartEntityName, pDestinationEntity, pEntityPathHints, pBaseGraphConnection, pParentEntity, pWeight)
 	{
 		let tmpGraphConnection = {};
-		let tmpEntityPathHints = (typeof(pEntityPathHints) === 'undefined') ? [] : pEntityPathHints;
 
-		tmpGraphConnection.EntityName = pStartEntityName;		
+		// Hints are a set of strings to hint which path is preferential
+		// For instance if the path was `Book->Rating->Author` or 
+		// `Book->Publisher->Author` or `Book->BookAuthorJoin->Author` we could
+		// hint that we want 'BookAuthorJoin' in the route.
+		//
+		// There are other more complex examples such as:
+		// `Book<-BookAuthorJoin->Author->ReaderAuthorReview->Customer`
+		// `Book->Cart->CartDetail->Transaction->Customer`
+		// `Book->ReadingClub->ReaderBookReview->Customer`
+		//
+		// We could hint that we want 'BookAuthorJoin' and 'ReaderAuthorReview' 
+		// in the route, and it would take the longer path.
+
+		tmpGraphConnection.EntityName = pStartEntityName;
+		tmpGraphConnection.EdgeTraversalEndpoints = `${pStartEntityName}-->${pDestinationEntity}`;
 
 		this.log.info(`Starting to solve graph connections from ${pStartEntityName} to ${pDestinationEntity}.`);
 
@@ -549,26 +582,38 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		// Also this tracks them per destination, so we can reuse them later if there are farther out there chains.
 		if (typeof(pBaseGraphConnection) === 'undefined')
 		{
-			tmpGraphConnection.Base = true;
-			tmpGraphConnection.EdgeAddress = pStartEntityName;
-			tmpGraphConnection.ParentEdgeAddress = '';
-			tmpGraphConnection.AttemptedEntities = {pStartEntityName: true};
+			tmpBaseGraphConnection.Base = true;
+			tmpBaseGraphConnection.EdgeAddress = pStartEntityName;
+			tmpBaseGraphConnection.ParentEdgeAddress = '';
+
+			tmpBaseGraphConnection.AttemptedEntities = {};
+			tmpBaseGraphConnection.AttemptedEntities[pStartEntityName] = true;
+
+			tmpBaseGraphConnection.EntityPathHints = (typeof(pEntityPathHints) === 'undefined') ? [] : pEntityPathHints;
+			// If we have default hints for this path, union them with the already passed-in hints
+			if (this._DefaultHints.hasOwnProperty(tmpGraphConnection.EdgeTraversalEndpoints))
+			{
+				tmpBaseGraphConnection.EntityPathHints = Array.from(new Set(tmpBaseGraphConnection.EntityPathHints.concat(this._DefaultHints[tmpBaseGraphConnection.EdgeTraversalEndpoints])));
+			}
+
+			// Generate the cache key for this path
+			tmpGraphConnection.CacheKey = `${pStartEntityName}-->${pDestinationEntity}[${this.fable.DataFormat.insecureStringHash(tmpGraphConnection.EntityPathHints.join(','))}]`;
 		}
 		else
 		{
 			tmpGraphConnection.Base = false;
-			tmpGraphConnection.ParentEdgeAddress = pParentEntity.EdgeAddress;
 			tmpGraphConnection.EdgeAddress = `${pParentEntity.EdgeAddress}-->${pStartEntityName}`;
+			tmpGraphConnection.ParentEdgeAddress = pParentEntity.EdgeAddress;
+
 			tmpGraphConnection.AttemptedEntities = JSON.parse(JSON.stringify(pParentEntity.AttemptedEntities));
+
 			// Add ourself to the attempted entities set
 			tmpGraphConnection.AttemptedEntities[pStartEntityName] = true;
 		}
 
-		tmpGraphConnection.EdgeTraversalEndpoints = `${pStartEntityName}-->${pDestinationEntity}`;
-
 		if (tmpGraphConnection.Base)
 		{
-			// For the base, let's not make it circular.
+			// For the base, prevent the Javascript object from having a circular reference.
 			tmpBaseGraphConnection.AttemptedPaths[tmpGraphConnection.EdgeAddress] = true;
 		}
 		else if (tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpGraphConnection.EdgeAddress))
@@ -593,19 +638,22 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			return tmpBaseGraphConnection;
 		}
 
-		// For now hints are only used for the base entity.
-		if (tmpGraphConnection.Base && (tmpGraphConnection.EdgeTraversalEndpoints in tmpEntityPathHints))
+		// For now manual paths are only used for the base entity.
+		if (tmpGraphConnection.Base && (tmpGraphConnection.EdgeTraversalEndpoints in this._DefaultManualPaths))
 		{
-			// This is solved with a hint -- use the hint and move on.
-			tmpGraphConnection.FromHint = true;
-			tmpGraphConnection.PotentialSolutions.push(tmpEntityPathHints[tmpGraphConnection.EdgeTraversalEndpoints]);
+			// This is solved with a manual path -- use the manual path and move on.
+			tmpBaseGraphConnection.FromManualPath = true;
+			tmpBaseGraphConnection.PotentialSolutions.push(this._DefaultManualPaths[tmpBaseGraphConnection.EdgeTraversalEndpoints]);
+			return tmpBaseGraphConnection;
 		}
 		// For now cache is only used for the base entity.
 		else if (tmpGraphConnection.Base && (tmpGraphConnection.EdgeTraversalEndpoints in this._GraphSolutionMap))
 		{
 			// This was solved already -- use the cached version and move on.
-			tmpGraphConnection.FromCache = true;
-			tmpGraphConnection.PotentialSolutions.push(this._GraphSolutionMap[tmpGraphConnection.EdgeTraversalEndpoints]);
+			// We may want to have some kind of hashing on the "hinting" to make sure we don't cache the wrong route.
+			// TODO: Must add hinting to the cache key.  Disabled for now (the cache is just never populated)
+			tmpBaseGraphConnection.FromCache = true;
+			tmpBaseGraphConnection.PotentialSolutions.push(this._GraphSolutionMap[tmpBaseGraphConnection.EdgeTraversalEndpoints]);
 		}
 		else
 		{
@@ -642,14 +690,23 @@ class MeadowGraphClient extends libFableServiceProviderBase
 					* BookAuthorJoin satisfies an incoming join
 					* BookAuthorJoin has an outgoing join so will solve this properly
 			*/
-			// 0. See if this is THE ONE
 			// See if this is a potential solution
 			if (tmpGraphConnection.EntityName === pDestinationEntity)
 			{
-				// IT IS!  ADD IT...
+				// This one might be THE ONE!  Add it as a potential solution...
+				// First, compute the additional weight for this solution based on hints
+				let tmpHintWeight = 0;
+				for (let i = 0; i < tmpBaseGraphConnection.EntityPathHints.length; i++)
+				{
+					if (tmpGraphConnection.AttemptedEntities.hasOwnProperty(tmpBaseGraphConnection.EntityPathHints[i]))
+					{
+						tmpHintWeight = tmpHintWeight + this.options.HintWeight;
+					}
+				}
 				let tmpPotentialSolution = (
 					{
-						Weight: tmpGraphConnection.Weight,
+						Weight: tmpGraphConnection.Weight + tmpHintWeight,
+						HintWeight: tmpHintWeight,
 						EdgeAddress: tmpGraphConnection.EdgeAddress,
 						RequestPath: this.generateRequestPath(tmpBaseGraphConnection, tmpGraphConnection, pDestinationEntity)
 					});
@@ -665,14 +722,14 @@ class MeadowGraphClient extends libFableServiceProviderBase
 					// This prevents circles without eliminating intermediates for different paths later.
 					if (!tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpAttemptedConnectedEntity))
 					{
-						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeightDifference;
+						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeight;
 						// Outgoing Joins get a boost in weight
-						tmpAttemptWeight = tmpAttemptWeight + this.options.OutgoingJoinWeightDifference;
+						tmpAttemptWeight = tmpAttemptWeight + this.options.OutgoingJoinWeight;
 						if (tmpAttemptedConnectedEntity.indexOf('Join',tmpAttemptedConnectedEntity.length-4) === 0)
 						{
-							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeightDifference;
+							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeight;
 						}
-						this.solveGraphConnections(tmpAttemptedConnectedEntity, pDestinationEntity, tmpEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
+						this.solveGraphConnections(tmpAttemptedConnectedEntity, pDestinationEntity, pEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
 					}
 				}
 
@@ -687,12 +744,12 @@ class MeadowGraphClient extends libFableServiceProviderBase
 					// This prevents circles without eliminating intermediates for different paths later.
 					if (!tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpAttemptedConnectedEntity))
 					{
-						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeightDifference;
+						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeight;
 						if (tmpAttemptedConnectedEntity.indexOf('Join',tmpAttemptedConnectedEntity.length-4) === 0)
 						{
-							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeightDifference;
+							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeight;
 						}
-						this.solveGraphConnections(tmpAttemptedConnectedEntity, pDestinationEntity, tmpEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
+						this.solveGraphConnections(tmpAttemptedConnectedEntity, pDestinationEntity, pEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
 					}
 				}
 

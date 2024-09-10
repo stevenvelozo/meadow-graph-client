@@ -18,5 +18,6 @@ let tmpFilterObject = {Entity: 'Project', Filter:{"Material.IDMaterial":107}};
 let tmpParsedFilterObject = _MeadowGraphClient.parseFilterObject(tmpFilterObject);
 
 let tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'Material');
+//let tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'Material', ['MaterialLineItemJoin']);
 
 _Fable.log.info(`Operation Complete!`);

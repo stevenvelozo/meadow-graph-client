@@ -91,12 +91,15 @@ suite
 
 								Expect(tmpFilterObject).to.be.an('object');
 								// There should be an author filter, value 107
-								//Expect(tmpFilterObject.FilterExpressionSet.Author).to.be.an('Array');
-								//Expect(tmpFilterObject.FilterExpressionSet.Author[0].Value).to.equal(107);
+								Expect(tmpFilterObject.FilterExpressionSet.Author).to.be.an('Array');
+								Expect(tmpFilterObject.FilterExpressionSet.Author[0].Value).to.equal(107);
 
 								let tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'Author');
 
 								Expect(tmpGraphTraversalObject).to.be.an('object');
+								Expect(tmpGraphTraversalObject.PotentialSolutions).to.be.an('Array');
+								Expect(tmpGraphTraversalObject.PotentialSolutions).to.have.lengthOf(1);
+								Expect(tmpGraphTraversalObject.PotentialSolutions[0].EdgeAddress).to.equal('Book-->BookAuthorJoin-->Author');
 
 								return fDone();
 							}
