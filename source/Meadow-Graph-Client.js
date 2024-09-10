@@ -1,23 +1,64 @@
 const libFableServiceProviderBase = require('fable-serviceproviderbase');
 
+const libGraphClientDataRequest = require('./Meadow-Graph-Service-DataRequest.js');
+
+const _DefaultGraphClientConfiguration = (
+{
+	// This allows us to point the graph client at a different http request
+	// client (e.g. a platform-specific client) if one already exists in the
+	// fable services.
+	"DataRequestClientService": "MeadowGraphClientDataRequest",
+
+	// The maximum number of hops we allow the graph solver to traverse before it gives up
+	"MaximumTraversalDepth": 25,
+
+	// The Weights for Graph Path Evaluation
+	"StartingWeight": 100000,
+
+	// What to add per depth
+	"TraversalHopWeightDifference": -100,
+
+	// What to add if a direct outgoing join exists
+	"OutgoingJoinWeightDifference": 25,
+
+	// What to add if the word "Join" is in the external table name
+	// Joins to Joins is valid, and, an odd one.... can work (and accelerate the traversal) .... which can be used to great advantage.........
+	"JoinInTableNameWeightDifference": 25
+});
+
 /**
  * Class representing a Meadow Graph Client.
  * @extends libFableServiceProviderBase
  */
 class MeadowGraphClient extends libFableServiceProviderBase
 {
-	constructor(pFable, pManifest, pServiceHash)
+	constructor(pFable, pOptions, pServiceHash)
 	{
-		super(pFable, pManifest, pServiceHash);
-        this.serviceType = 'MeadowGraphClient';
+		let tmpOptions = Object.assign({}, JSON.parse(JSON.stringify(_DefaultGraphClientConfiguration)), pOptions);
+		super(pFable, tmpOptions, pServiceHash);
+
+		this.serviceType = 'MeadowGraphClient';
+
+		this.fable.addAndInstantiateSingletonService(this.options.DataRequestClientService, libGraphClientDataRequest.default_configuration, libGraphClientDataRequest);
 
 		// Map of joins (Entity->Other Entities)
-		this._JoinMap = {};
+		this._OutgoingEntityConnections = {};
 		// Map of incoming connections for Entities (Entity->Incoming Entities)
-		this._JoinReverseMap = {};
+		this._IncomingEntityConnections = {};
 
-		// Known tables (loaded into the data model)
-		this._KnownTables = {};
+		// Map of solved joins so we don't solve them every time... ostensibly other than hints these are sEntity.
+		// Well, if a developer decides to use this dynamically and add/remove joins at runtime it could break
+		// these paths.
+		// TODO: Discuss if we want this to be a living/breathing data model or just a static needs to reload
+		this._GraphSolutionMap = {};
+
+		// Known Entities (loaded into the data model)
+		this._KnownEntities = {};
+
+		// Used for the parameter uniqeueness autonumber later -- we will want to auto reset this every once in a while;
+		// the filter will have a *potential* bug if we wrap over the integer boundary and the Entities match data type
+		// but that would be absurd and problematic and out of scope for this design.
+		this._ParameterIndex = 0;
 
 		if (this.options.DataModel)
 		{
@@ -26,97 +67,100 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	}
 
 	/**
-	 * Adds a join to the data model graph.
-	 *
-	 * @param {string} pColumn - The column to join on.
-	 * @param {string} pJoinEntity - The entity to join.
-	 * @param {string} pTableName - The table name to join.
+	 * Adds an outgoing connection data model graph.
 	 */
-	addJoin(pColumn, pJoinEntity, pTableName)
+	addOutgoingConnection(pColumn, pConnectionFromEntity, pConnectionToEntity)
 	{
-		if (!this._JoinMap.hasOwnProperty(pJoinEntity))
+		if (!this._OutgoingEntityConnections.hasOwnProperty(pConnectionFromEntity))
 		{
-			this._JoinMap[pJoinEntity] = {};
+			this._OutgoingEntityConnections[pConnectionFromEntity] = {};
 		}
 
-		if (!this._JoinMap[pJoinEntity].hasOwnProperty(pTableName))
+		if (!this._OutgoingEntityConnections[pConnectionFromEntity].hasOwnProperty(pConnectionToEntity))
 		{
-			this._JoinMap[pJoinEntity][pTableName] = pColumn;
+			this._OutgoingEntityConnections[pConnectionFromEntity][pConnectionToEntity] = pColumn;
 		}
 		else
 		{
 			// There are times when an entity refers to itself.  And.  Times when an entity is joined multiple times.
 			// TODO: We should refine this to deal with that in a sane way.
-			this.log.warn(`Meadow Graph Client: There is already a join for ${pJoinEntity} from ${pTableName}; connection will be ignored for ${pColumn}.`);
+			this.log.warn(`Meadow Graph Client: There is already a join for ${pConnectionFromEntity} from ${pConnectionToEntity}; connection will be ignored for ${pColumn}.`);
 		}
 	}
 
 	/**
-	 * Adds a reverse join to the data model graph.
-	 *
-	 * @param {string} pColumn - The column to join on.
-	 * @param {string} pConnectedEntity - The connected entity to join.
-	 * @param {string} pIncomingEntity - The incoming entity to join.
+	 * Adds an incoming connection to the graph.
 	 */
-	addJoinReverse(pColumn, pConnectedEntity, pIncomingEntity)
+	addIncomingConnection(pColumn, pConnectionToEntity, pConnectionFromEntity)
 	{
-		if (!this._JoinReverseMap.hasOwnProperty(pConnectedEntity))
+		if (!this._IncomingEntityConnections.hasOwnProperty(pConnectionToEntity))
 		{
-			this._JoinReverseMap[pConnectedEntity] = {};
+			this._IncomingEntityConnections[pConnectionToEntity] = {};
 		}
-		if (!this._JoinReverseMap[pConnectedEntity].hasOwnProperty(pIncomingEntity))
+		if (!this._IncomingEntityConnections[pConnectionToEntity].hasOwnProperty(pConnectionFromEntity))
 		{
-			this._JoinReverseMap[pConnectedEntity][pIncomingEntity] = pColumn;
+			this._IncomingEntityConnections[pConnectionToEntity][pConnectionFromEntity] = pColumn;
 		}
 		else
 		{
 			// There are times when an entity refers to itself.  And.  Times when an entity is joined multiple times.
 			// We should refine this to deal with that in a sane way.
-			this.log.warn(`Meadow Graph Client: There is already a reverse join for ${pConnectedEntity} from ${pTableName}; connection will be ignored for ${pColumn}.`);
+			this.log.warn(`Meadow Graph Client: There is already a reverse join for ${pConnectionToEntity} from ${pConnectionFromEntity}; connection will be ignored for ${pColumn}.`);
 		}
 	}
 
 	/**
-	 * Adds a table to the data model.
+	 * Adds a Entity to the data model.
 	 * 
-	 * @param {object} pTable - The table object to be added.
-	 * @returns {boolean} - Returns true if the table is successfully added, false otherwise.
+	 * @param {object} pEntity - The Entity object to be added (meadow schema format).
+	 * @returns {boolean} - Returns true if the Entity is successfully added, false otherwise.
 	 */
-	addTableToDataModel(pTable)
+	addEntityToDataModel(pEntity)
 	{
-		if (!pTable.hasOwnProperty('Columns'))
+		let tmpEntityName = pEntity.TableName;
+		if (!pEntity.hasOwnProperty('Columns'))
 		{
-			this.log.error(`Meadow Graph Client: Could not add table to the data model because it does not have a Columns property.`);
+			this.log.error(`Meadow Graph Client: Could not add Entity to the data model because it does not have a Columns property.`);
 			return false;
 		}
-		if (!Array.isArray(pTable.Columns))
+		if (!Array.isArray(pEntity.Columns))
 		{
-			this.log.error(`Meadow Graph Client: Could not add table to the data model because the Columns property is not an array.`);
+			this.log.error(`Meadow Graph Client: Could not add Entity to the data model because the Columns property is not an array.`);
 			return false;
 		}
-		if (this._KnownTables.hasOwnProperty(pTable.TableName))
+		if (this._KnownEntities.hasOwnProperty())
 		{
-			this.log.warn(`Meadow Graph Client: The table ${pTable.TableName} is already known; it won't be added to the graph.`);
+			this.log.warn(`Meadow Graph Client: The Entity ${tmpEntityName} is already known; it won't be added to the graph.`);
 			return false;
 		}
 		else
 		{
-			this._KnownTables[pTable.TableName] = pTable;
+			this._KnownEntities[tmpEntityName] = {};
+		}
+		if (!this._OutgoingEntityConnections.hasOwnProperty(tmpEntityName))
+		{
+			this._OutgoingEntityConnections[tmpEntityName] = {};
+		}
+		if (!this._IncomingEntityConnections.hasOwnProperty(tmpEntityName))
+		{
+			this._IncomingEntityConnections[tmpEntityName] = {};
 		}
 
-		for (let i = 0; i < pTable.Columns.length; i++)
+		for (let i = 0; i < pEntity.Columns.length; i++)
 		{
+			// Generate a basic map of the columns, for use in lookup later
+			this._KnownEntities[tmpEntityName][pEntity.Columns[i].Column] = pEntity.Columns[i];
+
 			// TODO: Potentially create a secondary set of graph connections across these audit joins, although they are really star/spokes as opposed to directed graphs.
-			if (pTable.Columns[i].Join &&
-				pTable.Columns[i].Column != 'IDCustomer' &&
-				pTable.Columns[i].Column != 'CreatingIDUser' &&
-				pTable.Columns[i].Column != 'UpdatingIDUser' &&
-				pTable.Columns[i].Column != 'DeletingIDUser')
+			if (pEntity.Columns[i].Join &&
+				pEntity.Columns[i].Column != 'IDCustomer' &&
+				pEntity.Columns[i].Column != 'CreatingIDUser' &&
+				pEntity.Columns[i].Column != 'UpdatingIDUser' &&
+				pEntity.Columns[i].Column != 'DeletingIDUser')
 			{
-				// TODO: This is a little smelly.
-				let tmpJoinedEntity = pTable.Columns[i].Join.startsWith('ID') ? pTable.Columns[i].Join.substring(2) : pTable.Columns[i].Join;
-				this.addJoin(pTable.Columns[i].Column, tmpJoinedEntity, pTable.TableName);
-				this.addJoinReverse(pTable.Columns[i].Column, pTable.TableName, tmpJoinedEntity);
+				let tmpConnectedEntityName = pEntity.Columns[i].Join.startsWith('ID') ? pEntity.Columns[i].Join.substring(2) : pEntity.Columns[i].Join;
+				this.addIncomingConnection(pEntity.Columns[i].Column, tmpConnectedEntityName, pEntity.TableName);
+				this.addOutgoingConnection(pEntity.Columns[i].Column, pEntity.TableName, tmpConnectedEntityName);
 			}
 		}
 		return true;
@@ -142,11 +186,11 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			return false;
 		}
 		// Enumerate each data set in the data model and create a join lookup if it isn't an internal audit column
-		let tmpTables = Object.keys(tmpDataModel.Tables);
-		for (let i = 0; i < tmpTables.length; i++)
+		let tmpEntities = Object.keys(tmpDataModel.Tables);
+		for (let i = 0; i < tmpEntities.length; i++)
 		{
-			let tmpTable = tmpDataModel.Tables[tmpTables[i]];
-			this.addTableToDataModel(tmpTable);
+			let tmpEntity = tmpDataModel.Tables[tmpEntities[i]];
+			this.addEntityToDataModel(tmpEntity);
 		}
 		return true;
 	}
@@ -159,6 +203,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 */
 	lintFilterObject(pFilterObject)
 	{
+		// Check Javascript Types and that we have the bare minimum
 		if (typeof(pFilterObject) !== 'object')
 		{
 			this.log.error(`Meadow Graph Client: The filter object is not an object.`);
@@ -195,6 +240,106 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	}
 
 	/**
+	 * Sets the default comparison operator for filter expressions based on data type
+	 * @param {string} pDataType - The data type for the filter expression
+	 * @returns {string} - The default Operator for the query
+	 */
+	getDefaultFilterExpressionOperator(pDataType)
+	{
+		switch(pDataType)
+		{
+			case 'String':
+			case 'Text':
+				return 'LIKE';
+			
+			default:
+				return '=';
+		}
+	}
+
+	/**
+	 * Take in a passed-in filter object or string and turn it into a consistent expression object.
+	 * 
+	 * Passed-in filters can be defined with strings, strings containing entity
+	 * or an object (expected to conform to the standard already).
+
+		Internally the filters follow the precisely same syntax as the meadow filters with an added Entity string:
+		{
+			"Entity": "Book",
+			"Column": "Title",
+			"Value": "James%",
+			"Operator": "LIKE",
+			"Connector": "AND",
+			"Parameter": "BookTitle5"
+		}
+	 * 
+	 * @param {string} pPivotalEntity 
+	 * @param {string} pFilterKey 
+	 * @param {Any} pFilterValue 
+	 * @returns {Object} A valid internal filter object with Column, Operator, Value, Connector and Parameter
+	 */
+	buildFilterExpression(pPivotalEntity, pFilterKey, pFilterValue)
+	{
+		let tmpFilterExpression = {};
+
+		if (typeof(pFilterKey) === 'string')
+		{
+			// If the FilterKey has a dot in it, this references a specific entity
+			// Objects do not provide this convenience feature.. spell it out or don't, no in-between magic
+			let tmpSeparator = pFilterKey.indexOf('.');
+			if (tmpSeparator > 0)
+			{
+				tmpFilterExpression.Entity = pFilterKey.substring(0, tmpSeparator);
+				tmpFilterExpression.Column = pFilterKey.substring(tmpSeparator+1);
+			}
+			else
+			{
+				tmpFilterExpression.Entity = pPivotalEntity;
+				tmpFilterExpression.Column = pFilterKey.substring(tmpSeparator);
+			}
+			tmpFilterExpression.Value = pFilterValue;
+		}
+		else if (typeof(pFilterKey) === 'object')
+		{
+			let tmpFilterExpression = pFilterKey;
+			if (!('Entity' in tmpFilterExpression))
+			{
+				tmpFilterExpression.Entity = pPivotalEntity;
+			}
+			if (!('Value' in tmpFilterExpression))
+			{
+				this.log.error(`Manual filter expression object ${JSON.stringify(pFilterValue)} doesn't contain a Value property; skipping it.`);
+				return false;
+			}
+		}
+
+		if (!(tmpFilterExpression.Entity in this._KnownEntities))
+		{
+			this.log.error(`Filter expression for [${tmpFilterExpression.Entity}.${tmpFilterExpression.Column}] references unknown entity ${tmpFilterExpression.Entity}.`);
+			// TODO: Throw?
+			return false;
+		}
+		if (!(tmpFilterExpression.Column in this._KnownEntities[tmpFilterExpression.Entity]))
+		{
+			this.log.error(`Filter expression for [${tmpFilterExpression.Entity}.${tmpFilterExpression.Column}] references unknown Column ${tmpFilterExpression.Column}.`);
+			// TODO: Throw?
+			return false;
+		}
+
+		// Now that we've checked the value, entity and column... deal with the rest of the properties
+		if (!('Operator' in tmpFilterExpression))
+		{
+			tmpFilterExpression.Operator = this.getDefaultFilterExpressionOperator(this._KnownEntities[tmpFilterExpression.Entity][tmpFilterExpression.Column].DataType);
+		}
+		if (!('Connector' in tmpFilterExpression))
+		{
+			tmpFilterExpression.Connector = 'And';
+		}
+
+		return tmpFilterExpression;
+	}
+
+	/**
 	 * Parses the filter object and returns valid filters.
 	 *
 	 * @param {Object} pFilterObject - The filter object to parse.
@@ -202,35 +347,50 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 */
 	parseFilterObject(pFilterObject)
 	{
-		let tmpFilterObject = pFilterObject;
+		let tmpFilterObject = { SourceFilterObject: pFilterObject };
 
-		// 1. Enumerate the filters
-		let tmpFilters = Object.keys(tmpFilterObject.Filter);
+		// 1. Clean up any previous source filter objects; this is if we keep reusing the filter object over and over.
+		if (tmpFilterObject.SourceFilterObject.hasOwnProperty('SourceFilterObject'))
+		{
+			delete tmpFilterObject.SourceFilterObject.SourceFilterObject;
+		}
+
+		// 2. Setup the basic entity filter expression set.
+		//    This is used to determine which entities to solve for; the order people put filters in can steer this.
+		tmpFilterObject.Entity = tmpFilterObject.SourceFilterObject.Entity;
+		tmpFilterObject.FilterExpressionSet = {};
+
+		// 3. Add an implicit set for the core entity
+		tmpFilterObject.FilterExpressionSet[tmpFilterObject.Entity] = [];
+
+		// 4. Enumerate the filters
+		let tmpFilters = Object.keys(tmpFilterObject.SourceFilterObject.Filter);
 		for (let i = 0; i < tmpFilters.length; i++)
 		{
 			let tmpFilterHash = tmpFilters[i];
-			let tmpFilter = tmpFilterObject.Filter[tmpFilterHash];
+			let tmpFilterExpression = this.buildFilterExpression(pFilterObject.Entity, tmpFilterHash, tmpFilterObject.SourceFilterObject.Filter[tmpFilterHash]);
 
-			let tmpCompiledFilter = {};
-			tmpCompiledFilter.Hash = tmpFilterHash;
-			if (tmpFilter.hasOwnProperty('Entity'))
+			if (tmpFilterExpression)
 			{
-				tmpCompiledFilter.Entity = tmpFilter.Entity;
-			}
-			else
-			{
-				// See if the column is in the core entity
+				if (!tmpFilterObject.FilterExpressionSet.hasOwnProperty(tmpFilterExpression.Entity))
+				{
+					tmpFilterObject.FilterExpressionSet[tmpFilterExpression.Entity] = [];
+				}
+
+				tmpFilterObject.FilterExpressionSet[tmpFilterExpression.Entity].push(tmpFilterExpression);
 			}
 		}
+
+		// 5. Create a location in the Filter Object to store solutions
+		tmpFilterObject.SolutionMap = {}
 
 		return tmpFilterObject;
 	}
 
-
-	gatherConnectedEntityData(pEntityContainer, pEntityContainerHash, pDestinationEntityName, pDestinationIDEntity, pEntityToGather, fCallback, pSilent)
+	gatherConnectedEntityData(pEntityContainer, pEntityContainerHash, pDestinationEntityName, pDestinationIDEntity, pEntityToGather, fCallback)
 	{
 		let tmpFilter = `FBV~ID${pDestinationEntityName}~EQ~${pDestinationIDEntity}`;
-		this.fable.HeadlightRestClient.getEntitySetWithPages(pEntityToGather, tmpFilter,
+		this.fable.HeadlightRestClient.getEntitiesetWithPages(pEntityToGather, tmpFilter,
 			(pRecordCount) =>
 			{
 				//console.log(`Matched ${pRecordCount} ${pEntityToGather} for ${pDestinationEntity} [${pDestinationIDEntity}]`);
@@ -267,6 +427,291 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			});
 	}
 
+	generateRequestPath(pBaseGraphConnection, pEndpointGraphConnection)
+	{
+		// Walk backwards (right to left) and generate the request path for an entity -- based on the cardinality of the connection.
+		let tmpGraphConnectionSet = [];
+
+		let tmpCurrentGraphConnection = pEndpointGraphConnection;
+		let tmpRightGraphConnection = false;
+
+		while (tmpCurrentGraphConnection.EdgeAddress != pBaseGraphConnection.EdgeAddress)
+		{
+			let tmpGraphRequest = (
+				{
+					Entity: tmpCurrentGraphConnection.EntityName,
+					Depth: tmpCurrentGraphConnection.Depth,
+					DataSet: tmpCurrentGraphConnection.EdgeAddress
+				});
+
+			// Now to figure out how to filter these!  For the Endpoint, we just use any passed-in filters but nothing on the automagic ones.
+			if (pEndpointGraphConnection.EdgeAddress === tmpCurrentGraphConnection.EdgeAddress)
+			{
+				tmpGraphRequest.FilterValueColumn = false;
+				tmpGraphRequest.FilterSourceDataSet = false;
+			}
+			else if (tmpRightGraphConnection)
+			{
+				// Check if this is based on an outgoing or incoming join
+				if (this._OutgoingEntityConnections[tmpRightGraphConnection.EntityName].hasOwnProperty(tmpGraphRequest.Entity))
+				{
+					tmpGraphRequest.FilterSourceDataSet = tmpRightGraphConnection.EdgeAddress;
+					tmpGraphRequest.FilterValueColumn = this._OutgoingEntityConnections[tmpRightGraphConnection.EntityName][tmpGraphRequest.Entity];
+				}
+				else if (this._IncomingEntityConnections[tmpRightGraphConnection.EntityName].hasOwnProperty(tmpGraphRequest.Entity))
+				{
+					tmpGraphRequest.FilterSourceDataSet = tmpRightGraphConnection.EdgeAddress;
+					tmpGraphRequest.FilterValueColumn = this._IncomingEntityConnections[tmpRightGraphConnection.EntityName][tmpGraphRequest.Entity];
+				}
+				else
+				{
+					throw new Error(`Error generating graph request path ... join not found in path edge.`);
+				}
+			}
+			else
+			{
+				throw new Error(`Error generating graph request path ... previous graph connection not found on non endpoint/base graph edge.`);
+			}
+
+			tmpGraphConnectionSet.push(tmpGraphRequest);
+
+			tmpRightGraphConnection = tmpCurrentGraphConnection;
+			tmpCurrentGraphConnection = typeof(pBaseGraphConnection.AttemptedPaths[tmpCurrentGraphConnection.ParentEdgeAddress]) === 'object' ? pBaseGraphConnection.AttemptedPaths[tmpCurrentGraphConnection.ParentEdgeAddress] : pBaseGraphConnection;
+		}
+
+		// Now put in the final (base) request
+		let tmpBaseGraphRequest = (
+			{
+				Entity: tmpCurrentGraphConnection.EntityName,
+				Depth: tmpCurrentGraphConnection.Depth,
+				DataSet: tmpCurrentGraphConnection.EdgeAddress
+			});
+		
+		if (tmpRightGraphConnection)
+		{
+			// Check if this is based on an outgoing or incoming join
+			if (this._OutgoingEntityConnections[tmpRightGraphConnection.EntityName].hasOwnProperty(tmpBaseGraphRequest.Entity))
+			{
+				tmpBaseGraphRequest.FilterSourceDataSet = tmpRightGraphConnection.EdgeAddress;
+				tmpBaseGraphRequest.FilterValueColumn = this._OutgoingEntityConnections[tmpRightGraphConnection.EntityName][tmpBaseGraphRequest.Entity];
+			}
+			else if (this._IncomingEntityConnections[tmpRightGraphConnection.EntityName].hasOwnProperty(tmpBaseGraphRequest.Entity))
+			{
+				tmpBaseGraphRequest.FilterSourceDataSet = tmpRightGraphConnection.EdgeAddress;
+				tmpBaseGraphRequest.FilterValueColumn = this._IncomingEntityConnections[tmpRightGraphConnection.EntityName][tmpBaseGraphRequest.Entity];
+			}
+			else
+			{
+				throw new Error(`Error generating base graph request path ... join not found in path edge.`);
+			}
+		}
+
+		tmpGraphConnectionSet.push(tmpBaseGraphRequest);
+
+		return tmpGraphConnectionSet;
+	}
+
+	/**
+	 * Solve the entity graph connections between two entities, taking into account hinting.
+	 * 
+	 * Recursive.  Not fast.  Not slow.  Coded for readability as the first metric.  Results are cached.
+	 * 
+	 * Automatic traversal *ONLY* navigates the entity path for well-formed connections (IDEntity -> IDEntity);
+	 * other traversals are possible by manual hinting.
+	 * 
+	 * @param {string} pStartEntityName - the entity to solve the graph path from
+	 * @param {string} pDestinationEntity - the entity to solve the graph path to
+	 * @param {Object} pEntityPathHints - any hinted paths to use (these are used for subpaths as well)
+	 * @param {Object} pBaseGraphConnection - the "root" of the tree; used for metrics mostly
+	 * @param {Object} pTraversalObject - a specialized traversal object for the breadth-first search.
+	 * @param {number} pDepth - the current depth of the tree; used to bail out if we pass a threshold
+	 * @returns {Object} a valid graph connection object
+	 */
+	solveGraphConnections(pStartEntityName, pDestinationEntity, pEntityPathHints, pBaseGraphConnection, pParentEntity, pWeight)
+	{
+		let tmpGraphConnection = {};
+		let tmpEntityPathHints = (typeof(pEntityPathHints) === 'undefined') ? [] : pEntityPathHints;
+
+		tmpGraphConnection.EntityName = pStartEntityName;		
+
+		this.log.info(`Starting to solve graph connections from ${pStartEntityName} to ${pDestinationEntity}.`);
+
+		let tmpBaseGraphConnection = (typeof(pBaseGraphConnection) === 'undefined') ? tmpGraphConnection : pBaseGraphConnection;
+		// The set of all graph connections we've tried (at *ALL* layers)
+		if (!(`AttemptedPaths` in tmpBaseGraphConnection))
+		{
+			tmpBaseGraphConnection.AttemptedPaths = {};
+			tmpBaseGraphConnection.PotentialSolutions = [];
+			tmpBaseGraphConnection.OptimalSolutionPath = false;
+		}
+
+		// We are tracking addresses rather than creating many circular JSON objects.
+		// Also this tracks them per destination, so we can reuse them later if there are farther out there chains.
+		if (typeof(pBaseGraphConnection) === 'undefined')
+		{
+			tmpGraphConnection.Base = true;
+			tmpGraphConnection.EdgeAddress = pStartEntityName;
+			tmpGraphConnection.ParentEdgeAddress = '';
+			tmpGraphConnection.AttemptedEntities = {pStartEntityName: true};
+		}
+		else
+		{
+			tmpGraphConnection.Base = false;
+			tmpGraphConnection.ParentEdgeAddress = pParentEntity.EdgeAddress;
+			tmpGraphConnection.EdgeAddress = `${pParentEntity.EdgeAddress}-->${pStartEntityName}`;
+			tmpGraphConnection.AttemptedEntities = JSON.parse(JSON.stringify(pParentEntity.AttemptedEntities));
+			// Add ourself to the attempted entities set
+			tmpGraphConnection.AttemptedEntities[pStartEntityName] = true;
+		}
+
+		tmpGraphConnection.EdgeTraversalEndpoints = `${pStartEntityName}-->${pDestinationEntity}`;
+
+		if (tmpGraphConnection.Base)
+		{
+			// For the base, let's not make it circular.
+			tmpBaseGraphConnection.AttemptedPaths[tmpGraphConnection.EdgeAddress] = true;
+		}
+		else if (tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpGraphConnection.EdgeAddress))
+		{
+			// We've already tried this path -- bail out.
+			return tmpBaseGraphConnection;
+		}
+		else
+		{
+			// Add this to the attempted paths
+			tmpBaseGraphConnection.AttemptedPaths[tmpGraphConnection.EdgeAddress] = tmpGraphConnection;
+		}
+
+		// The depth of this particular connection
+		tmpGraphConnection.Depth = (typeof(pParentEntity) === 'undefined') ? 1 : pParentEntity.Depth + 1;
+		tmpGraphConnection.Weight = (typeof(pWeight) === 'undefined') ? this.options.StartingWeight : pWeight;
+
+		if (tmpGraphConnection.Depth > this.options.MaximumTraversalDepth)
+		{
+			this.log.warn(`Maximum traversal depth of ${this.options.MaximumTraversalDepth} reached attempting to get from ${tmpBaseGraphConnection.EntityName} to ${pDestinationEntity} when testing entity ${tmpGraphConnection.EntityName}.`);
+			// This means there was no path solution in the maximum depth.
+			return tmpBaseGraphConnection;
+		}
+
+		// For now hints are only used for the base entity.
+		if (tmpGraphConnection.Base && (tmpGraphConnection.EdgeTraversalEndpoints in tmpEntityPathHints))
+		{
+			// This is solved with a hint -- use the hint and move on.
+			tmpGraphConnection.FromHint = true;
+			tmpGraphConnection.PotentialSolutions.push(tmpEntityPathHints[tmpGraphConnection.EdgeTraversalEndpoints]);
+		}
+		// For now cache is only used for the base entity.
+		else if (tmpGraphConnection.Base && (tmpGraphConnection.EdgeTraversalEndpoints in this._GraphSolutionMap))
+		{
+			// This was solved already -- use the cached version and move on.
+			tmpGraphConnection.FromCache = true;
+			tmpGraphConnection.PotentialSolutions.push(this._GraphSolutionMap[tmpGraphConnection.EdgeTraversalEndpoints]);
+		}
+		else
+		{
+			// Time to solve us some graphs.
+			/*
+			The output format for this is an array of solutions ... each solution 
+			has a weight (Join increases weight half a step to favor joins, 
+			nonjoins decrease a full step)
+			[
+				{ Weight:950, EdgeAddress:"Book-->Author", Path:[{Entity:"Author", Depth: 3}, {Entity:"BookAuthorJoin", FilterColumnSet:"IDAuthor", Depth: 2}, {Entity:"Book", FilterColumnSet:"IDBook", Depth: 1}]},
+				{ Weight:900, EdgeAddress:"Book-->Author", Path:[{Entity:"Author", Depth: 3}, {Entity:"Rating", FilterColumnSet:"IDAuthor", Depth: 2}, {Entity:"Book", FilterColumnSet:"IDBook", Depth: 1}]}
+			]
+
+			The request library later takes that chain of requests (along with 
+			request filters) and makes them biggest depth back
+
+			All potential solutions have a rank... these will be kept around for 
+			the lifecycle of the graph client object.
+
+			1. Start by checking direct outgoing joins; these are highest priority.
+				e.g. if the data model has Book and BookEdition, and BookEdition has IDBook -> Book
+					and we are looking for all BookEdition records for a particular Book:
+					* BookEdition is the start Entity
+					* Book is the destination Entity
+					* Because BookEdition has a direct outgoing join to Book via IDBook, it is the highest priority
+
+			2. Secondly checking direct incoming joins -> their outgoing joins
+
+			3. Lastly check outside -> in joins
+				e.g. if the data model has Book, BookAuthorJoin and BookAuther
+					and we are looking for all Book records for a particular IDAuthor
+					* Book is the start Entity
+					* No outgoing joins satisfy
+					* BookAuthorJoin satisfies an incoming join
+					* BookAuthorJoin has an outgoing join so will solve this properly
+			*/
+			// 0. See if this is THE ONE
+			// See if this is a potential solution
+			if (tmpGraphConnection.EntityName === pDestinationEntity)
+			{
+				// IT IS!  ADD IT...
+				let tmpPotentialSolution = (
+					{
+						Weight: tmpGraphConnection.Weight,
+						EdgeAddress: tmpGraphConnection.EdgeAddress,
+						RequestPath: this.generateRequestPath(tmpBaseGraphConnection, tmpGraphConnection, pDestinationEntity)
+					});
+				tmpBaseGraphConnection.PotentialSolutions.push(tmpPotentialSolution);
+			}
+			else
+			{
+				// 1. Start by checking direct outgoing joins
+				if (this._OutgoingEntityConnections[pStartEntityName].hasOwnProperty(pDestinationEntity))
+				{
+					let tmpAttemptedConnectedEntity = pDestinationEntity;
+					let tmpAttemptedEdgeAddress = `${tmpAttemptedConnectedEntity}-->${pDestinationEntity}`;
+					// This prevents circles without eliminating intermediates for different paths later.
+					if (!tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpAttemptedConnectedEntity))
+					{
+						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeightDifference;
+						// Outgoing Joins get a boost in weight
+						tmpAttemptWeight = tmpAttemptWeight + this.options.OutgoingJoinWeightDifference;
+						if (tmpAttemptedConnectedEntity.indexOf('Join',tmpAttemptedConnectedEntity.length-4) === 0)
+						{
+							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeightDifference;
+						}
+						this.solveGraphConnections(tmpAttemptedConnectedEntity, pDestinationEntity, tmpEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
+					}
+				}
+
+				// 2. Check direct incoming joins to their outgoing joins
+				//    We *could* respect multi-joins here, but, meh for now... hinting can resolve any of the hard issues.
+				//    This search is depth-first, using recursion
+				let tmpIncomingJoinKeys = Object.keys(this._IncomingEntityConnections[tmpGraphConnection.EntityName]);
+				for (let i = 0; i < tmpIncomingJoinKeys.length; i++)
+				{
+					let tmpAttemptedConnectedEntity = tmpIncomingJoinKeys[i];
+					let tmpAttemptedEdgeAddress = `${tmpGraphConnection.EdgeAddress}-->${pDestinationEntity}`;
+					// This prevents circles without eliminating intermediates for different paths later.
+					if (!tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpAttemptedConnectedEntity))
+					{
+						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeightDifference;
+						if (tmpAttemptedConnectedEntity.indexOf('Join',tmpAttemptedConnectedEntity.length-4) === 0)
+						{
+							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeightDifference;
+						}
+						this.solveGraphConnections(tmpAttemptedConnectedEntity, pDestinationEntity, tmpEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
+					}
+				}
+
+			}
+		}
+
+		// Now sort the graph requests by Weight and generate the optimal solution path
+		if (tmpGraphConnection.Base && (tmpBaseGraphConnection.PotentialSolutions.length > 0))
+		{
+			tmpBaseGraphConnection.PotentialSolutions.sort((a, b) => (a.Weight < b.Weight) ? 1 : -1);
+			if (tmpBaseGraphConnection.PotentialSolutions.length > 0)
+			{
+				this._GraphSolutionMap[tmpBaseGraphConnection.EdgeTraversalEndpoints] = tmpBaseGraphConnection.PotentialSolutions[0];
+			}
+		}
+
+		return tmpGraphConnection;
+	}
+
 	/**
 	 * Retrieves a bundle of graph data from the server.
 	 *
@@ -281,10 +726,11 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			return fCallback(new Error('Meadow Graph Client: The filter object is not valid.'), null, pFilterObject);
 		}
 
-		let tmpFilterObject = this.parseFilterObject(pFilterObject);
-		let tmpDataOutputObject = {};
+		// Parse the Filter Object
+		let tmpFilterObject = this.parseFilterObject(pEntityName, pFilterObject);
+		let tmpOptimalRequestPaths = this.solveGraphConnections(pEntityName, pFilterObject.Entity, {});
 
-		// Now get the records in the parsed filter object
+		// Now get the paths for each entity in the parsed filter object
 		let tmpAnticipate = this.fable.newAnticipate();
 
 		tmpAnticipate.anticipate((fStageComplete) =>
