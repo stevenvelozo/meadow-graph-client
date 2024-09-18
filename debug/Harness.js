@@ -13,11 +13,12 @@ _Fable.log.info(`...data model contains ${meadowModel.Tables.length} tables`);
 let _MeadowGraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient', {DataModel: meadowModel});
 _Fable.log.info(`...instantiated MeadowGraphClient`);
 
-let tmpFilterObject = {Entity: 'Project', Filter:{"Material.IDMaterial":107}};
+
+let tmpFilterObject = {Entity: 'Bridge', Filter:{"BridgeElementConditionDefect.CS1Description": "Crack"}, Hints:['MaterialLineItemJoin']};
+//let tmpFilterObject = {Entity: 'Bridge', Filter:{"BridgeElementConditionDefect.CS1Description": "Crack"}};
 
 let tmpParsedFilterObject = _MeadowGraphClient.parseFilterObject(tmpFilterObject);
 
-let tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'Material');
-//let tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'Material', ['MaterialLineItemJoin']);
+let tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'BridgeElementConditionDefect', tmpFilterObject.Hints);
 
 _Fable.log.info(`Operation Complete!`);

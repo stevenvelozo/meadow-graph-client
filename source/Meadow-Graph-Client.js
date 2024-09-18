@@ -3,36 +3,38 @@ const libFableServiceProviderBase = require('fable-serviceproviderbase');
 const libGraphClientDataRequest = require('./Meadow-Graph-Service-DataRequest.js');
 
 const _DefaultGraphClientConfiguration = (
-{
-	// This allows us to point the graph client at a different http request
-	// client (e.g. a platform-specific client) if one already exists in the
-	// fable services.
-	"DataRequestClientService": "MeadowGraphClientDataRequest",
+	{
+		// This allows us to point the graph client at a different http request
+		// client (e.g. a platform-specific client) if one already exists in the
+		// fable services.
+		"DataRequestClientService": "MeadowGraphClientDataRequest",
 
-	// The maximum number of hops we allow the graph solver to traverse before it gives up
-	"MaximumTraversalDepth": 25,
+		// The maximum number of hops we allow the graph solver to traverse before it gives up
+		"MaximumTraversalDepth": 25,
 
-	// The Weights for Graph Path Evaluation
-	"StartingWeight": 100000,
+		// The Weights for Graph Path Evaluation
+		"StartingWeight": 100000,
 
-	"HintWeight": 200000,
+		// The Weight for a hinted table in the chain (e.g. if we want to hint a join)
+		// This is meant to be much higher than the starting weight, to make a single (or even multiple) hinted tables blast routes to the top.
+		"HintWeight": 200000,
 
-	// What to add per depth
-	"TraversalHopWeight": -100,
+		// What to add per depth
+		"TraversalHopWeight": -100,
 
-	// What to add if a direct outgoing join exists
-	"OutgoingJoinWeight": 25,
+		// What to add if a direct outgoing join exists
+		"OutgoingJoinWeight": 25,
 
-	// What to add if the word "Join" is in the external table name
-	// Joins to Joins is valid, and, an odd one.... can work (and accelerate the traversal) .... which can be used to great advantage.........
-	"JoinInTableNameWeight": 25,
+		// What to add if the word "Join" is in the external table name
+		// Joins to Joins is valid, and, an odd one.... can work (and accelerate the traversal) .... which can be used to great advantage.........
+		"JoinInTableNameWeight": 25,
 
-	// Any default manual paths to load on initialization
-	"DefaultManualPaths": {},
+		// Any default manual paths to load on initialization
+		"DefaultManualPaths": {},
 
-	// Any default hints to load on initialization
-	"DefaultHints": {}
-});
+		// Any default hints to load on initialization
+		"DefaultHints": {}
+	});
 
 /**
  * Class representing a Meadow Graph Client.
@@ -74,10 +76,10 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		// that only uses ID columns, when we want to join across other data.
 		//
 		// These manual paths are required to be in the entity graph path format.
-		this._DefaultManualPaths = (typeof(this.options.DefaultManualPaths) === 'object') ? this.options.DefaultManualPaths : {};
+		this._DefaultManualPaths = (typeof (this.options.DefaultManualPaths) === 'object') ? this.options.DefaultManualPaths : {};
 
 		// Hints are array of strings based on EdgeTraverslEndpoints syntax.
-		this._DefaultHints = (typeof(this.options.DefaultHints) === 'object') ? this.options.DefaultHints : {};
+		this._DefaultHints = (typeof (this.options.DefaultHints) === 'object') ? this.options.DefaultHints : {};
 
 		if (this.options.DataModel)
 		{
@@ -193,13 +195,13 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 */
 	loadDataModel(pDataModel)
 	{
-		let tmpDataModel = (typeof(pDataModel) == 'object') ? pDataModel : false;
+		let tmpDataModel = (typeof (pDataModel) == 'object') ? pDataModel : false;
 		if (!tmpDataModel)
 		{
 			this.log.error(`Meadow Graph Client: Could not load a DataModel because it was not passed in or set in the options.`);
 			return false;
 		}
-		if ((!tmpDataModel.hasOwnProperty('Tables')) || (typeof(tmpDataModel) != 'object'))
+		if ((!tmpDataModel.hasOwnProperty('Tables')) || (typeof (tmpDataModel) != 'object'))
 		{
 			this.log.error(`Meadow Graph Client: The DataModel object does not have a Tables property or it is not an object, so cannot be loaded.`);
 			return false;
@@ -223,7 +225,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	lintFilterObject(pFilterObject)
 	{
 		// Check Javascript Types and that we have the bare minimum
-		if (typeof(pFilterObject) !== 'object')
+		if (typeof (pFilterObject) !== 'object')
 		{
 			this.log.error(`Meadow Graph Client: The filter object is not an object.`);
 			return false;
@@ -265,16 +267,38 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 */
 	getDefaultFilterExpressionOperator(pDataType)
 	{
-		switch(pDataType)
+		switch (pDataType)
 		{
 			case 'String':
 			case 'Text':
 				return 'LIKE';
-			
+
 			default:
 				return '=';
 		}
 	}
+
+	// TODO: This needs some data type magick and INN list magick
+	getMeadowFilterType(pFilterConnector, pFilterOperator)
+	{
+		if (pFilterOperator === '(')
+		{
+			return 'FOP';
+		}
+
+		if (pFilterOperator === ')')
+		{
+			return 'FCP';
+		}
+
+		if (pFilterConnector === 'OR')
+		{
+			return 'FBVOR';
+		}
+
+		return 'FBV';
+	}
+
 
 	/**
 	 * Take in a passed-in filter object or string and turn it into a consistent expression object.
@@ -282,8 +306,9 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 * Passed-in filters can be defined with strings, strings containing entity
 	 * or an object (expected to conform to the standard already).
 
-		Internally the filters follow the precisely same syntax as the meadow filters with an added Entity string:
+		Internally the filters follow the precisely same syntax as the meadow filters with an added Entity string and hinting for the Meadow filterstring type:
 		{
+			"MeadowFilterType": "FBV",
 			"Entity": "Book",
 			"Column": "Title",
 			"Value": "James%",
@@ -301,7 +326,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	{
 		let tmpFilterExpression = {};
 
-		if (typeof(pFilterKey) === 'string')
+		if (typeof (pFilterKey) === 'string')
 		{
 			// If the FilterKey has a dot in it, this references a specific entity
 			// Objects do not provide this convenience feature.. spell it out or don't, no in-between magic
@@ -309,7 +334,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			if (tmpSeparator > 0)
 			{
 				tmpFilterExpression.Entity = pFilterKey.substring(0, tmpSeparator);
-				tmpFilterExpression.Column = pFilterKey.substring(tmpSeparator+1);
+				tmpFilterExpression.Column = pFilterKey.substring(tmpSeparator + 1);
 			}
 			else
 			{
@@ -318,7 +343,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			}
 			tmpFilterExpression.Value = pFilterValue;
 		}
-		else if (typeof(pFilterKey) === 'object')
+		else if (typeof (pFilterKey) === 'object')
 		{
 			let tmpFilterExpression = pFilterKey;
 			if (!('Entity' in tmpFilterExpression))
@@ -355,6 +380,11 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			tmpFilterExpression.Connector = 'And';
 		}
 
+		if (!('MeadowFilterType' in tmpFilterExpression))
+		{
+			tmpFilterExpression.MeadowFilterType = this.getMeadowFilterType(tmpFilterExpression.Connector, tmpFilterExpression.Operator);
+		}
+
 		return tmpFilterExpression;
 	}
 
@@ -366,7 +396,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 */
 	parseFilterObject(pFilterObject)
 	{
-		let tmpFilterObject = { SourceFilterObject: pFilterObject };
+		let tmpFilterObject = { Entity:pFilterObject.Enttiy, SourceFilterObject:pFilterObject };
 
 		// 1. Clean up any previous source filter objects; this is if we keep reusing the filter object over and over.
 		if (tmpFilterObject.SourceFilterObject.hasOwnProperty('SourceFilterObject'))
@@ -399,6 +429,8 @@ class MeadowGraphClient extends libFableServiceProviderBase
 				tmpFilterObject.FilterExpressionSet[tmpFilterExpression.Entity].push(tmpFilterExpression);
 			}
 		}
+
+		tmpFilterObject.RequiredEntities = Object.keys(tmpFilterObject.FilterExpressionSet);
 
 		// 5. Create a location in the Filter Object to store solutions
 		tmpFilterObject.SolutionMap = {}
@@ -495,7 +527,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			tmpGraphConnectionSet.push(tmpGraphRequest);
 
 			tmpRightGraphConnection = tmpCurrentGraphConnection;
-			tmpCurrentGraphConnection = typeof(pBaseGraphConnection.AttemptedPaths[tmpCurrentGraphConnection.ParentEdgeAddress]) === 'object' ? pBaseGraphConnection.AttemptedPaths[tmpCurrentGraphConnection.ParentEdgeAddress] : pBaseGraphConnection;
+			tmpCurrentGraphConnection = typeof (pBaseGraphConnection.AttemptedPaths[tmpCurrentGraphConnection.ParentEdgeAddress]) === 'object' ? pBaseGraphConnection.AttemptedPaths[tmpCurrentGraphConnection.ParentEdgeAddress] : pBaseGraphConnection;
 		}
 
 		// Now put in the final (base) request
@@ -505,7 +537,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 				Depth: tmpCurrentGraphConnection.Depth,
 				DataSet: tmpCurrentGraphConnection.EdgeAddress
 			});
-		
+
 		if (tmpRightGraphConnection)
 		{
 			// Check if this is based on an outgoing or incoming join
@@ -569,7 +601,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 
 		this.log.info(`Starting to solve graph connections from ${pStartEntityName} to ${pDestinationEntity}.`);
 
-		let tmpBaseGraphConnection = (typeof(pBaseGraphConnection) === 'undefined') ? tmpGraphConnection : pBaseGraphConnection;
+		let tmpBaseGraphConnection = (typeof (pBaseGraphConnection) === 'undefined') ? tmpGraphConnection : pBaseGraphConnection;
 		// The set of all graph connections we've tried (at *ALL* layers)
 		if (!(`AttemptedPaths` in tmpBaseGraphConnection))
 		{
@@ -580,7 +612,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 
 		// We are tracking addresses rather than creating many circular JSON objects.
 		// Also this tracks them per destination, so we can reuse them later if there are farther out there chains.
-		if (typeof(pBaseGraphConnection) === 'undefined')
+		if (typeof (pBaseGraphConnection) === 'undefined')
 		{
 			tmpBaseGraphConnection.Base = true;
 			tmpBaseGraphConnection.EdgeAddress = pStartEntityName;
@@ -589,7 +621,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			tmpBaseGraphConnection.AttemptedEntities = {};
 			tmpBaseGraphConnection.AttemptedEntities[pStartEntityName] = true;
 
-			tmpBaseGraphConnection.EntityPathHints = (typeof(pEntityPathHints) === 'undefined') ? [] : pEntityPathHints;
+			tmpBaseGraphConnection.EntityPathHints = (typeof (pEntityPathHints) === 'undefined') ? [] : pEntityPathHints;
 			// If we have default hints for this path, union them with the already passed-in hints
 			if (this._DefaultHints.hasOwnProperty(tmpGraphConnection.EdgeTraversalEndpoints))
 			{
@@ -628,8 +660,8 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		}
 
 		// The depth of this particular connection
-		tmpGraphConnection.Depth = (typeof(pParentEntity) === 'undefined') ? 1 : pParentEntity.Depth + 1;
-		tmpGraphConnection.Weight = (typeof(pWeight) === 'undefined') ? this.options.StartingWeight : pWeight;
+		tmpGraphConnection.Depth = (typeof (pParentEntity) === 'undefined') ? 1 : pParentEntity.Depth + 1;
+		tmpGraphConnection.Weight = (typeof (pWeight) === 'undefined') ? this.options.StartingWeight : pWeight;
 
 		if (tmpGraphConnection.Depth > this.options.MaximumTraversalDepth)
 		{
@@ -725,7 +757,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeight;
 						// Outgoing Joins get a boost in weight
 						tmpAttemptWeight = tmpAttemptWeight + this.options.OutgoingJoinWeight;
-						if (tmpAttemptedConnectedEntity.indexOf('Join',tmpAttemptedConnectedEntity.length-4) === 0)
+						if (tmpAttemptedConnectedEntity.indexOf('Join', tmpAttemptedConnectedEntity.length - 4) === 0)
 						{
 							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeight;
 						}
@@ -745,7 +777,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 					if (!tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpAttemptedConnectedEntity))
 					{
 						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeight;
-						if (tmpAttemptedConnectedEntity.indexOf('Join',tmpAttemptedConnectedEntity.length-4) === 0)
+						if (tmpAttemptedConnectedEntity.indexOf('Join', tmpAttemptedConnectedEntity.length - 4) === 0)
 						{
 							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeight;
 						}
@@ -764,9 +796,128 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			{
 				this._GraphSolutionMap[tmpBaseGraphConnection.EdgeTraversalEndpoints] = tmpBaseGraphConnection.PotentialSolutions[0];
 			}
+
+			if (tmpBaseGraphConnection.PotentialSolutions.length > 0)
+			{
+				tmpBaseGraphConnection.OptimalSolutionPath = tmpBaseGraphConnection.PotentialSolutions[0];
+			}
 		}
 
 		return tmpGraphConnection;
+	}
+
+	getFilterComparisonOperator(pFilterOperator)
+	{
+		let tmpOperator = '=';
+		switch (pFilterOperator)
+		{
+			case '=': tmpOperator = 'EQ'; break;
+			case '!=': tmpOperator = 'NE'; break;
+			case '>': tmpOperator = 'GT'; break;
+			case '>=': tmpOperator = 'GE'; break;
+			case '<': tmpOperator = 'LT'; break;
+			case '<=': tmpOperator = 'LE'; break;
+			case 'LIKE': tmpOperator = 'LK'; break;
+			case 'NOT LIKE': tmpOperator = 'NLK'; break;
+			case 'IS NULL': tmpOperator = 'IN'; break;
+			case 'IS NOT NULL': tmpOperator = 'NN'; break;
+			case 'IN': tmpOperator = 'INN'; break;
+			case '(': tmpOperator = 'FOP'; break;
+			case ')': tmpOperator = 'FCP'; break;
+			default: tmpOperator = pFilterOperator; break;
+		}
+		return tmpOperator;
+	}
+
+	/**
+	 * 
+	 * @param {Object} pFilterArray - The generated filter object
+	 * 
+	 * @returns {string} the meadow query string from this filter object
+	 */
+	convertFilterObjectToFilterString(pFilterArray)
+	{
+		let tmpFilterString = "";
+		if (!Array.isArray(pFilterArray) || pFilterArray.length < 1)
+		{
+			return tmpFilterString;
+		}
+
+		for (let i = 0; i < pFilterArray.length; i++)
+		{
+			tmpFilterString += `${pFilterArray[i].MeadowFilterType}~${pFilterArray[i].Column}~${this.getFilterComparisonOperator(pFilterArray[i].Operator)}~${pFilterArray[i].Value}`;
+		}
+
+		return tmpFilterString;
+	}
+
+	compileFilter(pFilterObject)
+	{
+		// 0. Lint the Filter Object
+		if (!this.lintFilterObject(pFilterObject))
+		{
+			return fCallback(new Error('Meadow Graph Client: The filter object is not valid.'), null, pFilterObject);
+		}
+
+		// 1. Parse the Filter Object
+		let tmpCompiledGraphRequest = {};
+
+		tmpCompiledGraphRequest.ParsedFilter = this.parseFilterObject(pFilterObject);
+
+		tmpCompiledGraphRequest.RequestPaths = {};
+
+		// 2. Get the paths for each required entity in the parsed filter object
+		for (let i = 0; i < tmpCompiledGraphRequest.ParsedFilter.RequiredEntities.length; i++)
+		{
+			let tmpEntityName = tmpCompiledGraphRequest.ParsedFilter.RequiredEntities[i];
+			if (tmpEntityName != pFilterObject.Entity)
+			{
+				tmpCompiledGraphRequest.RequestPaths[tmpEntityName] = this.solveGraphConnections(pFilterObject.Entity, tmpEntityName, pFilterObject.Hints);
+			}
+		}
+
+		// 3. (not doing this yet -- it may not even be possible!!) Optimize the paths to only do one request per entity
+
+		// 4. Build the chain of requests that have to happen -- order is unimportant other than doing the core requested entity last.
+		/*
+		"Request" objects have a particular format:
+		{
+			Entity: "Book",
+			MeadowFilter: "FBV~IDAuthor~EQ~8675309"
+		}
+		*/
+		tmpCompiledGraphRequest.Requests = [];
+		for (let i = 0; i < tmpCompiledGraphRequest.ParsedFilter.RequiredEntities.length; i++)
+		{
+			let tmpEndpointEntityName = tmpCompiledGraphRequest.ParsedFilter.RequiredEntities[i];
+			// Get the basal/endpoint requests
+			if (tmpEndpointEntityName != tmpCompiledGraphRequest.ParsedFilter.Entity)
+			{
+				let tmpRequestObject = ({
+						// The Entity to get
+						Entity:tmpEndpointEntityName,
+						// The filter to apply to the Entity
+						MeadowFilter:this.convertFilterObjectToFilterString(tmpCompiledGraphRequest.ParsedFilter.FilterExpressionSet[tmpEndpointEntityName]),
+						// The chain of requests to make with the graph
+						GraphRequestChain:[]
+					});
+
+				// Each of these in the GraphRequestChain requests will use the previous request data to pull the filter for the next.
+				// Join cardinality is key.
+				let tmpGraphRequestSolution = tmpCompiledGraphRequest.RequestPaths[tmpEndpointEntityName].OptimalSolutionPath;
+				for (let j = 0; j < tmpGraphRequestSolution.RequestPath.length; j++)
+				{
+					if ((tmpGraphRequestSolution.RequestPath[j].Entity != tmpCompiledGraphRequest.ParsedFilter.Entity) && (tmpGraphRequestSolution.RequestPath[j].Entity != tmpEndpointEntityName))
+					{
+						tmpRequestObject.GraphRequestChain.push(tmpGraphRequestSolution.RequestPath[j].Entity);
+					}
+				}
+
+				tmpCompiledGraphRequest.Requests.push(tmpRequestObject);
+			}
+		}
+
+		return tmpCompiledGraphRequest;
 	}
 
 	/**
@@ -776,40 +927,56 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 * @param {object} pFilterObject - The filter object to apply to the query.
 	 * @param {function} fCallback - The callback function with the signature (pError, pData, pFilterObject) to execute after the data is retrieved
 	 */
-	get(pEntityName, pFilterObject, fCallback)
+	get(pFilterObject, fCallback)
 	{
-		if (!this.lintFilterObject(pFilterObject))
-		{
-			return fCallback(new Error('Meadow Graph Client: The filter object is not valid.'), null, pFilterObject);
-		}
+		let tmpCompiledFilter = this.compileFilter(pFilterObject);
 
-		// Parse the Filter Object
-		let tmpFilterObject = this.parseFilterObject(pEntityName, pFilterObject);
-		let tmpOptimalRequestPaths = this.solveGraphConnections(pEntityName, pFilterObject.Entity, {});
-
-		// Now get the paths for each entity in the parsed filter object
+		// Now start to get the records outlined by the compiled filter.
 		let tmpAnticipate = this.fable.newAnticipate();
 
-		tmpAnticipate.anticipate((fStageComplete) =>
+		for (let i = 0; i < tmpCompiledFilter.Requests.length; i++)
 		{
-			this.getRecords(pEntityName, tmpFilterObject, (pError, pData) =>
+			let tmpRequest = tmpCompiledFilter.Requests[i];
+
+			tmpAnticipate.anticipate((fStageComplete) =>
 			{
-				if (pError)
+				this.log.info(`Performing request to Entity [${tmpRequest.Entity}] filter [${tmpRequest.MeadowFilter}]`);
+				tmpRequest.Result = [];
+
+				// Now put the downstream requests on the anticipate chain... this is breadth first, rather than depth
+				for (let j = 0; j < tmpRequest.GraphRequestChain.length; j++)
 				{
-					return fStageComplete(pError);
+					let tmpDownstreamRequest = (
+						{
+							Entity: tmpRequest.GraphRequestChain[j],
+							// This will either be an in list of internal records from the previous request in the chain,
+							// or,
+							// an in list of external record IDs based on the join cardinality.
+							MeadowFilter: `GeneratedDownstreamFilter`
+						});
+					tmpAnticipate.anticipate((fDownstreamRequestStageComplete) =>
+					{
+						this.log.info(`Performing downstream request to Entity [${tmpDownstreamRequest.Entity}] filter [${tmpDownstreamRequest.MeadowFilter}]`);
+						return fDownstreamRequestStageComplete();
+					});
 				}
-				return fStageComplete(null, pData);
+
+				return fStageComplete();
 			});
-		});
+
+		}
 
 		tmpAnticipate.wait(
 			(pError) =>
 			{
 				if (pError)
 				{
-					this.log.error(`Meadow Graph Client: There was an error getting records for ${pEntityName}.`);
+					this.log.error(`Meadow Graph Client: There was an error getting supporting records for ${tmpCompiledFilter.Entity}.`);
 				}
-				return fCallback(pError, tmpDataOutputObject, tmpFilterObject);
+				// Now do the actual request
+				this.log.info(`Performing request for Entity [${tmpCompiledFilter.ParsedFilter.Entity}] filter []`);
+
+				return fCallback(pError, tmpCompiledFilter);
 			});
 	}
 };
