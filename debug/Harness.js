@@ -14,7 +14,7 @@ let _MeadowGraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient', 
 _Fable.log.info(`...instantiated MeadowGraphClient`);
 
 
-let tmpFilterObject = {Entity: 'Bridge', Filter:{"BridgeElementConditionDefect.CS1Description": "Crack"}, Hints:['MaterialLineItemJoin']};
+let tmpFilterObject = {Entity: 'Bridge', Filter:{"BridgeElementConditionDefect.Code": "1080"}, Hints:['MaterialLineItemJoin']};
 //let tmpFilterObject = {Entity: 'Bridge', Filter:{"BridgeElementConditionDefect.CS1Description": "Crack"}};
 
 let tmpParsedFilterObject = _MeadowGraphClient.parseFilterObject(tmpFilterObject);

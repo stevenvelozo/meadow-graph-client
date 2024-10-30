@@ -8,6 +8,9 @@ const Expect = Chai.expect;
 const libFable = require('fable');
 const libMeadowGraphClient = require(`../source/Meadow-Graph-Client.js`);
 
+//TODO: This warmup cuts 13ms off of the first test.  Profile and see if it's worth 10ms to change.
+//const warmupFable = new libFable();
+
 const modelBookStore = require(`./model/Retold-SampleData-Bookstore.json`);
 
 suite

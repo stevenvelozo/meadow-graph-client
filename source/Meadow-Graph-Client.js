@@ -949,9 +949,10 @@ class MeadowGraphClient extends libFableServiceProviderBase
 					let tmpDownstreamRequest = (
 						{
 							Entity: tmpRequest.GraphRequestChain[j],
-							// This will either be an in list of internal records from the previous request in the chain,
+							// This will either be
+							// --> an in list of internal records from the previous request in the chain,
 							// or,
-							// an in list of external record IDs based on the join cardinality.
+							// --> an in list of external record IDs based on the join cardinality.
 							MeadowFilter: `GeneratedDownstreamFilter`
 						});
 					tmpAnticipate.anticipate((fDownstreamRequestStageComplete) =>
