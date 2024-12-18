@@ -1,0 +1,310 @@
+{
+    "Scope": "Employees",
+    "DefaultIdentifier": "EmployeeID",
+    "Domain": "Default",
+    "Schema": [
+        {
+            "Column": "EmployeeID",
+            "Type": "AutoIdentity",
+            "Size": "Default"
+        },
+        {
+            "Column": "LastName",
+            "Type": "String",
+            "Size": "20"
+        },
+        {
+            "Column": "FirstName",
+            "Type": "String",
+            "Size": "10"
+        },
+        {
+            "Column": "Title",
+            "Type": "String",
+            "Size": "30"
+        },
+        {
+            "Column": "TitleOfCourtesy",
+            "Type": "String",
+            "Size": "25"
+        },
+        {
+            "Column": "BirthDate",
+            "Type": "DateTime",
+            "Size": "Default"
+        },
+        {
+            "Column": "HireDate",
+            "Type": "DateTime",
+            "Size": "Default"
+        },
+        {
+            "Column": "Address",
+            "Type": "String",
+            "Size": "60"
+        },
+        {
+            "Column": "City",
+            "Type": "String",
+            "Size": "15"
+        },
+        {
+            "Column": "Region",
+            "Type": "String",
+            "Size": "15"
+        },
+        {
+            "Column": "PostalCode",
+            "Type": "String",
+            "Size": "10"
+        },
+        {
+            "Column": "Country",
+            "Type": "String",
+            "Size": "15"
+        },
+        {
+            "Column": "HomePhone",
+            "Type": "String",
+            "Size": "24"
+        },
+        {
+            "Column": "Extension",
+            "Type": "String",
+            "Size": "4"
+        },
+        {
+            "Column": "Notes",
+            "Type": "String",
+            "Size": "Default"
+        },
+        {
+            "Column": "PhotoPath",
+            "Type": "String",
+            "Size": "255"
+        },
+        {
+            "Column": "Salary",
+            "Type": "Decimal",
+            "Size": "10,3"
+        }
+    ],
+    "DefaultObject": {
+        "EmployeeID": 0,
+        "LastName": "",
+        "FirstName": "",
+        "Title": "",
+        "TitleOfCourtesy": "",
+        "BirthDate": null,
+        "HireDate": null,
+        "Address": "",
+        "City": "",
+        "Region": "",
+        "PostalCode": "",
+        "Country": "",
+        "HomePhone": "",
+        "Extension": "",
+        "Notes": "",
+        "PhotoPath": "",
+        "Salary": 0
+    },
+    "JsonSchema": {
+        "title": "Employees",
+        "type": "object",
+        "properties": {
+            "EmployeeID": {
+                "type": "integer",
+                "size": "Default"
+            },
+            "LastName": {
+                "type": "string",
+                "size": "20"
+            },
+            "FirstName": {
+                "type": "string",
+                "size": "10"
+            },
+            "Title": {
+                "type": "string",
+                "size": "30"
+            },
+            "TitleOfCourtesy": {
+                "type": "string",
+                "size": "25"
+            },
+            "BirthDate": {
+                "type": "string",
+                "size": "Default"
+            },
+            "HireDate": {
+                "type": "string",
+                "size": "Default"
+            },
+            "Address": {
+                "type": "string",
+                "size": "60"
+            },
+            "City": {
+                "type": "string",
+                "size": "15"
+            },
+            "Region": {
+                "type": "string",
+                "size": "15"
+            },
+            "PostalCode": {
+                "type": "string",
+                "size": "10"
+            },
+            "Country": {
+                "type": "string",
+                "size": "15"
+            },
+            "HomePhone": {
+                "type": "string",
+                "size": "24"
+            },
+            "Extension": {
+                "type": "string",
+                "size": "4"
+            },
+            "Notes": {
+                "type": "string",
+                "size": "Default"
+            },
+            "PhotoPath": {
+                "type": "string",
+                "size": "255"
+            },
+            "Salary": {
+                "type": "number",
+                "size": "10,3"
+            }
+        },
+        "required": [
+            "EmployeeID"
+        ]
+    },
+    "Authorization": {
+        "__DefaultAPISecurity": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Unauthenticated": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Readonly": {
+            "Create": "Deny",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Deny"
+        },
+        "User": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "Mine",
+            "Delete": "Mine",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Manager": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "Mine",
+            "Delete": "Mine",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Director": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "MyCustomer",
+            "Delete": "MyCustomer",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Executive": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "MyCustomer",
+            "Delete": "MyCustomer",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Administrator": {
+            "Create": "Allow",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Allow",
+            "Delete": "Allow",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Allow"
+        }
+    }
+}

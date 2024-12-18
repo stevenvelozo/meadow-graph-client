@@ -1,4 +1,5 @@
 .VSCodeCounter
+.DS_Store
 
 # Logs
 logs
@@ -70,6 +71,8 @@ web_modules/
 
 # Output of 'npm pack'
 *.tgz
+
+Headlight*
 
 # Yarn Integrity file
 .yarn-integrity

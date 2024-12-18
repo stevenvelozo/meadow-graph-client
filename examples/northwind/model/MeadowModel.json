@@ -1,0 +1,506 @@
+{
+    "Tables": {
+        "Categories": {
+            "TableName": "Categories",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "CategoryID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "CategoryName",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "Description",
+                    "DataType": "Text"
+                }
+            ],
+            "Description": ""
+        },
+        "CustomerCustomerDemo": {
+            "TableName": "CustomerCustomerDemo",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "CustomerID",
+                    "DataType": "Numeric",
+                    "Size": "int",
+                    "Join": "CustomerID"
+                },
+                {
+                    "Column": "CustomerTypeID",
+                    "DataType": "Numeric",
+                    "Size": "int",
+                    "Join": "CustomerTypeID"
+                }
+            ],
+            "Description": ""
+        },
+        "CustomerDemographics": {
+            "TableName": "CustomerDemographics",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "CustomerTypeID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "CustomerDesc",
+                    "DataType": "Text"
+                }
+            ],
+            "Description": ""
+        },
+        "Customers": {
+            "TableName": "Customers",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "CustomerID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "CompanyName",
+                    "DataType": "String",
+                    "Size": "40"
+                },
+                {
+                    "Column": "ContactName",
+                    "DataType": "String",
+                    "Size": "30"
+                },
+                {
+                    "Column": "ContactTitle",
+                    "DataType": "String",
+                    "Size": "30"
+                },
+                {
+                    "Column": "Address",
+                    "DataType": "String",
+                    "Size": "60"
+                },
+                {
+                    "Column": "City",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "Region",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "PostalCode",
+                    "DataType": "String",
+                    "Size": "10"
+                },
+                {
+                    "Column": "Country",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "Phone",
+                    "DataType": "String",
+                    "Size": "24"
+                },
+                {
+                    "Column": "Fax",
+                    "DataType": "String",
+                    "Size": "24"
+                }
+            ],
+            "Description": ""
+        },
+        "Employees": {
+            "TableName": "Employees",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "EmployeeID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "LastName",
+                    "DataType": "String",
+                    "Size": "20"
+                },
+                {
+                    "Column": "FirstName",
+                    "DataType": "String",
+                    "Size": "10"
+                },
+                {
+                    "Column": "Title",
+                    "DataType": "String",
+                    "Size": "30"
+                },
+                {
+                    "Column": "TitleOfCourtesy",
+                    "DataType": "String",
+                    "Size": "25"
+                },
+                {
+                    "Column": "BirthDate",
+                    "DataType": "DateTime"
+                },
+                {
+                    "Column": "HireDate",
+                    "DataType": "DateTime"
+                },
+                {
+                    "Column": "Address",
+                    "DataType": "String",
+                    "Size": "60"
+                },
+                {
+                    "Column": "City",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "Region",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "PostalCode",
+                    "DataType": "String",
+                    "Size": "10"
+                },
+                {
+                    "Column": "Country",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "HomePhone",
+                    "DataType": "String",
+                    "Size": "24"
+                },
+                {
+                    "Column": "Extension",
+                    "DataType": "String",
+                    "Size": "4"
+                },
+                {
+                    "Column": "Notes",
+                    "DataType": "Text"
+                },
+                {
+                    "Column": "PhotoPath",
+                    "DataType": "String",
+                    "Size": "255"
+                },
+                {
+                    "Column": "Salary",
+                    "DataType": "Decimal",
+                    "Size": "10,3"
+                }
+            ],
+            "Description": ""
+        },
+        "EmployeeTerritories": {
+            "TableName": "EmployeeTerritories",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "EmployeeID",
+                    "DataType": "ForeignKey",
+                    "Join": "EmployeeID"
+                },
+                {
+                    "Column": "TerritoryID",
+                    "DataType": "ForeignKey",
+                    "Join": "TerritoryID"
+                }
+            ],
+            "Description": ""
+        },
+        "OrderDetails": {
+            "TableName": "OrderDetails",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "OrderID",
+                    "DataType": "Numeric",
+                    "Size": "int",
+                    "Join": "OrderID"
+                },
+                {
+                    "Column": "ProductID",
+                    "DataType": "Numeric",
+                    "Size": "int",
+                    "Join": "ProductID"
+                },
+                {
+                    "Column": "UnitPrice",
+                    "DataType": "Decimal",
+                    "Size": "10,4"
+                },
+                {
+                    "Column": "Quantity",
+                    "DataType": "Numeric",
+                    "Size": "int"
+                },
+                {
+                    "Column": "Discount",
+                    "DataType": "Decimal",
+                    "Size": "8,0"
+                }
+            ],
+            "Description": ""
+        },
+        "Orders": {
+            "TableName": "Orders",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "OrderID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "CustomerID",
+                    "DataType": "ForeignKey",
+                    "Join": "CustomerID"
+                },
+                {
+                    "Column": "EmployeeID",
+                    "DataType": "ForeignKey",
+                    "Join": "EmployeeID"
+                },
+                {
+                    "Column": "OrderDate",
+                    "DataType": "DateTime"
+                },
+                {
+                    "Column": "RequiredDate",
+                    "DataType": "DateTime"
+                },
+                {
+                    "Column": "ShippedDate",
+                    "DataType": "DateTime"
+                },
+                {
+                    "Column": "ShipVia",
+                    "DataType": "Numeric",
+                    "Size": "int",
+                    "Join": "ShipperID"
+                },
+                {
+                    "Column": "Freight",
+                    "DataType": "Decimal",
+                    "Size": "10,4"
+                },
+                {
+                    "Column": "ShipName",
+                    "DataType": "String",
+                    "Size": "40"
+                },
+                {
+                    "Column": "ShipAddress",
+                    "DataType": "String",
+                    "Size": "60"
+                },
+                {
+                    "Column": "ShipCity",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "ShipRegion",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "ShipPostalCode",
+                    "DataType": "String",
+                    "Size": "10"
+                },
+                {
+                    "Column": "ShipCountry",
+                    "DataType": "String",
+                    "Size": "15"
+                }
+            ],
+            "Description": ""
+        },
+        "Products": {
+            "TableName": "Products",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "ProductID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "ProductName",
+                    "DataType": "String",
+                    "Size": "40"
+                },
+                {
+                    "Column": "SupplierID",
+                    "DataType": "ForeignKey",
+                    "Join": "SupplierID"
+                },
+                {
+                    "Column": "CategoryID",
+                    "DataType": "ForeignKey",
+                    "Join": "CategoryID"
+                },
+                {
+                    "Column": "QuantityPerUnit",
+                    "DataType": "String",
+                    "Size": "20"
+                },
+                {
+                    "Column": "UnitPrice",
+                    "DataType": "Decimal",
+                    "Size": "10,4"
+                },
+                {
+                    "Column": "UnitsInStock",
+                    "DataType": "Numeric",
+                    "Size": "int"
+                },
+                {
+                    "Column": "UnitsOnOrder",
+                    "DataType": "Numeric",
+                    "Size": "int"
+                },
+                {
+                    "Column": "ReorderLevel",
+                    "DataType": "Numeric",
+                    "Size": "int"
+                },
+                {
+                    "Column": "Discontinued",
+                    "DataType": "Numeric",
+                    "Size": "int"
+                }
+            ],
+            "Description": ""
+        },
+        "Region": {
+            "TableName": "Region",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "RegionID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "RegionDescription",
+                    "DataType": "String",
+                    "Size": "50"
+                }
+            ],
+            "Description": ""
+        },
+        "Shippers": {
+            "TableName": "Shippers",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "ShipperID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "CompanyName",
+                    "DataType": "String",
+                    "Size": "40"
+                },
+                {
+                    "Column": "Phone",
+                    "DataType": "String",
+                    "Size": "24"
+                }
+            ],
+            "Description": ""
+        },
+        "Suppliers": {
+            "TableName": "Suppliers",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "SupplierID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "CompanyName",
+                    "DataType": "String",
+                    "Size": "40"
+                },
+                {
+                    "Column": "ContactName",
+                    "DataType": "String",
+                    "Size": "30"
+                },
+                {
+                    "Column": "ContactTitle",
+                    "DataType": "String",
+                    "Size": "30"
+                },
+                {
+                    "Column": "Address",
+                    "DataType": "String",
+                    "Size": "60"
+                },
+                {
+                    "Column": "City",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "RegionID",
+                    "DataType": "ForeignKey",
+                    "Join": "RegionID"
+                },
+                {
+                    "Column": "PostalCode",
+                    "DataType": "String",
+                    "Size": "10"
+                },
+                {
+                    "Column": "Country",
+                    "DataType": "String",
+                    "Size": "15"
+                },
+                {
+                    "Column": "Phone",
+                    "DataType": "String",
+                    "Size": "24"
+                },
+                {
+                    "Column": "Fax",
+                    "DataType": "String",
+                    "Size": "24"
+                },
+                {
+                    "Column": "HomePage",
+                    "DataType": "Text"
+                }
+            ],
+            "Description": ""
+        },
+        "Territories": {
+            "TableName": "Territories",
+            "Domain": "Default",
+            "Columns": [
+                {
+                    "Column": "TerritoryID",
+                    "DataType": "ID"
+                },
+                {
+                    "Column": "TerritoryDescription",
+                    "DataType": "String",
+                    "Size": "50"
+                }
+            ],
+            "Description": ""
+        }
+    }
+}

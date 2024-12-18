@@ -1,0 +1,29 @@
+## Table Connection Graph -- Generated 2024-11-17T22:44:27.557Z
+digraph DataModel {
+rankdir=LR
+Categories;
+CustomerCustomerDemo;
+CustomerDemographics;
+Customers;
+Employees;
+EmployeeTerritories;
+OrderDetails;
+Orders;
+Products;
+Region;
+Shippers;
+Suppliers;
+Territories;
+CustomerCustomerDemo -> Customers
+CustomerCustomerDemo -> CustomerDemographics
+EmployeeTerritories -> Employees
+EmployeeTerritories -> Territories
+OrderDetails -> Orders
+OrderDetails -> Products
+Orders -> Customers
+Orders -> Employees
+Orders -> Shippers
+Products -> Suppliers
+Products -> Categories
+Suppliers -> Region
+}

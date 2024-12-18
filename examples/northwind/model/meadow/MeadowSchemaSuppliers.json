@@ -1,0 +1,261 @@
+{
+    "Scope": "Suppliers",
+    "DefaultIdentifier": "SupplierID",
+    "Domain": "Default",
+    "Schema": [
+        {
+            "Column": "SupplierID",
+            "Type": "AutoIdentity",
+            "Size": "Default"
+        },
+        {
+            "Column": "CompanyName",
+            "Type": "String",
+            "Size": "40"
+        },
+        {
+            "Column": "ContactName",
+            "Type": "String",
+            "Size": "30"
+        },
+        {
+            "Column": "ContactTitle",
+            "Type": "String",
+            "Size": "30"
+        },
+        {
+            "Column": "Address",
+            "Type": "String",
+            "Size": "60"
+        },
+        {
+            "Column": "City",
+            "Type": "String",
+            "Size": "15"
+        },
+        {
+            "Column": "RegionID",
+            "Type": "Integer",
+            "Size": "Default"
+        },
+        {
+            "Column": "PostalCode",
+            "Type": "String",
+            "Size": "10"
+        },
+        {
+            "Column": "Country",
+            "Type": "String",
+            "Size": "15"
+        },
+        {
+            "Column": "Phone",
+            "Type": "String",
+            "Size": "24"
+        },
+        {
+            "Column": "Fax",
+            "Type": "String",
+            "Size": "24"
+        },
+        {
+            "Column": "HomePage",
+            "Type": "String",
+            "Size": "Default"
+        }
+    ],
+    "DefaultObject": {
+        "SupplierID": 0,
+        "CompanyName": "",
+        "ContactName": "",
+        "ContactTitle": "",
+        "Address": "",
+        "City": "",
+        "RegionID": 0,
+        "PostalCode": "",
+        "Country": "",
+        "Phone": "",
+        "Fax": "",
+        "HomePage": ""
+    },
+    "JsonSchema": {
+        "title": "Suppliers",
+        "type": "object",
+        "properties": {
+            "SupplierID": {
+                "type": "integer",
+                "size": "Default"
+            },
+            "CompanyName": {
+                "type": "string",
+                "size": "40"
+            },
+            "ContactName": {
+                "type": "string",
+                "size": "30"
+            },
+            "ContactTitle": {
+                "type": "string",
+                "size": "30"
+            },
+            "Address": {
+                "type": "string",
+                "size": "60"
+            },
+            "City": {
+                "type": "string",
+                "size": "15"
+            },
+            "RegionID": {
+                "type": "integer",
+                "size": "Default"
+            },
+            "PostalCode": {
+                "type": "string",
+                "size": "10"
+            },
+            "Country": {
+                "type": "string",
+                "size": "15"
+            },
+            "Phone": {
+                "type": "string",
+                "size": "24"
+            },
+            "Fax": {
+                "type": "string",
+                "size": "24"
+            },
+            "HomePage": {
+                "type": "string",
+                "size": "Default"
+            }
+        },
+        "required": [
+            "SupplierID",
+            "RegionID"
+        ]
+    },
+    "Authorization": {
+        "__DefaultAPISecurity": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Unauthenticated": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Readonly": {
+            "Create": "Deny",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Deny"
+        },
+        "User": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "Mine",
+            "Delete": "Mine",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Manager": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "Mine",
+            "Delete": "Mine",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Director": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "MyCustomer",
+            "Delete": "MyCustomer",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Executive": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "MyCustomer",
+            "Delete": "MyCustomer",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Administrator": {
+            "Create": "Allow",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Allow",
+            "Delete": "Allow",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Allow"
+        }
+    }
+}

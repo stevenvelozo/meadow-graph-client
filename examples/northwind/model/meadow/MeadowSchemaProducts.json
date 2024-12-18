@@ -1,0 +1,242 @@
+{
+    "Scope": "Products",
+    "DefaultIdentifier": "ProductID",
+    "Domain": "Default",
+    "Schema": [
+        {
+            "Column": "ProductID",
+            "Type": "AutoIdentity",
+            "Size": "Default"
+        },
+        {
+            "Column": "ProductName",
+            "Type": "String",
+            "Size": "40"
+        },
+        {
+            "Column": "SupplierID",
+            "Type": "Integer",
+            "Size": "Default"
+        },
+        {
+            "Column": "CategoryID",
+            "Type": "Integer",
+            "Size": "Default"
+        },
+        {
+            "Column": "QuantityPerUnit",
+            "Type": "String",
+            "Size": "20"
+        },
+        {
+            "Column": "UnitPrice",
+            "Type": "Decimal",
+            "Size": "10,4"
+        },
+        {
+            "Column": "UnitsInStock",
+            "Type": "Integer",
+            "Size": "int"
+        },
+        {
+            "Column": "UnitsOnOrder",
+            "Type": "Integer",
+            "Size": "int"
+        },
+        {
+            "Column": "ReorderLevel",
+            "Type": "Integer",
+            "Size": "int"
+        },
+        {
+            "Column": "Discontinued",
+            "Type": "Integer",
+            "Size": "int"
+        }
+    ],
+    "DefaultObject": {
+        "ProductID": 0,
+        "ProductName": "",
+        "SupplierID": 0,
+        "CategoryID": 0,
+        "QuantityPerUnit": "",
+        "UnitPrice": 0,
+        "UnitsInStock": 0,
+        "UnitsOnOrder": 0,
+        "ReorderLevel": 0,
+        "Discontinued": 0
+    },
+    "JsonSchema": {
+        "title": "Products",
+        "type": "object",
+        "properties": {
+            "ProductID": {
+                "type": "integer",
+                "size": "Default"
+            },
+            "ProductName": {
+                "type": "string",
+                "size": "40"
+            },
+            "SupplierID": {
+                "type": "integer",
+                "size": "Default"
+            },
+            "CategoryID": {
+                "type": "integer",
+                "size": "Default"
+            },
+            "QuantityPerUnit": {
+                "type": "string",
+                "size": "20"
+            },
+            "UnitPrice": {
+                "type": "number",
+                "size": "10,4"
+            },
+            "UnitsInStock": {
+                "type": "integer",
+                "size": "int"
+            },
+            "UnitsOnOrder": {
+                "type": "integer",
+                "size": "int"
+            },
+            "ReorderLevel": {
+                "type": "integer",
+                "size": "int"
+            },
+            "Discontinued": {
+                "type": "integer",
+                "size": "int"
+            }
+        },
+        "required": [
+            "ProductID",
+            "SupplierID",
+            "CategoryID"
+        ]
+    },
+    "Authorization": {
+        "__DefaultAPISecurity": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Unauthenticated": {
+            "Create": "Deny",
+            "Read": "Deny",
+            "Reads": "Deny",
+            "ReadsBy": "Deny",
+            "ReadMax": "Deny",
+            "ReadSelectList": "Deny",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Deny",
+            "CountBy": "Deny",
+            "Schema": "Deny",
+            "Validate": "Deny",
+            "New": "Deny"
+        },
+        "Readonly": {
+            "Create": "Deny",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Deny",
+            "Delete": "Deny",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Deny"
+        },
+        "User": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "Mine",
+            "Delete": "Mine",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Manager": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "Mine",
+            "Delete": "Mine",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Director": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "MyCustomer",
+            "Delete": "MyCustomer",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Executive": {
+            "Create": "Allow",
+            "Read": "MyCustomer",
+            "Reads": "MyCustomer",
+            "ReadsBy": "MyCustomer",
+            "ReadMax": "MyCustomer",
+            "ReadSelectList": "MyCustomer",
+            "Update": "MyCustomer",
+            "Delete": "MyCustomer",
+            "Count": "MyCustomer",
+            "CountBy": "MyCustomer",
+            "Schema": "MyCustomer",
+            "Validate": "MyCustomer",
+            "New": "MyCustomer"
+        },
+        "Administrator": {
+            "Create": "Allow",
+            "Read": "Allow",
+            "Reads": "Allow",
+            "ReadsBy": "Allow",
+            "ReadMax": "Allow",
+            "ReadSelectList": "Allow",
+            "Update": "Allow",
+            "Delete": "Allow",
+            "Count": "Allow",
+            "CountBy": "Allow",
+            "Schema": "Allow",
+            "Validate": "Allow",
+            "New": "Allow"
+        }
+    }
+}
