@@ -90,7 +90,11 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	}
 
 	/**
-	 * Adds an outgoing connection data model graph.
+	 * Adds an outgoing connection edge to the Outgoing connection graph.
+	 * 
+	 * @param {string} pColumn - The column node.
+	 * @param {string} pConnectionFromEntity - The entity the connection is from.
+	 * @param {string} pConnectionToEntity - The entity the connection is to.
 	 */
 	addOutgoingConnection(pColumn, pConnectionFromEntity, pConnectionToEntity)
 	{
@@ -117,7 +121,11 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	}
 
 	/**
-	 * Adds an incoming connection to the graph.
+	 * Adds an incoming connection edge to the Incoming connection graph.
+	 * 
+	 * @param {string} pColumn - The column node.
+	 * @param {string} pConnectionToEntity - The entity the connection is to.
+	 * @param {string} pConnectionFromEntity - The entity the connection is from.
 	 */
 	addIncomingConnection(pColumn, pConnectionToEntity, pConnectionFromEntity)
 	{
@@ -143,7 +151,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	}
 
 	/**
-	 * Adds a Entity to the data model.
+	 * Adds an Entity node to the data model graph.
 	 * 
 	 * @param {object} pEntity - The Entity object to be added (meadow schema format).
 	 * @returns {boolean} - Returns true if the Entity is successfully added, false otherwise.
@@ -907,7 +915,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			}
 		}
 
-		// 3. (not doing this yet -- it may not even be possible!!) Optimize the paths to only do one request per entity
+		// 3. Optimize the paths to only do one request per entity _(not doing this yet -- this one isn't possible until the meadow-endpoints allow combinatorial requests)_
 
 		// 4. Build the chain of requests that have to happen -- order is unimportant other than doing the core requested entity last.
 		/*
