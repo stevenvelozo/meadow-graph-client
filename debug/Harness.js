@@ -1,8 +1,8 @@
 const libFable = require('fable');
 
 const libMeadowGraphClient = require(`../source/Meadow-Graph-Client.js`);
-//const meadowModel = require(`../test/model/Retold-SampleData-Bookstore.json`);
-const meadowModel = require(`./TestModel.json`);
+let meadowModel = require(`../test/model/Retold-SampleData-Bookstore.json`);
+//meadowModel = require(`./TestModel.json`);
 
 let _Fable = new libFable();
 
@@ -14,11 +14,11 @@ let _MeadowGraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient', 
 _Fable.log.info(`...instantiated MeadowGraphClient`);
 
 
-let tmpFilterObject = {Entity: 'Bridge', Filter:{"BridgeElementConditionDefect.Code": "1080"}, Hints:['MaterialLineItemJoin']};
-//let tmpFilterObject = {Entity: 'Bridge', Filter:{"BridgeElementConditionDefect.CS1Description": "Crack"}};
+let tmpFilterObject = {Entity: 'Book', Filter:{"Author.Name": "Dan Brown"}};
+//tmpFilterObject = {Entity: 'Bridge', Filter:{"BridgeElementConditionDefect.Code": "1080"}};
 
 let tmpParsedFilterObject = _MeadowGraphClient.parseFilterObject(tmpFilterObject);
-
-let tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'BridgeElementConditionDefect', tmpFilterObject.Hints);
+let tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'Author', tmpFilterObject.Hints);
+//tmpGraphTraversalObject = _MeadowGraphClient.solveGraphConnections(tmpFilterObject.Entity, 'BridgeElementConditionDefect', tmpFilterObject.Hints);
 
 _Fable.log.info(`Operation Complete!`);

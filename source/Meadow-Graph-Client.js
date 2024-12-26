@@ -53,8 +53,10 @@ class MeadowGraphClient extends libFableServiceProviderBase
 
 		// Map of joins (Entity->Other Entities)
 		this._OutgoingEntityConnections = {};
+		this._OutgoingEntityConnectionLists = {};
 		// Map of incoming connections for Entities (Entity->Incoming Entities)
 		this._IncomingEntityConnections = {};
+		this._IncomingEntityConnectionLists = {};
 
 		// Map of solved joins so we don't solve them every time... ostensibly other than hints these are solvable.
 		// Well, if a developer decides to use this dynamically and add/remove joins at runtime it could break
@@ -96,10 +98,15 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		{
 			this._OutgoingEntityConnections[pConnectionFromEntity] = {};
 		}
+		if (!this._OutgoingEntityConnectionLists.hasOwnProperty(pConnectionFromEntity))
+		{
+			this._OutgoingEntityConnectionLists[pConnectionFromEntity] = [];
+		}
 
 		if (!this._OutgoingEntityConnections[pConnectionFromEntity].hasOwnProperty(pConnectionToEntity))
 		{
 			this._OutgoingEntityConnections[pConnectionFromEntity][pConnectionToEntity] = pColumn;
+			this._OutgoingEntityConnectionLists[pConnectionFromEntity].push(pConnectionToEntity);
 		}
 		else
 		{
@@ -118,9 +125,14 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		{
 			this._IncomingEntityConnections[pConnectionToEntity] = {};
 		}
+		if (!this._IncomingEntityConnectionLists.hasOwnProperty(pConnectionToEntity))
+		{
+			this._IncomingEntityConnectionLists[pConnectionToEntity] = [];
+		}
 		if (!this._IncomingEntityConnections[pConnectionToEntity].hasOwnProperty(pConnectionFromEntity))
 		{
 			this._IncomingEntityConnections[pConnectionToEntity][pConnectionFromEntity] = pColumn;
+			this._IncomingEntityConnectionLists[pConnectionToEntity].push(pConnectionFromEntity);
 		}
 		else
 		{
@@ -162,9 +174,17 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		{
 			this._OutgoingEntityConnections[tmpEntityName] = {};
 		}
+		if (!this._OutgoingEntityConnectionLists.hasOwnProperty(tmpEntityName))
+		{
+			this._OutgoingEntityConnectionLists[tmpEntityName] = [];
+		}
 		if (!this._IncomingEntityConnections.hasOwnProperty(tmpEntityName))
 		{
 			this._IncomingEntityConnections[tmpEntityName] = {};
+		}
+		if (!this._IncomingEntityConnectionLists.hasOwnProperty(tmpEntityName))
+		{
+			this._IncomingEntityConnectionLists[tmpEntityName] = [];
 		}
 
 		for (let i = 0; i < pEntity.Columns.length; i++)
@@ -599,8 +619,6 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		tmpGraphConnection.EntityName = pStartEntityName;
 		tmpGraphConnection.EdgeTraversalEndpoints = `${pStartEntityName}-->${pDestinationEntity}`;
 
-		this.log.info(`Starting to solve graph connections from ${pStartEntityName} to ${pDestinationEntity}.`);
-
 		let tmpBaseGraphConnection = (typeof (pBaseGraphConnection) === 'undefined') ? tmpGraphConnection : pBaseGraphConnection;
 		// The set of all graph connections we've tried (at *ALL* layers)
 		if (!(`AttemptedPaths` in tmpBaseGraphConnection))
@@ -618,6 +636,9 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			tmpBaseGraphConnection.EdgeAddress = pStartEntityName;
 			tmpBaseGraphConnection.ParentEdgeAddress = '';
 
+			tmpBaseGraphConnection.RouteHash = `${pStartEntityName}==>${pDestinationEntity}`;
+			tmpBaseGraphConnection.AttemptedRouteHashes = {};
+			tmpBaseGraphConnection.AttemptedRouteHashes[tmpBaseGraphConnection.RouteHash] = true;
 			tmpBaseGraphConnection.AttemptedEntities = {};
 			tmpBaseGraphConnection.AttemptedEntities[pStartEntityName] = true;
 
@@ -636,12 +657,22 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			tmpGraphConnection.Base = false;
 			tmpGraphConnection.EdgeAddress = `${pParentEntity.EdgeAddress}-->${pStartEntityName}`;
 			tmpGraphConnection.ParentEdgeAddress = pParentEntity.EdgeAddress;
+			// This is start-> Finish no matter what.
+			tmpGraphConnection.RouteHash = `${pStartEntityName}==>${pDestinationEntity}`;
+			if (pBaseGraphConnection.AttemptedRouteHashes.hasOwnProperty(tmpGraphConnection.RouteHash))
+			{
+				// Recursion bailout .. we've tried this path already.
+				return tmpBaseGraphConnection;
+			}
+			pBaseGraphConnection.AttemptedRouteHashes[tmpGraphConnection.RouteHash] = true;
 
 			tmpGraphConnection.AttemptedEntities = JSON.parse(JSON.stringify(pParentEntity.AttemptedEntities));
 
 			// Add ourself to the attempted entities set
 			tmpGraphConnection.AttemptedEntities[pStartEntityName] = true;
 		}
+
+		this.log.info(`Starting to solve graph connections from ${pStartEntityName} to ${pDestinationEntity} edge address [${tmpGraphConnection.EdgeAddress}].`);
 
 		if (tmpGraphConnection.Base)
 		{
@@ -747,21 +778,21 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			else
 			{
 				// 1. Start by checking direct outgoing joins
-				if (this._OutgoingEntityConnections[pStartEntityName].hasOwnProperty(pDestinationEntity))
+				for (let i = 0; i < this._OutgoingEntityConnectionLists[pStartEntityName].length; i++)
 				{
-					let tmpAttemptedConnectedEntity = pDestinationEntity;
-					let tmpAttemptedEdgeAddress = `${tmpAttemptedConnectedEntity}-->${pDestinationEntity}`;
+					let tmpEntityToTestForConnection = this._OutgoingEntityConnectionLists[pStartEntityName][i];
+					let tmpAttemptedEdgeAddress = `${tmpEntityToTestForConnection}-->${pDestinationEntity}`;
 					// This prevents circles without eliminating intermediates for different paths later.
-					if (!tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpAttemptedConnectedEntity))
+					if (!tmpBaseGraphConnection.AttemptedEntities.hasOwnProperty(tmpEntityToTestForConnection) && !tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpEntityToTestForConnection))
 					{
 						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeight;
 						// Outgoing Joins get a boost in weight
 						tmpAttemptWeight = tmpAttemptWeight + this.options.OutgoingJoinWeight;
-						if (tmpAttemptedConnectedEntity.indexOf('Join', tmpAttemptedConnectedEntity.length - 4) === 0)
+						if (tmpEntityToTestForConnection.indexOf('Join', tmpEntityToTestForConnection.length - 4) === 0)
 						{
 							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeight;
 						}
-						this.solveGraphConnections(tmpAttemptedConnectedEntity, pDestinationEntity, pEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
+						this.solveGraphConnections(tmpEntityToTestForConnection, pDestinationEntity, pEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
 					}
 				}
 
@@ -771,17 +802,17 @@ class MeadowGraphClient extends libFableServiceProviderBase
 				let tmpIncomingJoinKeys = Object.keys(this._IncomingEntityConnections[tmpGraphConnection.EntityName]);
 				for (let i = 0; i < tmpIncomingJoinKeys.length; i++)
 				{
-					let tmpAttemptedConnectedEntity = tmpIncomingJoinKeys[i];
+					let tmpEntityToTestForConnection = tmpIncomingJoinKeys[i];
 					let tmpAttemptedEdgeAddress = `${tmpGraphConnection.EdgeAddress}-->${pDestinationEntity}`;
 					// This prevents circles without eliminating intermediates for different paths later.
-					if (!tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpAttemptedConnectedEntity))
+					if (!tmpBaseGraphConnection.AttemptedEntities.hasOwnProperty(tmpEntityToTestForConnection) && !tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpEntityToTestForConnection))
 					{
 						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeight;
-						if (tmpAttemptedConnectedEntity.indexOf('Join', tmpAttemptedConnectedEntity.length - 4) === 0)
+						if (tmpEntityToTestForConnection.indexOf('Join', tmpEntityToTestForConnection.length - 4) === 0)
 						{
 							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeight;
 						}
-						this.solveGraphConnections(tmpAttemptedConnectedEntity, pDestinationEntity, pEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
+						this.solveGraphConnections(tmpEntityToTestForConnection, pDestinationEntity, pEntityPathHints, tmpBaseGraphConnection, tmpGraphConnection, tmpAttemptWeight);
 					}
 				}
 
