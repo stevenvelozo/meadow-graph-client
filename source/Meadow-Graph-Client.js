@@ -245,6 +245,40 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	}
 
 	/**
+	 * Cleans missing entities from the data model graph.
+	 * 
+	 * @returns {void}
+	 */
+	cleanMissingEntityConnections()
+	{
+		let tmpOutgoingEntityConnectionKeys = Object.keys(this._OutgoingEntityConnections);
+		for (let i = 0; i < tmpOutgoingEntityConnectionKeys.length; i++)
+		{
+			let tmpOutgoingEntityKey = tmpOutgoingEntityConnectionKeys[i];
+			let tmpOutgoingEntityConnections = this._OutgoingEntityConnections[tmpOutgoingEntityKey];
+			let tmpOutgoingEntityConnectionEdgeKeys = Object.keys(tmpOutgoingEntityConnections);
+			for (let j = 0; j < tmpOutgoingEntityConnectionEdgeKeys.length; j++)
+			{
+				let tmpOutgoingEntityConnectionEdgeKey = tmpOutgoingEntityConnectionEdgeKeys[j];
+				if (!this._KnownEntities.hasOwnProperty(tmpOutgoingEntityConnectionEdgeKey))
+				{
+					this.log.warn(`Meadow Graph Client: Removing Outgoing connection edge from [${tmpOutgoingEntityKey}] to [${tmpOutgoingEntityConnectionEdgeKey}] because the target entity is missing.`);
+					delete tmpOutgoingEntityConnections[tmpOutgoingEntityConnectionEdgeKey];
+					// Check if it's in the array as well -- it should be
+					if (tmpOutgoingEntityKey in this._OutgoingEntityConnectionLists)
+					{
+						let tmpIndex = this._OutgoingEntityConnectionLists[tmpOutgoingEntityKey].indexOf(tmpOutgoingEntityConnectionEdgeKey);
+						if (tmpIndex > -1)
+						{
+							this._OutgoingEntityConnectionLists[tmpOutgoingEntityKey].splice(tmpIndex, 1);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Lints a passed-in filter object.
 	 * 
 	 * @param {object} pFilterObject - The filter object to be linted.
@@ -628,13 +662,6 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		tmpGraphConnection.EdgeTraversalEndpoints = `${pStartEntityName}-->${pDestinationEntity}`;
 
 		let tmpBaseGraphConnection = (typeof (pBaseGraphConnection) === 'undefined') ? tmpGraphConnection : pBaseGraphConnection;
-		// The set of all graph connections we've tried (at *ALL* layers)
-		if (!(`AttemptedPaths` in tmpBaseGraphConnection))
-		{
-			tmpBaseGraphConnection.AttemptedPaths = {};
-			tmpBaseGraphConnection.PotentialSolutions = [];
-			tmpBaseGraphConnection.OptimalSolutionPath = false;
-		}
 
 		// We are tracking addresses rather than creating many circular JSON objects.
 		// Also this tracks them per destination, so we can reuse them later if there are farther out there chains.
@@ -643,6 +670,11 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			tmpBaseGraphConnection.Base = true;
 			tmpBaseGraphConnection.EdgeAddress = pStartEntityName;
 			tmpBaseGraphConnection.ParentEdgeAddress = '';
+
+			// The set of all graph connections we've tried (at *ALL* layers)
+			tmpBaseGraphConnection.AttemptedPaths = {};
+			tmpBaseGraphConnection.PotentialSolutions = [];
+			tmpBaseGraphConnection.OptimalSolutionPath = false;
 
 			tmpBaseGraphConnection.RouteHash = `${pStartEntityName}==>${pDestinationEntity}`;
 			tmpBaseGraphConnection.AttemptedRouteHashes = {};
@@ -670,6 +702,8 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			if (pBaseGraphConnection.AttemptedRouteHashes.hasOwnProperty(tmpGraphConnection.RouteHash))
 			{
 				// Recursion bailout .. we've tried this path already.
+				// If a path was found with these rules with this hash, add this to the attempted paths and bail out.
+				// TODO: This means we need to store the best option path for each attempted hash.
 				return tmpBaseGraphConnection;
 			}
 			pBaseGraphConnection.AttemptedRouteHashes[tmpGraphConnection.RouteHash] = true;
@@ -709,23 +743,24 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			return tmpBaseGraphConnection;
 		}
 
-		// For now manual paths are only used for the base entity.
+		// Manual paths are only used for the base entity.
 		if (tmpGraphConnection.Base && (tmpGraphConnection.EdgeTraversalEndpoints in this._DefaultManualPaths))
 		{
-			// This is solved with a manual path -- use the manual path and move on.
+			// This is solved with a manually crafted path -- use the manual path.
 			tmpBaseGraphConnection.FromManualPath = true;
 			tmpBaseGraphConnection.PotentialSolutions.push(this._DefaultManualPaths[tmpBaseGraphConnection.EdgeTraversalEndpoints]);
 			return tmpBaseGraphConnection;
 		}
 		// For now cache is only used for the base entity.
-		else if (tmpGraphConnection.Base && (tmpGraphConnection.EdgeTraversalEndpoints in this._GraphSolutionMap))
-		{
-			// This was solved already -- use the cached version and move on.
-			// We may want to have some kind of hashing on the "hinting" to make sure we don't cache the wrong route.
-			// TODO: Must add hinting to the cache key.  Disabled for now (the cache is just never populated)
-			tmpBaseGraphConnection.FromCache = true;
-			tmpBaseGraphConnection.PotentialSolutions.push(this._GraphSolutionMap[tmpBaseGraphConnection.EdgeTraversalEndpoints]);
-		}
+		// TODO: Caching breaks if we have complex graph traversal filters, so parameters will need to be cached as well.
+		// else if (tmpGraphConnection.Base && (tmpGraphConnection.EdgeTraversalEndpoints in this._GraphSolutionMap))
+		// {
+		// 	// This was solved already -- use the cached version and move on.
+		// 	// We may want to have some kind of hashing on the "hinting" to make sure we don't cache the wrong route.
+		// 	// TODO: Must add hinting to the cache key.  Disabled for now (the cache is just never populated)
+		// 	tmpBaseGraphConnection.FromCache = true;
+		// 	tmpBaseGraphConnection.PotentialSolutions.push(this._GraphSolutionMap[tmpBaseGraphConnection.EdgeTraversalEndpoints]);
+		// }
 		else
 		{
 			// Time to solve us some graphs.
@@ -824,21 +859,6 @@ class MeadowGraphClient extends libFableServiceProviderBase
 					}
 				}
 
-			}
-		}
-
-		// Now sort the graph requests by Weight and generate the optimal solution path
-		if (tmpGraphConnection.Base && (tmpBaseGraphConnection.PotentialSolutions.length > 0))
-		{
-			tmpBaseGraphConnection.PotentialSolutions.sort((a, b) => (a.Weight < b.Weight) ? 1 : -1);
-			if (tmpBaseGraphConnection.PotentialSolutions.length > 0)
-			{
-				this._GraphSolutionMap[tmpBaseGraphConnection.EdgeTraversalEndpoints] = tmpBaseGraphConnection.PotentialSolutions[0];
-			}
-
-			if (tmpBaseGraphConnection.PotentialSolutions.length > 0)
-			{
-				tmpBaseGraphConnection.OptimalSolutionPath = tmpBaseGraphConnection.PotentialSolutions[0];
 			}
 		}
 

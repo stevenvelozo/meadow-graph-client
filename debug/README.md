@@ -1,13 +1,9 @@
 # Test Harness for Graph Client
 
-This allows us to exercise different moving parts of the graph client on any 
+This allows us to exercise different moving parts of the graph client on any
 JSON meadow model we want.
 
-By default, the harness leverages the test model in:
-
-```
-test/model/Retold-SampleData-Bookstore.json
-```
+By default, the harness leverages the test model in: `test/model/Retold-SampleData-Bookstore.json`
 
 If you want to use a different model, the easiest way is to copy it to a
 file `TestModel.json` in this folder, which is already in the repository
