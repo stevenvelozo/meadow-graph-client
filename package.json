@@ -13,7 +13,7 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
-        "quackage": "^1.0.58",
+        "quackage": "^1.0.59",
         "stricture": "^1.0.36"
     },
     "dependencies": {
