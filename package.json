@@ -1,6 +1,6 @@
 {
     "name": "meadow-graph-client",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Meadow graph client for pulling sets of records and comprehensions.",
     "main": "source/Meadow-Graph-Client.js",
     "scripts": {
@@ -17,7 +17,7 @@
         "stricture": "^1.0.36"
     },
     "dependencies": {
-        "fable-serviceproviderbase": "^3.0.13"
+        "fable-serviceproviderbase": "^3.0.19"
     },
     "mocha": {
         "diff": true,
