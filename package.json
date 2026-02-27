@@ -7,7 +7,7 @@
         "start": "node source/Meadow-Graph-Client.js",
         "test": "npx mocha -u tdd -R spec",
         "tests": "npx mocha -u tdd --exit -R spec --grep",
-        "coverage": "npx nyc --reporter=lcov --reporter=text-lcov npx mocha -- -u tdd -R spec",
+        "coverage": "npx quack coverage",
         "build": "npx quack build"
     },
     "author": "steven velozo <steven@velozo.com>",
