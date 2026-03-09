@@ -169,7 +169,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			this.log.error(`Meadow Graph Client: Could not add Entity to the data model because the Columns property is not an array.`);
 			return false;
 		}
-		if (this._KnownEntities.hasOwnProperty())
+		if (this._KnownEntities.hasOwnProperty(tmpEntityName))
 		{
 			this.log.warn(`Meadow Graph Client: The Entity ${tmpEntityName} is already known; it won't be added to the graph.`);
 			return false;
@@ -401,13 +401,13 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			else
 			{
 				tmpFilterExpression.Entity = pPivotalEntity;
-				tmpFilterExpression.Column = pFilterKey.substring(tmpSeparator);
+				tmpFilterExpression.Column = pFilterKey;
 			}
 			tmpFilterExpression.Value = pFilterValue;
 		}
 		else if (typeof (pFilterKey) === 'object')
 		{
-			let tmpFilterExpression = pFilterKey;
+			tmpFilterExpression = pFilterKey;
 			if (!('Entity' in tmpFilterExpression))
 			{
 				tmpFilterExpression.Entity = pPivotalEntity;
@@ -458,7 +458,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	 */
 	parseFilterObject(pFilterObject)
 	{
-		let tmpFilterObject = { Entity:pFilterObject.Enttiy, SourceFilterObject:pFilterObject };
+		let tmpFilterObject = { Entity:pFilterObject.Entity, SourceFilterObject:pFilterObject };
 
 		// 1. Clean up any previous source filter objects; this is if we keep reusing the filter object over and over.
 		if (tmpFilterObject.SourceFilterObject.hasOwnProperty('SourceFilterObject'))
@@ -503,39 +503,17 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	gatherConnectedEntityData(pEntityContainer, pEntityContainerHash, pDestinationEntityName, pDestinationIDEntity, pEntityToGather, fCallback)
 	{
 		let tmpFilter = `FBV~ID${pDestinationEntityName}~EQ~${pDestinationIDEntity}`;
-		this.fable.HeadlightRestClient.getEntitiesetWithPages(pEntityToGather, tmpFilter,
-			(pRecordCount) =>
-			{
-				//console.log(`Matched ${pRecordCount} ${pEntityToGather} for ${pDestinationEntity} [${pDestinationIDEntity}]`);
-				let tmpRecordCount = pRecordCount > 0 ? pRecordCount : 1;
-				if (pRecordCount < 1)
-				{
-					pSilent = true;
-				}
-				this.progressTracker.createProgressTracker(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`, tmpRecordCount);
-				this.progressTracker.startProgressTracker(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`);
-			},
-			(pPageLength, pPageRecords) =>
-			{
-				this.progressTracker.incrementProgressTracker(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`, pPageLength);
-				if (!pSilent)
-				{
-					this.progressTracker.logProgressTrackerStatus(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`);
-				}
-			},
+		let tmpURL = `${pEntityToGather}s/FilteredTo/${tmpFilter}/0/10000`;
+
+		let tmpDataRequestService = this.fable.servicesMap[this.options.DataRequestClientService];
+		tmpDataRequestService.getJSON(tmpURL,
 			(pError, pRecords) =>
 			{
 				if (pError)
 				{
 					this.log.error(`Error getting ${pEntityToGather} records: ${pError}`, pError);
 				}
-				//console.log(`...decorated ${pRecords.length} ${pEntityToGather} records for ${pDestinationEntity} [${pDestinationIDEntity}].`);
 				pEntityContainer[pEntityContainerHash] = pRecords;
-				this.progressTracker.endProgressTracker(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`);
-				if (!pSilent)
-				{
-					this.progressTracker.logProgressTrackerStatus(`${pEntityToGather}-Download-${pDestinationEntityName}-${pDestinationIDEntity}`);
-				}
 				return fCallback(pError);
 			});
 	}
@@ -831,7 +809,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeight;
 						// Outgoing Joins get a boost in weight
 						tmpAttemptWeight = tmpAttemptWeight + this.options.OutgoingJoinWeight;
-						if (tmpEntityToTestForConnection.indexOf('Join', tmpEntityToTestForConnection.length - 4) === 0)
+						if (tmpEntityToTestForConnection.endsWith('Join'))
 						{
 							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeight;
 						}
@@ -851,7 +829,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 					if (!tmpBaseGraphConnection.AttemptedEntities.hasOwnProperty(tmpEntityToTestForConnection) && !tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpEntityToTestForConnection))
 					{
 						let tmpAttemptWeight = tmpGraphConnection.Weight + this.options.TraversalHopWeight;
-						if (tmpEntityToTestForConnection.indexOf('Join', tmpEntityToTestForConnection.length - 4) === 0)
+						if (tmpEntityToTestForConnection.endsWith('Join'))
 						{
 							tmpAttemptWeight = tmpAttemptWeight + this.options.JoinInTableNameWeight;
 						}
@@ -860,6 +838,14 @@ class MeadowGraphClient extends libFableServiceProviderBase
 				}
 
 			}
+		}
+
+		// If this is the base call, select the optimal solution from the potential solutions
+		if (tmpGraphConnection.Base && tmpBaseGraphConnection.PotentialSolutions.length > 0)
+		{
+			// Sort by weight descending (highest weight = best path)
+			tmpBaseGraphConnection.PotentialSolutions.sort((a, b) => b.Weight - a.Weight);
+			tmpBaseGraphConnection.OptimalSolutionPath = tmpBaseGraphConnection.PotentialSolutions[0];
 		}
 
 		return tmpGraphConnection;
@@ -904,6 +890,10 @@ class MeadowGraphClient extends libFableServiceProviderBase
 
 		for (let i = 0; i < pFilterArray.length; i++)
 		{
+			if (i > 0)
+			{
+				tmpFilterString += '~';
+			}
 			tmpFilterString += `${pFilterArray[i].MeadowFilterType}~${pFilterArray[i].Column}~${this.getFilterComparisonOperator(pFilterArray[i].Operator)}~${pFilterArray[i].Value}`;
 		}
 
@@ -915,7 +905,8 @@ class MeadowGraphClient extends libFableServiceProviderBase
 		// 0. Lint the Filter Object
 		if (!this.lintFilterObject(pFilterObject))
 		{
-			return fCallback(new Error('Meadow Graph Client: The filter object is not valid.'), null, pFilterObject);
+			this.log.error(`Meadow Graph Client: The filter object is not valid.`);
+			return false;
 		}
 
 		// 1. Parse the Filter Object
@@ -989,6 +980,11 @@ class MeadowGraphClient extends libFableServiceProviderBase
 	get(pFilterObject, fCallback)
 	{
 		let tmpCompiledFilter = this.compileFilter(pFilterObject);
+
+		if (!tmpCompiledFilter)
+		{
+			return fCallback(new Error('Meadow Graph Client: The filter object is not valid.'), null);
+		}
 
 		// Now start to get the records outlined by the compiled filter.
 		let tmpAnticipate = this.fable.newAnticipate();
