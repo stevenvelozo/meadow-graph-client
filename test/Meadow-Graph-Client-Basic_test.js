@@ -660,7 +660,36 @@ suite
 								Expect(tmpResult.PotentialSolutions).to.be.an('Array');
 								Expect(tmpResult.PotentialSolutions.length).to.be.greaterThan(0);
 								Expect(tmpResult.OptimalSolutionPath).to.be.an('object');
+								// The direct 2-hop path (Book→BookPrice via incoming join) should be optimal
 								Expect(tmpResult.OptimalSolutionPath.EdgeAddress).to.equal('Book-->BookPrice');
+
+								return fDone();
+							}
+						);
+
+					test(
+							'solveGraphConnections allows destination to be reached from multiple directions',
+							(fDone) =>
+							{
+								let _Fable = new libFable();
+								_Fable.addServiceType('MeadowGraphClient', libMeadowGraphClient);
+								// Use the full bookstore model to create more possible paths
+								let tmpModel = JSON.parse(JSON.stringify(modelBookStore));
+								// Add a second route: Book->Review->BookPrice (via a fake join)
+								tmpModel.Tables.Review.Columns.push({ Column: 'IDBookPrice', DataType: 'Numeric', Join: 'IDBookPrice' });
+								let _MeadowGraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient', {DataModel: tmpModel});
+
+								let tmpResult = _MeadowGraphClient.solveGraphConnections('Book', 'BookPrice');
+
+								// Should find multiple solutions now (direct and via Review)
+								Expect(tmpResult.PotentialSolutions.length).to.be.greaterThan(1);
+								// The optimal path should still be the direct one with highest weight
+								Expect(tmpResult.OptimalSolutionPath.EdgeAddress).to.equal('Book-->BookPrice');
+								// Verify solutions are sorted by weight descending
+								for (let i = 1; i < tmpResult.PotentialSolutions.length; i++)
+								{
+									Expect(tmpResult.PotentialSolutions[i - 1].Weight).to.be.greaterThanOrEqual(tmpResult.PotentialSolutions[i].Weight);
+								}
 
 								return fDone();
 							}

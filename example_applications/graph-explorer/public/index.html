@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meadow Graph Explorer</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #c9d1d9; }
+
+/* Layout */
+.app { display: grid; grid-template-columns: 340px 1fr; grid-template-rows: 48px 1fr; height: 100vh; }
+
+/* Top Bar */
+.topbar { grid-column: 1 / -1; background: #161b22; border-bottom: 1px solid #30363d; display: flex; align-items: center; padding: 0 16px; gap: 12px; }
+.topbar h1 { font-size: 15px; font-weight: 600; color: #f0f6fc; }
+.topbar .status { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+.topbar .status.ok { background: #238636; color: #fff; }
+.topbar .status.err { background: #da3633; color: #fff; }
+
+/* Sidebar */
+.sidebar { background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; padding: 12px; }
+.sidebar h2 { font-size: 12px; text-transform: uppercase; color: #8b949e; letter-spacing: 0.5px; margin-bottom: 8px; }
+.sidebar h3 { font-size: 11px; text-transform: uppercase; color: #8b949e; letter-spacing: 0.5px; margin: 16px 0 6px; }
+
+/* Entity Graph SVG */
+#graph-container { background: #0d1117; border-radius: 6px; border: 1px solid #30363d; margin-bottom: 12px; }
+#graph-container svg { width: 100%; display: block; }
+svg .entity-node { cursor: pointer; }
+svg .entity-rect { fill: #21262d; stroke: #30363d; stroke-width: 1.5; rx: 4; ry: 4; }
+svg .entity-rect:hover { stroke: #58a6ff; }
+svg .entity-rect.source { fill: #0d419d; stroke: #58a6ff; stroke-width: 2; }
+svg .entity-rect.dest { fill: #3d1e06; stroke: #d29922; stroke-width: 2; }
+svg .entity-rect.path { fill: #1a3a1a; stroke: #3fb950; stroke-width: 2; }
+svg .entity-label { fill: #c9d1d9; font-size: 10px; font-family: inherit; font-weight: 500; text-anchor: middle; pointer-events: none; }
+svg .edge-line { stroke: #30363d; stroke-width: 1; fill: none; }
+svg .edge-line.path { stroke: #3fb950; stroke-width: 2.5; }
+
+/* Prebuilt query buttons */
+.prebuilt-btn { display: block; width: 100%; padding: 7px 10px; margin-bottom: 4px; background: #21262d; border: 1px solid #30363d; border-radius: 4px; color: #c9d1d9; font-size: 12px; cursor: pointer; text-align: left; }
+.prebuilt-btn:hover { border-color: #58a6ff; background: #1c2128; }
+.prebuilt-btn .label { font-weight: 600; display: block; }
+.prebuilt-btn .desc { color: #8b949e; font-size: 11px; }
+
+/* Main Panel */
+.main { overflow-y: auto; padding: 16px 20px; }
+.panel { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+.panel h2 { font-size: 14px; color: #f0f6fc; margin-bottom: 12px; }
+
+/* Form Elements */
+.form-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+.form-row label { font-size: 12px; color: #8b949e; min-width: 60px; }
+select, input[type=text], input[type=number] { background: #0d1117; border: 1px solid #30363d; border-radius: 4px; color: #c9d1d9; padding: 6px 8px; font-size: 13px; font-family: inherit; }
+select { min-width: 140px; }
+input[type=text] { flex: 1; }
+.btn { padding: 6px 14px; border-radius: 4px; border: 1px solid #30363d; font-size: 13px; font-family: inherit; cursor: pointer; font-weight: 500; }
+.btn-primary { background: #238636; color: #fff; border-color: #238636; }
+.btn-primary:hover { background: #2ea043; }
+.btn-secondary { background: #21262d; color: #c9d1d9; }
+.btn-secondary:hover { background: #30363d; }
+.btn-sm { padding: 3px 8px; font-size: 11px; }
+.btn-danger { background: #da3633; color: #fff; border-color: #da3633; }
+
+/* Filter rows */
+.filter-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.filter-row select { min-width: 100px; }
+.filter-row input { min-width: 80px; }
+
+/* Hints checkboxes */
+.hints-grid { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0; }
+.hints-grid label { font-size: 12px; padding: 3px 8px; background: #21262d; border: 1px solid #30363d; border-radius: 3px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.hints-grid label:hover { border-color: #58a6ff; }
+.hints-grid input[type=checkbox] { accent-color: #58a6ff; }
+
+/* Path display */
+.path-display { padding: 10px; background: #0d1117; border-radius: 4px; font-family: 'SF Mono', 'Cascadia Code', monospace; font-size: 13px; margin-bottom: 10px; overflow-x: auto; white-space: nowrap; }
+.path-display .entity { color: #58a6ff; font-weight: 600; }
+.path-display .arrow { color: #3fb950; margin: 0 4px; }
+.path-display .weight { color: #8b949e; font-size: 11px; margin-left: 8px; }
+
+/* Request chain */
+.request-chain { margin-top: 8px; }
+.request-item { padding: 8px 10px; background: #0d1117; border-radius: 4px; margin-bottom: 4px; font-size: 12px; font-family: monospace; }
+.request-item .entity-tag { color: #d29922; font-weight: 600; }
+.request-item .filter-tag { color: #3fb950; }
+.request-item .chain-tag { color: #8b949e; }
+
+/* Results table */
+.results-table-wrap { overflow-x: auto; margin-top: 8px; max-height: 400px; overflow-y: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+th { background: #21262d; color: #8b949e; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; padding: 6px 10px; text-align: left; position: sticky; top: 0; }
+td { padding: 5px 10px; border-bottom: 1px solid #21262d; color: #c9d1d9; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+tr:hover td { background: #1c2128; }
+
+/* Timing */
+.timing { font-size: 11px; color: #8b949e; margin-top: 6px; }
+.timing span { color: #3fb950; font-weight: 600; }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 40px 20px; color: #8b949e; }
+.empty-state h3 { color: #c9d1d9; margin-bottom: 8px; font-size: 16px; }
+</style>
+</head>
+<body>
+<div class="app">
+	<!-- Top Bar -->
+	<div class="topbar">
+		<h1>Meadow Graph Explorer</h1>
+		<span id="harness-status" class="status err">Checking harness...</span>
+	</div>
+
+	<!-- Sidebar -->
+	<div class="sidebar">
+		<h2>Entity Graph</h2>
+		<div id="graph-container"></div>
+
+		<h3>Prebuilt Queries</h3>
+		<div id="prebuilt-queries"></div>
+	</div>
+
+	<!-- Main -->
+	<div class="main">
+		<!-- Query Builder -->
+		<div class="panel">
+			<h2>Graph Query Builder</h2>
+			<div class="form-row">
+				<label>Source</label>
+				<select id="source-entity"></select>
+			</div>
+			<div class="form-row">
+				<label>Destination</label>
+				<select id="dest-entity"></select>
+			</div>
+
+			<div style="margin: 10px 0 6px; font-size: 12px; color: #8b949e;">Filters (Destination.Column)</div>
+			<div id="filter-rows"></div>
+			<button class="btn btn-sm btn-secondary" onclick="addFilterRow()">+ Add Filter</button>
+
+			<div style="margin: 10px 0 6px; font-size: 12px; color: #8b949e;">Path Hints (prefer these intermediary entities)</div>
+			<div id="hints-grid" class="hints-grid"></div>
+
+			<div class="form-row" style="margin-top: 12px;">
+				<button class="btn btn-secondary" onclick="solvePath()">Solve Path</button>
+				<button class="btn btn-primary" onclick="compileAndExecute()">Execute Query</button>
+			</div>
+		</div>
+
+		<!-- Solved Path -->
+		<div class="panel" id="path-panel" style="display:none">
+			<h2>Solved Path</h2>
+			<div id="path-display" class="path-display"></div>
+			<div id="all-solutions" style="font-size:11px; color:#8b949e; margin-top:4px"></div>
+		</div>
+
+		<!-- Request Chain -->
+		<div class="panel" id="request-panel" style="display:none">
+			<h2>Compiled Request Chain</h2>
+			<div id="request-chain" class="request-chain"></div>
+		</div>
+
+		<!-- Results -->
+		<div class="panel" id="results-panel" style="display:none">
+			<h2>Results <span id="result-count" style="font-weight:400; color:#8b949e; font-size:12px"></span></h2>
+			<div id="results-table" class="results-table-wrap"></div>
+			<div id="results-timing" class="timing"></div>
+		</div>
+
+		<!-- Empty state -->
+		<div id="empty-state" class="empty-state">
+			<h3>Select a prebuilt query or build your own</h3>
+			<p>Use the sidebar to pick a prebuilt query, or choose source/destination entities and add filters above.</p>
+		</div>
+	</div>
+</div>
+
+<script>
+// --- State ---
+var gModel = null;
+var gEntityNames = [];
+var gEntityPositions = {};
+var gSourceEntity = '';
+var gDestEntity = '';
+var gSolvedPath = null;
+
+// --- Prebuilt Queries ---
+var PREBUILT_QUERIES = [
+	{
+		label: 'Books by Author',
+		desc: 'Book \u2192 BookAuthorJoin \u2192 Author',
+		source: 'Book',
+		dest: 'Author',
+		filters: [{ entity: 'Author', column: 'IDAuthor', op: '=', value: '1' }],
+		hints: ['BookAuthorJoin']
+	},
+	{
+		label: 'Prices for a Book',
+		desc: 'Book \u2192 BookPrice (direct)',
+		source: 'Book',
+		dest: 'BookPrice',
+		filters: [{ entity: 'BookPrice', column: 'IDBook', op: '=', value: '1' }],
+		hints: []
+	},
+	{
+		label: 'Store Inventory for Book',
+		desc: 'Book \u2192 BookStoreInventory',
+		source: 'Book',
+		dest: 'BookStoreInventory',
+		filters: [{ entity: 'BookStoreInventory', column: 'IDBook', op: '=', value: '1' }],
+		hints: []
+	},
+	{
+		label: 'Reviews for Author\u2019s Books',
+		desc: 'Author \u2192 BookAuthorJoin \u2192 Book \u2192 Review',
+		source: 'Review',
+		dest: 'Author',
+		filters: [{ entity: 'Author', column: 'IDAuthor', op: '=', value: '1' }],
+		hints: ['BookAuthorJoin']
+	},
+	{
+		label: 'Employees at a Store',
+		desc: 'BookStore \u2192 BookStoreEmployee',
+		source: 'BookStore',
+		dest: 'BookStoreEmployee',
+		filters: [{ entity: 'BookStoreEmployee', column: 'IDBookStore', op: '=', value: '1' }],
+		hints: []
+	},
+	{
+		label: 'Sales at a Store',
+		desc: 'BookStore \u2192 BookStoreSale \u2192 BookStoreSaleItem',
+		source: 'BookStoreSaleItem',
+		dest: 'BookStore',
+		filters: [{ entity: 'BookStore', column: 'IDBookStore', op: '=', value: '1' }],
+		hints: ['BookStoreSale']
+	}
+];
+
+// --- Init ---
+async function init()
+{
+	await loadModel();
+	checkHarness();
+	renderGraph();
+	populateDropdowns();
+	renderPrebuiltButtons();
+	addFilterRow();
+}
+
+async function loadModel()
+{
+	try
+	{
+		let tmpResponse = await fetch('/api/model');
+		gModel = await tmpResponse.json();
+		gEntityNames = gModel.EntityNames;
+	}
+	catch (e)
+	{
+		console.error('Failed to load model:', e);
+	}
+}
+
+async function checkHarness()
+{
+	let tmpEl = document.getElementById('harness-status');
+	try
+	{
+		let tmpResponse = await fetch('/api/proxy/Books/Count');
+		if (tmpResponse.ok)
+		{
+			let tmpData = await tmpResponse.json();
+			tmpEl.textContent = 'Harness connected (' + (tmpData.Count || '?') + ' books)';
+			tmpEl.className = 'status ok';
+		}
+		else
+		{
+			tmpEl.textContent = 'Harness unreachable';
+			tmpEl.className = 'status err';
+		}
+	}
+	catch (e)
+	{
+		tmpEl.textContent = 'Harness offline';
+		tmpEl.className = 'status err';
+	}
+}
+
+// --- SVG Graph ---
+function renderGraph()
+{
+	// Position entities in a structured layout (3 columns)
+	var tmpW = 90;
+	var tmpH = 26;
+	var tmpCol1 = 10;
+	var tmpCol2 = 110;
+	var tmpCol3 = 210;
+	var tmpPositions = {
+		'Customer':           { x: tmpCol2, y: 10 },
+		'User':               { x: tmpCol1, y: 55 },
+		'Author':             { x: tmpCol1, y: 120 },
+		'BookAuthorJoin':     { x: tmpCol2, y: 120 },
+		'BookPrice':          { x: tmpCol3, y: 120 },
+		'Book':               { x: tmpCol2, y: 185 },
+		'Review':             { x: tmpCol3, y: 185 },
+		'BookStore':          { x: tmpCol1, y: 265 },
+		'BookStoreInventory': { x: tmpCol2, y: 265 },
+		'BookStoreSale':      { x: tmpCol3, y: 265 },
+		'BookStoreEmployee':  { x: tmpCol1, y: 330 },
+		'BookStoreSaleItem':  { x: tmpCol3, y: 330 }
+	};
+	gEntityPositions = tmpPositions;
+
+	var tmpSvgW = 310;
+	var tmpSvgH = 370;
+
+	var tmpEdges = [];
+	// Build edges from outgoing connections
+	for (var tmpFrom in gModel.OutgoingConnections)
+	{
+		for (var tmpTo in gModel.OutgoingConnections[tmpFrom])
+		{
+			if (tmpPositions[tmpFrom] && tmpPositions[tmpTo])
+			{
+				tmpEdges.push({ from: tmpFrom, to: tmpTo });
+			}
+		}
+	}
+
+	var tmpSvg = '<svg viewBox="0 0 ' + tmpSvgW + ' ' + tmpSvgH + '" xmlns="http://www.w3.org/2000/svg">';
+
+	// Draw edges first (behind nodes)
+	for (var i = 0; i < tmpEdges.length; i++)
+	{
+		var tmpE = tmpEdges[i];
+		var tmpX1 = tmpPositions[tmpE.from].x + tmpW / 2;
+		var tmpY1 = tmpPositions[tmpE.from].y + tmpH / 2;
+		var tmpX2 = tmpPositions[tmpE.to].x + tmpW / 2;
+		var tmpY2 = tmpPositions[tmpE.to].y + tmpH / 2;
+		tmpSvg += '<line class="edge-line" data-from="' + tmpE.from + '" data-to="' + tmpE.to + '" x1="' + tmpX1 + '" y1="' + tmpY1 + '" x2="' + tmpX2 + '" y2="' + tmpY2 + '"/>';
+	}
+
+	// Draw nodes
+	for (var tmpName in tmpPositions)
+	{
+		var tmpP = tmpPositions[tmpName];
+		var tmpDisplayName = tmpName;
+		// Abbreviate long names for the graph
+		if (tmpName === 'BookStoreInventory') tmpDisplayName = 'Inventory';
+		else if (tmpName === 'BookStoreEmployee') tmpDisplayName = 'Employee';
+		else if (tmpName === 'BookStoreSale') tmpDisplayName = 'Sale';
+		else if (tmpName === 'BookStoreSaleItem') tmpDisplayName = 'SaleItem';
+		else if (tmpName === 'BookAuthorJoin') tmpDisplayName = 'AuthorJoin';
+		else if (tmpName === 'BookPrice') tmpDisplayName = 'Price';
+
+		tmpSvg += '<g class="entity-node" data-entity="' + tmpName + '" onclick="onEntityClick(\'' + tmpName + '\')">';
+		tmpSvg += '<rect class="entity-rect" data-entity="' + tmpName + '" x="' + tmpP.x + '" y="' + tmpP.y + '" width="' + tmpW + '" height="' + tmpH + '"/>';
+		tmpSvg += '<text class="entity-label" x="' + (tmpP.x + tmpW / 2) + '" y="' + (tmpP.y + tmpH / 2 + 4) + '">' + tmpDisplayName + '</text>';
+		tmpSvg += '</g>';
+	}
+
+	tmpSvg += '</svg>';
+	document.getElementById('graph-container').innerHTML = tmpSvg;
+}
+
+function highlightPath(pPathEntities)
+{
+	// Reset all
+	document.querySelectorAll('.entity-rect').forEach(function(el) { el.classList.remove('source', 'dest', 'path'); });
+	document.querySelectorAll('.edge-line').forEach(function(el) { el.classList.remove('path'); });
+
+	if (!pPathEntities || pPathEntities.length === 0) return;
+
+	// Highlight entities on the path
+	for (var i = 0; i < pPathEntities.length; i++)
+	{
+		var tmpRect = document.querySelector('.entity-rect[data-entity="' + pPathEntities[i] + '"]');
+		if (tmpRect)
+		{
+			if (i === 0) tmpRect.classList.add('source');
+			else if (i === pPathEntities.length - 1) tmpRect.classList.add('dest');
+			else tmpRect.classList.add('path');
+		}
+	}
+
+	// Highlight edges on the path
+	for (var j = 0; j < pPathEntities.length - 1; j++)
+	{
+		var tmpA = pPathEntities[j];
+		var tmpB = pPathEntities[j + 1];
+		document.querySelectorAll('.edge-line').forEach(function(el)
+		{
+			var tmpFrom = el.getAttribute('data-from');
+			var tmpTo = el.getAttribute('data-to');
+			if ((tmpFrom === tmpA && tmpTo === tmpB) || (tmpFrom === tmpB && tmpTo === tmpA))
+			{
+				el.classList.add('path');
+			}
+		});
+	}
+}
+
+function onEntityClick(pEntityName)
+{
+	var tmpSourceSelect = document.getElementById('source-entity');
+	var tmpDestSelect = document.getElementById('dest-entity');
+
+	if (!gSourceEntity || (gSourceEntity && gDestEntity))
+	{
+		// Set as source, clear dest
+		gSourceEntity = pEntityName;
+		gDestEntity = '';
+		tmpSourceSelect.value = pEntityName;
+		tmpDestSelect.value = '';
+		highlightPath([pEntityName]);
+	}
+	else
+	{
+		// Set as destination
+		gDestEntity = pEntityName;
+		tmpDestSelect.value = pEntityName;
+		highlightPath([gSourceEntity, gDestEntity]);
+	}
+	updateHintsGrid();
+}
+
+// --- Dropdowns ---
+function populateDropdowns()
+{
+	var tmpSourceSelect = document.getElementById('source-entity');
+	var tmpDestSelect = document.getElementById('dest-entity');
+
+	var tmpOptions = '<option value="">-- Select --</option>';
+	for (var i = 0; i < gEntityNames.length; i++)
+	{
+		tmpOptions += '<option value="' + gEntityNames[i] + '">' + gEntityNames[i] + '</option>';
+	}
+	tmpSourceSelect.innerHTML = tmpOptions;
+	tmpDestSelect.innerHTML = tmpOptions;
+
+	tmpSourceSelect.onchange = function()
+	{
+		gSourceEntity = this.value;
+		updateHintsGrid();
+		highlightPath(gSourceEntity ? [gSourceEntity] : []);
+	};
+	tmpDestSelect.onchange = function()
+	{
+		gDestEntity = this.value;
+		updateHintsGrid();
+	};
+}
+
+function updateHintsGrid()
+{
+	var tmpContainer = document.getElementById('hints-grid');
+	var tmpHTML = '';
+	for (var i = 0; i < gEntityNames.length; i++)
+	{
+		var tmpName = gEntityNames[i];
+		if (tmpName === gSourceEntity || tmpName === gDestEntity) continue;
+		tmpHTML += '<label><input type="checkbox" value="' + tmpName + '"> ' + tmpName + '</label>';
+	}
+	tmpContainer.innerHTML = tmpHTML;
+}
+
+// --- Filter Rows ---
+function addFilterRow()
+{
+	var tmpContainer = document.getElementById('filter-rows');
+	var tmpRow = document.createElement('div');
+	tmpRow.className = 'filter-row';
+
+	// Build entity.column options from model
+	var tmpColOptions = '<option value="">-- Column --</option>';
+	if (gModel)
+	{
+		for (var tmpEntityName in gModel.Entities)
+		{
+			var tmpCols = gModel.Entities[tmpEntityName].Columns;
+			for (var j = 0; j < tmpCols.length; j++)
+			{
+				tmpColOptions += '<option value="' + tmpEntityName + '.' + tmpCols[j] + '">' + tmpEntityName + '.' + tmpCols[j] + '</option>';
+			}
+		}
+	}
+
+	tmpRow.innerHTML =
+		'<select class="filter-col">' + tmpColOptions + '</select>' +
+		'<select class="filter-op">' +
+			'<option value="=">=</option>' +
+			'<option value="LIKE">LIKE</option>' +
+			'<option value="!=">!=</option>' +
+			'<option value=">">></option>' +
+			'<option value="<"><</option>' +
+		'</select>' +
+		'<input type="text" class="filter-val" placeholder="value">' +
+		'<button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">\u00d7</button>';
+
+	tmpContainer.appendChild(tmpRow);
+}
+
+function getFilters()
+{
+	var tmpFilters = {};
+	var tmpRows = document.querySelectorAll('.filter-row');
+	for (var i = 0; i < tmpRows.length; i++)
+	{
+		var tmpCol = tmpRows[i].querySelector('.filter-col').value;
+		var tmpVal = tmpRows[i].querySelector('.filter-val').value;
+		if (tmpCol && tmpVal)
+		{
+			// For now treat all values as-is (string or numeric)
+			var tmpNumVal = Number(tmpVal);
+			tmpFilters[tmpCol] = isNaN(tmpNumVal) ? tmpVal : tmpNumVal;
+		}
+	}
+	return tmpFilters;
+}
+
+function getHints()
+{
+	var tmpHints = [];
+	var tmpChecked = document.querySelectorAll('#hints-grid input:checked');
+	for (var i = 0; i < tmpChecked.length; i++)
+	{
+		tmpHints.push(tmpChecked[i].value);
+	}
+	return tmpHints;
+}
+
+// --- Prebuilt Query Buttons ---
+function renderPrebuiltButtons()
+{
+	var tmpContainer = document.getElementById('prebuilt-queries');
+	var tmpHTML = '';
+	for (var i = 0; i < PREBUILT_QUERIES.length; i++)
+	{
+		tmpHTML += '<button class="prebuilt-btn" onclick="runPrebuilt(' + i + ')">' +
+			'<span class="label">' + PREBUILT_QUERIES[i].label + '</span>' +
+			'<span class="desc">' + PREBUILT_QUERIES[i].desc + '</span>' +
+			'</button>';
+	}
+	tmpContainer.innerHTML = tmpHTML;
+}
+
+function runPrebuilt(pIndex)
+{
+	var tmpQuery = PREBUILT_QUERIES[pIndex];
+
+	// Set source/dest
+	document.getElementById('source-entity').value = tmpQuery.source;
+	document.getElementById('dest-entity').value = tmpQuery.dest;
+	gSourceEntity = tmpQuery.source;
+	gDestEntity = tmpQuery.dest;
+
+	// Set filters
+	var tmpContainer = document.getElementById('filter-rows');
+	tmpContainer.innerHTML = '';
+	for (var i = 0; i < tmpQuery.filters.length; i++)
+	{
+		addFilterRow();
+		var tmpRows = tmpContainer.querySelectorAll('.filter-row');
+		var tmpRow = tmpRows[tmpRows.length - 1];
+		tmpRow.querySelector('.filter-col').value = tmpQuery.filters[i].entity + '.' + tmpQuery.filters[i].column;
+		tmpRow.querySelector('.filter-op').value = tmpQuery.filters[i].op;
+		tmpRow.querySelector('.filter-val').value = tmpQuery.filters[i].value;
+	}
+
+	// Set hints
+	updateHintsGrid();
+	if (tmpQuery.hints.length > 0)
+	{
+		var tmpCheckboxes = document.querySelectorAll('#hints-grid input');
+		for (var j = 0; j < tmpCheckboxes.length; j++)
+		{
+			tmpCheckboxes[j].checked = tmpQuery.hints.indexOf(tmpCheckboxes[j].value) >= 0;
+		}
+	}
+
+	// Solve and execute
+	compileAndExecute();
+}
+
+// --- Solve Path ---
+async function solvePath()
+{
+	var tmpSource = document.getElementById('source-entity').value;
+	var tmpDest = document.getElementById('dest-entity').value;
+
+	if (!tmpSource || !tmpDest)
+	{
+		alert('Please select both source and destination entities.');
+		return null;
+	}
+
+	try
+	{
+		var tmpResponse = await fetch('/api/solve', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ From: tmpSource, To: tmpDest, Hints: getHints() })
+		});
+		var tmpResult = await tmpResponse.json();
+		gSolvedPath = tmpResult;
+
+		document.getElementById('empty-state').style.display = 'none';
+		document.getElementById('path-panel').style.display = 'block';
+
+		// Render path
+		var tmpPathEl = document.getElementById('path-display');
+		if (tmpResult.OptimalSolution)
+		{
+			var tmpEdges = tmpResult.OptimalSolution.EdgeAddress.split('-->');
+			var tmpHTML = '';
+			for (var i = 0; i < tmpEdges.length; i++)
+			{
+				if (i > 0) tmpHTML += '<span class="arrow">\u2192</span>';
+				tmpHTML += '<span class="entity">' + tmpEdges[i] + '</span>';
+			}
+			tmpHTML += '<span class="weight">(weight: ' + tmpResult.OptimalSolution.Weight + ')</span>';
+			tmpPathEl.innerHTML = tmpHTML;
+
+			// Highlight on SVG
+			highlightPath(tmpEdges);
+		}
+		else
+		{
+			tmpPathEl.innerHTML = '<span style="color:#da3633">No path found between ' + tmpSource + ' and ' + tmpDest + '</span>';
+			highlightPath([]);
+		}
+
+		// All solutions count
+		document.getElementById('all-solutions').textContent =
+			tmpResult.SolutionCount + ' solution' + (tmpResult.SolutionCount !== 1 ? 's' : '') + ' found';
+
+		return tmpResult;
+	}
+	catch (e)
+	{
+		console.error('Solve failed:', e);
+		return null;
+	}
+}
+
+// --- Compile and Execute ---
+async function compileAndExecute()
+{
+	var tmpSource = document.getElementById('source-entity').value;
+	if (!tmpSource)
+	{
+		alert('Please select a source entity.');
+		return;
+	}
+
+	// First solve the path
+	var tmpDest = document.getElementById('dest-entity').value;
+	if (tmpDest)
+	{
+		await solvePath();
+	}
+
+	var tmpStartTime = performance.now();
+
+	// Compile
+	var tmpFilters = getFilters();
+	try
+	{
+		var tmpResponse = await fetch('/api/compile', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ Entity: tmpSource, Filter: tmpFilters, Hints: getHints() })
+		});
+		var tmpCompiled = await tmpResponse.json();
+
+		if (tmpCompiled.Error)
+		{
+			alert('Compile error: ' + tmpCompiled.Error);
+			return;
+		}
+
+		document.getElementById('empty-state').style.display = 'none';
+
+		// Show request chain
+		document.getElementById('request-panel').style.display = 'block';
+		var tmpChainHTML = '';
+		if (tmpCompiled.Requests.length === 0)
+		{
+			tmpChainHTML = '<div class="request-item"><span class="entity-tag">' + tmpSource + '</span> <span class="chain-tag">(direct query, no cross-entity joins needed)</span></div>';
+		}
+		for (var i = 0; i < tmpCompiled.Requests.length; i++)
+		{
+			var tmpReq = tmpCompiled.Requests[i];
+			tmpChainHTML += '<div class="request-item">';
+			tmpChainHTML += '<span class="entity-tag">' + tmpReq.Entity + '</span>';
+			if (tmpReq.MeadowFilter)
+			{
+				tmpChainHTML += ' <span class="filter-tag">' + tmpReq.MeadowFilter + '</span>';
+			}
+			if (tmpReq.GraphRequestChain.length > 0)
+			{
+				tmpChainHTML += ' <span class="chain-tag">via ' + tmpReq.GraphRequestChain.join(' \u2192 ') + '</span>';
+			}
+			tmpChainHTML += '</div>';
+		}
+		document.getElementById('request-chain').innerHTML = tmpChainHTML;
+
+		// Now fetch actual data from harness for the source entity
+		var tmpFilterString = '';
+		// Build a meadow filter URL from the filters on the source entity
+		var tmpSourceFilters = [];
+		for (var tmpKey in tmpFilters)
+		{
+			var tmpParts = tmpKey.split('.');
+			if (tmpParts.length === 2 && tmpParts[0] === tmpSource)
+			{
+				var tmpVal = tmpFilters[tmpKey];
+				if (typeof tmpVal === 'string')
+				{
+					tmpSourceFilters.push('FBV~' + tmpParts[1] + '~LK~' + tmpVal);
+				}
+				else
+				{
+					tmpSourceFilters.push('FBV~' + tmpParts[1] + '~EQ~' + tmpVal);
+				}
+			}
+		}
+
+		var tmpURL = tmpSource + 's';
+		if (tmpSourceFilters.length > 0)
+		{
+			tmpURL += '/FilteredTo/' + tmpSourceFilters.join('~');
+		}
+		tmpURL += '/0/50';
+
+		var tmpDataResponse = await fetch('/api/proxy/' + tmpURL);
+		var tmpData = await tmpDataResponse.json();
+
+		var tmpEndTime = performance.now();
+
+		// Show results
+		document.getElementById('results-panel').style.display = 'block';
+		if (Array.isArray(tmpData) && tmpData.length > 0)
+		{
+			document.getElementById('result-count').textContent = '(' + tmpData.length + ' records)';
+			var tmpKeys = Object.keys(tmpData[0]);
+			var tmpTableHTML = '<table><thead><tr>';
+			for (var k = 0; k < tmpKeys.length; k++)
+			{
+				tmpTableHTML += '<th>' + tmpKeys[k] + '</th>';
+			}
+			tmpTableHTML += '</tr></thead><tbody>';
+			for (var r = 0; r < tmpData.length; r++)
+			{
+				tmpTableHTML += '<tr>';
+				for (var c = 0; c < tmpKeys.length; c++)
+				{
+					var tmpCellVal = tmpData[r][tmpKeys[c]];
+					if (tmpCellVal === null || tmpCellVal === undefined) tmpCellVal = '';
+					tmpTableHTML += '<td>' + String(tmpCellVal).replace(/</g, '&lt;') + '</td>';
+				}
+				tmpTableHTML += '</tr>';
+			}
+			tmpTableHTML += '</tbody></table>';
+			document.getElementById('results-table').innerHTML = tmpTableHTML;
+		}
+		else if (Array.isArray(tmpData))
+		{
+			document.getElementById('result-count').textContent = '(0 records)';
+			document.getElementById('results-table').innerHTML = '<div class="empty-state"><p>No records found.</p></div>';
+		}
+		else
+		{
+			// Might be a count or error object
+			document.getElementById('result-count').textContent = '';
+			document.getElementById('results-table').innerHTML = '<pre style="font-size:12px;color:#c9d1d9">' + JSON.stringify(tmpData, null, 2) + '</pre>';
+		}
+
+		document.getElementById('results-timing').innerHTML = 'Completed in <span>' + Math.round(tmpEndTime - tmpStartTime) + 'ms</span>';
+	}
+	catch (e)
+	{
+		console.error('Execute failed:', e);
+		alert('Query execution failed. Is the harness running?');
+	}
+}
+
+// --- Boot ---
+init();
+</script>
+</body>
+</html>

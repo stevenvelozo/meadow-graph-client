@@ -677,7 +677,9 @@ class MeadowGraphClient extends libFableServiceProviderBase
 			tmpGraphConnection.ParentEdgeAddress = pParentEntity.EdgeAddress;
 			// This is start-> Finish no matter what.
 			tmpGraphConnection.RouteHash = `${pStartEntityName}==>${pDestinationEntity}`;
-			if (pBaseGraphConnection.AttemptedRouteHashes.hasOwnProperty(tmpGraphConnection.RouteHash))
+			// Allow the destination entity to be reached from multiple paths (each adds a
+			// differently-weighted solution).  Only bail out for intermediate route hashes.
+			if (pStartEntityName !== pDestinationEntity && pBaseGraphConnection.AttemptedRouteHashes.hasOwnProperty(tmpGraphConnection.RouteHash))
 			{
 				// Recursion bailout .. we've tried this path already.
 				// If a path was found with these rules with this hash, add this to the attempted paths and bail out.
@@ -824,7 +826,7 @@ class MeadowGraphClient extends libFableServiceProviderBase
 				for (let i = 0; i < tmpIncomingJoinKeys.length; i++)
 				{
 					let tmpEntityToTestForConnection = tmpIncomingJoinKeys[i];
-					let tmpAttemptedEdgeAddress = `${tmpGraphConnection.EdgeAddress}-->${pDestinationEntity}`;
+					let tmpAttemptedEdgeAddress = `${tmpEntityToTestForConnection}-->${pDestinationEntity}`;
 					// This prevents circles without eliminating intermediates for different paths later.
 					if (!tmpBaseGraphConnection.AttemptedEntities.hasOwnProperty(tmpEntityToTestForConnection) && !tmpBaseGraphConnection.AttemptedPaths.hasOwnProperty(tmpAttemptedEdgeAddress) && (tmpGraphConnection.EntityName != tmpEntityToTestForConnection))
 					{

@@ -1,0 +1,15 @@
+{
+	"name": "meadow-graph-explorer",
+	"version": "1.0.0",
+	"description": "Visual graph query explorer for meadow-graph-client against retold-harness bookstore data.",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"author": "steven velozo <steven@velozo.com>",
+	"license": "MIT",
+	"dependencies": {
+		"fable": "^3.0.0",
+		"simple-get": "^4.0.1"
+	}
+}

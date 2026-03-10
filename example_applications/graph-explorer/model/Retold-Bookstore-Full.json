@@ -1,0 +1,238 @@
+{
+	"Tables": {
+		"Customer": {
+			"TableName": "Customer",
+			"Columns": [
+				{ "Column": "IDCustomer", "DataType": "ID" },
+				{ "Column": "GUIDCustomer", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "Name", "DataType": "String", "Size": "255" },
+				{ "Column": "Description", "DataType": "Text" },
+				{ "Column": "ContactName", "DataType": "String", "Size": "255" },
+				{ "Column": "ContactEmail", "DataType": "String", "Size": "255" },
+				{ "Column": "ContactPhone", "DataType": "String", "Size": "64" },
+				{ "Column": "Address", "DataType": "String", "Size": "255" },
+				{ "Column": "City", "DataType": "String", "Size": "128" },
+				{ "Column": "State", "DataType": "String", "Size": "64" },
+				{ "Column": "Postal", "DataType": "String", "Size": "16" },
+				{ "Column": "Country", "DataType": "String", "Size": "128" },
+				{ "Column": "Active", "DataType": "Boolean" }
+			]
+		},
+		"User": {
+			"TableName": "User",
+			"Columns": [
+				{ "Column": "IDUser", "DataType": "ID" },
+				{ "Column": "GUIDUser", "DataType": "GUID" },
+				{ "Column": "LoginID", "DataType": "String", "Size": "128" },
+				{ "Column": "Password", "DataType": "String", "Size": "255" },
+				{ "Column": "NameFirst", "DataType": "String", "Size": "128" },
+				{ "Column": "NameLast", "DataType": "String", "Size": "128" },
+				{ "Column": "FullName", "DataType": "String", "Size": "255" },
+				{ "Column": "Config", "DataType": "String", "Size": "64" },
+				{ "Column": "IDCustomer", "DataType": "Numeric", "Join": "IDCustomer" },
+				{ "Column": "Email", "DataType": "String", "Size": "255" },
+				{ "Column": "Phone", "DataType": "String", "Size": "64" },
+				{ "Column": "Address", "DataType": "String", "Size": "255" },
+				{ "Column": "City", "DataType": "String", "Size": "128" },
+				{ "Column": "State", "DataType": "String", "Size": "64" },
+				{ "Column": "Postal", "DataType": "String", "Size": "16" },
+				{ "Column": "Country", "DataType": "String", "Size": "128" }
+			]
+		},
+		"Book": {
+			"TableName": "Book",
+			"Columns": [
+				{ "Column": "IDBook", "DataType": "ID" },
+				{ "Column": "GUIDBook", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "Title", "DataType": "String", "Size": "200" },
+				{ "Column": "Type", "DataType": "String", "Size": "32" },
+				{ "Column": "Genre", "DataType": "String", "Size": "128" },
+				{ "Column": "ISBN", "DataType": "String", "Size": "64" },
+				{ "Column": "Language", "DataType": "String", "Size": "12" },
+				{ "Column": "ImageURL", "DataType": "String", "Size": "254" },
+				{ "Column": "PublicationYear", "DataType": "Numeric" }
+			]
+		},
+		"Author": {
+			"TableName": "Author",
+			"Columns": [
+				{ "Column": "IDAuthor", "DataType": "ID" },
+				{ "Column": "GUIDAuthor", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "Name", "DataType": "String", "Size": "200" },
+				{ "Column": "IDUser", "DataType": "Numeric", "Join": "IDUser" }
+			]
+		},
+		"BookAuthorJoin": {
+			"TableName": "BookAuthorJoin",
+			"Columns": [
+				{ "Column": "IDBookAuthorJoin", "DataType": "ID" },
+				{ "Column": "GUIDBookAuthorJoin", "DataType": "GUID" },
+				{ "Column": "IDBook", "DataType": "Numeric", "Join": "IDBook" },
+				{ "Column": "IDAuthor", "DataType": "Numeric", "Join": "IDAuthor" }
+			]
+		},
+		"BookPrice": {
+			"TableName": "BookPrice",
+			"Columns": [
+				{ "Column": "IDBookPrice", "DataType": "ID" },
+				{ "Column": "GUIDBookPrice", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "Price", "DataType": "Decimal" },
+				{ "Column": "StartDate", "DataType": "DateTime" },
+				{ "Column": "EndDate", "DataType": "DateTime" },
+				{ "Column": "Discountable", "DataType": "Boolean" },
+				{ "Column": "CouponCode", "DataType": "String", "Size": "16" },
+				{ "Column": "IDBook", "DataType": "Numeric", "Join": "IDBook" }
+			]
+		},
+		"BookStore": {
+			"TableName": "BookStore",
+			"Columns": [
+				{ "Column": "IDBookStore", "DataType": "ID" },
+				{ "Column": "GUIDBookStore", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "Name", "DataType": "String", "Size": "200" },
+				{ "Column": "Address", "DataType": "String", "Size": "64" },
+				{ "Column": "City", "DataType": "String", "Size": "64" },
+				{ "Column": "State", "DataType": "String", "Size": "24" },
+				{ "Column": "Postal", "DataType": "String", "Size": "16" },
+				{ "Column": "Country", "DataType": "String", "Size": "64" },
+				{ "Column": "StoreType", "DataType": "String", "Size": "64" },
+				{ "Column": "Phone", "DataType": "String", "Size": "64" },
+				{ "Column": "Email", "DataType": "String", "Size": "255" }
+			]
+		},
+		"BookStoreInventory": {
+			"TableName": "BookStoreInventory",
+			"Columns": [
+				{ "Column": "IDBookStoreInventory", "DataType": "ID" },
+				{ "Column": "GUIDBookStoreInventory", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "StockDate", "DataType": "DateTime" },
+				{ "Column": "BookCount", "DataType": "Numeric" },
+				{ "Column": "AggregateBookCount", "DataType": "Numeric" },
+				{ "Column": "IDBook", "DataType": "Numeric", "Join": "IDBook" },
+				{ "Column": "IDBookStore", "DataType": "Numeric", "Join": "IDBookStore" },
+				{ "Column": "IDBookPrice", "DataType": "Numeric", "Join": "IDBookPrice" },
+				{ "Column": "StockingAssociate", "DataType": "Numeric", "Join": "IDUser" }
+			]
+		},
+		"BookStoreEmployee": {
+			"TableName": "BookStoreEmployee",
+			"Columns": [
+				{ "Column": "IDBookStoreEmployee", "DataType": "ID" },
+				{ "Column": "GUIDBookStoreEmployee", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "Title", "DataType": "String", "Size": "128" },
+				{ "Column": "HireDate", "DataType": "DateTime" },
+				{ "Column": "TerminationDate", "DataType": "DateTime" },
+				{ "Column": "IsActive", "DataType": "Boolean" },
+				{ "Column": "IDUser", "DataType": "Numeric", "Join": "IDUser" },
+				{ "Column": "IDBookStore", "DataType": "Numeric", "Join": "IDBookStore" }
+			]
+		},
+		"BookStoreSale": {
+			"TableName": "BookStoreSale",
+			"Columns": [
+				{ "Column": "IDBookStoreSale", "DataType": "ID" },
+				{ "Column": "GUIDBookStoreSale", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "SaleDate", "DataType": "DateTime" },
+				{ "Column": "TotalAmount", "DataType": "Decimal" },
+				{ "Column": "PaymentMethod", "DataType": "String", "Size": "64" },
+				{ "Column": "TransactionID", "DataType": "String", "Size": "128" },
+				{ "Column": "IDBookStore", "DataType": "Numeric", "Join": "IDBookStore" },
+				{ "Column": "IDUser", "DataType": "Numeric", "Join": "IDUser" }
+			]
+		},
+		"BookStoreSaleItem": {
+			"TableName": "BookStoreSaleItem",
+			"Columns": [
+				{ "Column": "IDBookStoreSaleItem", "DataType": "ID" },
+				{ "Column": "GUIDBookStoreSaleItem", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "Quantity", "DataType": "Numeric" },
+				{ "Column": "UnitPrice", "DataType": "Decimal" },
+				{ "Column": "LineTotal", "DataType": "Decimal" },
+				{ "Column": "IDBookStoreSale", "DataType": "Numeric", "Join": "IDBookStoreSale" },
+				{ "Column": "IDBook", "DataType": "Numeric", "Join": "IDBook" },
+				{ "Column": "IDBookPrice", "DataType": "Numeric", "Join": "IDBookPrice" }
+			]
+		},
+		"Review": {
+			"TableName": "Review",
+			"Columns": [
+				{ "Column": "IDReview", "DataType": "ID" },
+				{ "Column": "GUIDReview", "DataType": "GUID" },
+				{ "Column": "CreateDate", "DataType": "DateTime" },
+				{ "Column": "CreatingIDUser", "DataType": "Numeric" },
+				{ "Column": "UpdateDate", "DataType": "DateTime" },
+				{ "Column": "UpdatingIDUser", "DataType": "Numeric" },
+				{ "Column": "Deleted", "DataType": "Boolean" },
+				{ "Column": "DeleteDate", "DataType": "DateTime" },
+				{ "Column": "DeletingIDUser", "DataType": "Numeric" },
+				{ "Column": "Text", "DataType": "Text" },
+				{ "Column": "Rating", "DataType": "Numeric" },
+				{ "Column": "IDBook", "DataType": "Numeric", "Join": "IDBook" },
+				{ "Column": "IDUser", "DataType": "Numeric", "Join": "IDUser" }
+			]
+		}
+	}
+}
