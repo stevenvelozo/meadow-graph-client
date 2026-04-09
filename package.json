@@ -1,6 +1,6 @@
 {
     "name": "meadow-graph-client",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Meadow graph client for pulling sets of records and comprehensions.",
     "main": "source/Meadow-Graph-Client.js",
     "scripts": {
