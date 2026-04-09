@@ -1,167 +1,99 @@
-# meadow-graph-client
+# Meadow Graph Client
 
-Meadow client pulling comprehensions of data from relational database graphs.
+> Pull comprehensions of data from relational database graphs by filter, not by JOIN
 
-## Concepts
+Meadow Graph Client is a Fable service provider that lets you describe what records you want in terms of **entities and filters**, and it figures out the rest. Given a meadow schema, it builds an in-memory directed graph of every join relationship, then resolves a user filter — even when the filter references columns on entities multiple hops away from the entity you're actually pulling — into a concrete ordered series of requests to fetch the records. The request execution is delegated to a pluggable data-request service so the same client works against any meadow backend (HTTP API, IPC, in-memory, mocked).
 
-* Entity
-* Filter
-* Pagination
-* Hints
-* Ignores
+If you've ever written something like "give me all the Books by authors named `Dan Brown%` that have at least one discountable BookPrice" and felt the pain of writing the JOIN-and-subquery SQL by hand, this module exists for you.
 
-## Preparation
+## Features
 
-Before any graph requests can be made, a data model needs to be loaded.
+- **Graph-Based Filter Resolution** - Describe your query as `{Entity, Filter}` using column names from any reachable entity; the client walks the join graph and figures out the path
+- **Implicit Data Model Loading** - Pass a meadow schema and every `IDFoo` column gets wired up as an edge automatically. Audit columns (`CreatingIDUser`, `IDCustomer`, etc.) are ignored by default
+- **Dot-Notation Filter Addressing** - `"Author.Name": "Dan Brown"` on a `Book` query; the client figures out which entities need to be pulled
+- **Hinting** - Steer path resolution when multiple valid routes exist (`Book→Author` via `BookAuthorJoin` versus via `Rating`) without hand-coding joins
+- **Manual Paths** - Drop in a fully-crafted traversal when the automatic solver can't figure out something exotic (e.g. non-ID joins across custom columns)
+- **Pluggable Transport** - Override the `MeadowGraphDataRequest` stub with your HTTP client, IPC bridge, or test fake; the graph logic stays the same
+- **Cached Graph Solutions** - Solved path maps are cached per client instance so repeated queries reuse the same traversal work
+- **Weighted Path Scoring** - Multiple valid traversal paths are scored by depth, join shape, and hint bonuses; the highest-weight path wins
+- **First-Class Fable Service Provider** - Standard lifecycle, logging, and service manager integration
 
-This can be done in three ways:
+## Quick Start
 
-1. by passing in the data model as part of the service options in the `DataModel` property
-2. as a direct function call with the meadow schema object to `graphClientService.loadDataModel(MyMeadowSchema);`
-3. as discrete table adds with each meadow table schema you want to load with `graphClientService.addTableToDataModel(MyMeadowTableSchema);`
+```javascript
+const libFable = require('fable');
+const libMeadowGraphClient = require('meadow-graph-client');
 
-As these are loaded, the library creates the connection map for how
-entities are connected to each other.
+const _Fable = new libFable();
+_Fable.addServiceType('MeadowGraphClient', libMeadowGraphClient);
 
-There are some meadow-specific nomenclatures that are used to hint the graph
-creation and traversal:
+// Load your meadow schema at construction time
+let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient',
+    {
+        DataModel: require('./my-meadow-schema.json')
+    });
 
-1. identity columns are prefaced by `ID` -- for instance `IDBook`, `IDAuthoer`, etc. (and these correlate with the table name)
-2. join tables are postfixed by `Join` -- for instance `BookAuthorJoin` is a join between `Book` and `Author`
-
-By default the library ignores auditing columns (CreatingUserID,
-UpdatingUserID, CustomerID, etc.) and will not use them to build graph
-query lookups.
-
-## Basic Algorithm
-
-The graph traversal happens in a forwards then backwards manner, building
-context and then resolving connections coming back.
-
-1. Lint Filter Object
-2. Parse the Filters
-3. Generate the Request Graph
-4. Perform the Request Graph outside in
-
-## Some Complex Tasks
-
-* Determining whether or not the filter is in the current entity (and if not, which one)
-* Walk the graph of potential entities to apply the filter to, and scoring them (distance being a huge factor)
-* Converting Filters to their complex filter descriptions *(this one is complex because it has to resolve based on ambiguity at times (for instance if you filter on `Name` but there is no `Name` column in the queried entity but three of the potential joins have a `Name` column... which is part of why there is hinting)*
-* Once the graph requirements have been built, pull record sets in reverse-style *(for instance if I'm getting all Books by a specific Author Name, we will gather the Author first then the books and the join inbetween if that join exists in the data model)*
-
-## Filters
-
-* Each filter has a type
-* Right now there are two types: `InRecord` and `Join`
-* Filters have a comparison operator -- defaulted to Equal
-
-## A simple direct search of an entity with equivalent filters
-
-Longhand form:
-
-```json
-{
-    Entity: 'Book',
-    Filters: {
-        Name: { FilterType: 'InRecord', Comparison: 'Equality', Value: 'Breakfast of Champions' }
-    }
-}
-```
-
-Shorthand form:
-
-```json
-{
-    Entity: 'Book',
-    Filters: {
-        Name: 'Breakfast of Champions'
-    }
-}
-```
-
-Both of these resolve into:
-
-```json
-{
-    Entity: 'Book',
-    Filters: [
+// Query: all Books by Author with IDAuthor = 107 that have a discountable price
+_GraphClient.get(
+    {
+        Entity: 'Book',
+        Filter:
         {
-            Hash: 'Name',
-            Entity: 'Book',
-            FilterType: 'InRecord',
-            Column: 'Name',
-            Comparison: 'Equality',
-            Value: 'Breakfast Of Champions'
+            'Author.IDAuthor': 107,
+            'BookPrice.Discountable': true
         }
-    ]
-}
-```
-
-Note that filters do not have to have the object key map to the Column name...
-this is just a convenience for shorthand.  You can explicitly define the Column
-as well with:
-
-```json
-{
-    Entity: 'Book',
-    Filters: {
-        NameIsIrrelevant: { Column: 'Name', FilterType: 'InRecord', Comparison: 'Equality', Value: 'Breakfast of Champions' }
-    }
-}
-```
-
-Which will resolve to:
-
-```json
-{
-    Entity: 'Book',
-    Filters: ...one of the two Filters objects from above...,
-
-    EntitiesToPull: ['Book']
-    ParsedFilters: [
+    },
+    (pError, pCompiledGraphRequest) =>
+    {
+        if (pError)
         {
-            Hash: 'NameIsIrrelevant',
-            FilterType: 'InRecord',
-            Column: 'Name',
-            Comparison: 'Equality',
-            Value: 'Breakfast Of Champions',
+            console.error(pError);
+            return;
         }
-    ]
-}
+        console.log('Traversal plan:', pCompiledGraphRequest.Requests);
+    });
 ```
 
-The possible (but not definite) correlation between Hash and Column adds
-complexity.  And.  Gives an interesting interaction with Manyfests which
-use a similar type of potential indirection.
+The library walks the schema, discovers that `Book → BookAuthorJoin → Author` and `Book → BookPrice` are the relevant paths, and emits an ordered request plan your data-request service can execute.
 
-## Some equivalent filters for an entity that is a single dimension away
+## Installation
 
-Longhand form:
-
-```json
-{
-    Entity: 'Book',
-    Filters: {
-        IDAuthor: { FilterType: 'Join', Value: 157 }
-    }
-}
+```bash
+npm install meadow-graph-client
 ```
 
-Shorthand form:
+`meadow-graph-client` is self-contained on the graph logic side. The only required runtime dependency is `fable-serviceproviderbase`. To actually fetch records you will supply (or override) a `MeadowGraphDataRequest` service — see [the data request service guide](docs/data-request-service.md).
 
-```json
-{
-    Entity: 'Book',
-    Filters: {
-        IDAuthor: 157
-    }
-}
-```
+## Core Concepts
+
+- **Entity** — a meadow table (`Book`, `Author`, `BookAuthorJoin`, etc.) with columns, an `ID` column, and zero or more `Join` columns linking to other entities
+- **Filter** — a user-supplied `{Entity, Filter}` object describing what records you want. Keys can be `ColumnName`, `EntityName.ColumnName`, or a fully-specified filter expression object
+- **Graph Path** — a solved traversal through the data model from the query's pivotal entity to some other entity referenced by the filter, expressed as an `EdgeAddress` like `Book-->BookAuthorJoin-->Author`
+- **Hint** — a list of entity names the solver should prefer when multiple paths exist
+- **Manual Path** — a pre-built traversal that bypasses the solver entirely, for complex joins on non-ID columns
+
+Read more in [Core Concepts](docs/concepts.md).
+
+## Documentation
+
+Full documentation is available in the [`docs`](./docs) folder, or served locally via [pict-docuserve](https://github.com/stevenvelozo/pict-docuserve):
+
+- [Overview](docs/README.md) - What the module is, what it solves, how it fits together
+- [Quick Start](docs/quickstart.md) - End-to-end walkthrough with the bookstore sample schema
+- [Architecture](docs/architecture.md) - Design, data flow, sequence diagrams, and trade-offs
+- [Core Concepts](docs/concepts.md) - Entities, filters, pagination, hints, and ignores
+- [Filter DSL Reference](docs/filter-dsl.md) - Every shape a filter can take
+- [Configuration Reference](docs/configuration.md) - Constructor options and fable settings
+- [API Reference](docs/api-reference.md) - Every public method with a dedicated page
+- [Hints and Manual Paths](docs/hints-and-manual-paths.md) - Steer graph resolution
+- [Data Request Service](docs/data-request-service.md) - Plug in your HTTP/IPC transport
 
 ## Related Packages
 
-- [meadow](https://github.com/stevenvelozo/meadow) - Data access and ORM
+- [meadow](https://github.com/stevenvelozo/meadow) - Meadow ORM that produces the schemas this client consumes
+- [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) - REST endpoints that a meadow-graph-client transport targets
+- [foxhound](https://github.com/stevenvelozo/foxhound) - Meadow query DSL
+- [stricture](https://github.com/stevenvelozo/stricture) - Meadow schema definitions
 - [fable](https://github.com/stevenvelozo/fable) - Application services framework
 
 ## License

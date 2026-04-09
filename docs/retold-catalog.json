@@ -1,0 +1,75 @@
+{
+	"Generated": "2026-04-09T18:06:48.101Z",
+	"GitHubOrg": "stevenvelozo",
+	"DefaultBranch": "master",
+	"Groups": [
+		{
+			"Name": "Dist",
+			"Key": "dist",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "indoctrinate_content_staging",
+					"Repo": "indoctrinate_content_staging",
+					"Group": "dist",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		},
+		{
+			"Name": "Example_applications",
+			"Key": "example_applications",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "graph-explorer",
+					"Repo": "graph-explorer",
+					"Group": "example_applications",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		},
+		{
+			"Name": "Examples",
+			"Key": "examples",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "northwind",
+					"Repo": "northwind",
+					"Group": "examples",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		},
+		{
+			"Name": "Test",
+			"Key": "test",
+			"Description": "",
+			"Modules": [
+				{
+					"Name": "model",
+					"Repo": "model",
+					"Group": "test",
+					"Branch": "master",
+					"HasDocs": false,
+					"HasCover": false,
+					"Sidebar": [],
+					"DocFiles": []
+				}
+			]
+		}
+	]
+}
