@@ -14,7 +14,7 @@ lintFilterObject(pFilterObject)
 
 **Returns:** `true` if the filter object is valid (and has been mutated to fill in defaults), `false` if validation failed (the argument is not an object or is missing `Entity`).
 
-**Side effects:** mutates the argument in place — adds `Filter: {}` if missing, adds `Options` with default `RecordLimit: 10000` and `PageSize: 100` if missing.
+**Side effects:** mutates the argument in place -- adds `Filter: {}` if missing, adds `Options` with default `RecordLimit: 10000` and `PageSize: 100` if missing.
 
 ## When to Use It
 
@@ -37,10 +37,10 @@ let tmpFilter =
 
 let tmpIsValid = _GraphClient.lintFilterObject(tmpFilter);
 console.log(tmpIsValid);
-// → true
+// -> true
 
 console.log(tmpFilter);
-// →
+// ->
 // {
 //     Entity: 'Book',
 //     Filter: {},
@@ -133,11 +133,11 @@ let tmpFilter =
 
 _GraphClient.lintFilterObject(tmpFilter);
 console.log(tmpFilter.Options);
-// → { RecordLimit: 500, PageSize: 100 }
+// -> { RecordLimit: 500, PageSize: 100 }
 ```
 
 ## Related
 
-- [parseFilterObject](api-parseFilterObject.md) — the next stage, which turns the linted object into a canonical form
-- [compileFilter](api-compileFilter.md) — the full pipeline that calls `lintFilterObject` automatically
-- [Filter DSL Reference](filter-dsl.md) — every shape a filter can take
+- [parseFilterObject](api-parseFilterObject.md) -- the next stage, which turns the linted object into a canonical form
+- [compileFilter](api-compileFilter.md) -- the full pipeline that calls `lintFilterObject` automatically
+- [Filter DSL Reference](filter-dsl.md) -- every shape a filter can take

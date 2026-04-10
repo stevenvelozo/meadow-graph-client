@@ -100,16 +100,16 @@ _GraphClient.get(
         if (pError) return console.error(pError);
 
         // Because both filters target Book itself, RequiredEntities is just ['Book']
-        // and Requests[] is empty — no downstream queries needed
+        // and Requests[] is empty -- no downstream queries needed
         console.log('Required:', pCompiled.ParsedFilter.RequiredEntities);
-        // → ['Book']
+        // -> ['Book']
     });
 ```
 
 ## Code Example: Deeply Nested Query
 
 ```javascript
-// Customer email → which Orders → which OrderItems → which Products → which Category
+// Customer email -> which Orders -> which OrderItems -> which Products -> which Category
 _GraphClient.get(
     {
         Entity: 'Product',
@@ -124,8 +124,8 @@ _GraphClient.get(
         if (pError) return console.error(pError);
 
         // The compiler will solve two paths:
-        //   Product → OrderItem → Order → Customer
-        //   Product → CategoryProductJoin → Category
+        //   Product -> OrderItem -> Order -> Customer
+        //   Product -> CategoryProductJoin -> Category
         // Both are executed in order, with intermediate hops pulled automatically.
     });
 ```
@@ -186,11 +186,11 @@ sequenceDiagram
 - The filter object failed to compile (via `compileFilter`). The error is `new Error('Meadow Graph Client: The filter object is not valid.')`.
 - Any anticipate stage propagates an error from its `fStageComplete(err)`.
 
-When the transport itself returns an error for a request, the error is logged but may not halt the whole chain — the chain continues and the final callback is called with whatever partial results were gathered. Inspect the compiled graph request's `Requests[i].Result` arrays to see what actually succeeded.
+When the transport itself returns an error for a request, the error is logged but may not halt the whole chain -- the chain continues and the final callback is called with whatever partial results were gathered. Inspect the compiled graph request's `Requests[i].Result` arrays to see what actually succeeded.
 
 ## Customizing Transport
 
-The `get` implementation doesn't reach for `http.request` directly — it delegates every outbound call to the Fable service registered under `options.DataRequestClientService` (default: `MeadowGraphClientDataRequest`). To make real HTTP requests, either:
+The `get` implementation doesn't reach for `http.request` directly -- it delegates every outbound call to the Fable service registered under `options.DataRequestClientService` (default: `MeadowGraphClientDataRequest`). To make real HTTP requests, either:
 
 1. Override `MeadowGraphDataRequest.doGetJSON` in a subclass and point the client at it
 2. Register a different Fable service that implements `getJSON` with the same signature and pass its name via `DataRequestClientService`
@@ -247,7 +247,7 @@ _GraphClient.get(myFilterObject, (pError, pResult) => {
 
 ## Related
 
-- [compileFilter](api-compileFilter.md) — the inner stage `get` calls to build the plan
-- [Data Request Service](data-request-service.md) — how to plug in a real transport
-- [Filter DSL Reference](filter-dsl.md) — every shape the first argument can take
-- [Quick Start](quickstart.md) — end-to-end walkthrough
+- [compileFilter](api-compileFilter.md) -- the inner stage `get` calls to build the plan
+- [Data Request Service](data-request-service.md) -- how to plug in a real transport
+- [Filter DSL Reference](filter-dsl.md) -- every shape the first argument can take
+- [Quick Start](quickstart.md) -- end-to-end walkthrough

@@ -58,11 +58,11 @@ These aren't methods, but they're the instance state you'll want to look at for 
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `_KnownEntities` | object | Map of `EntityName → { ColumnName → ColumnDefinition }` for every loaded entity |
-| `_OutgoingEntityConnections` | object | `Entity → { TargetEntity → ColumnName }` adjacency map |
-| `_OutgoingEntityConnectionLists` | object | `Entity → [TargetEntity, ...]` list form of outgoing connections |
-| `_IncomingEntityConnections` | object | `Entity → { SourceEntity → ColumnName }` adjacency map |
-| `_IncomingEntityConnectionLists` | object | `Entity → [SourceEntity, ...]` list form of incoming connections |
+| `_KnownEntities` | object | Map of `EntityName -> { ColumnName -> ColumnDefinition }` for every loaded entity |
+| `_OutgoingEntityConnections` | object | `Entity -> { TargetEntity -> ColumnName }` adjacency map |
+| `_OutgoingEntityConnectionLists` | object | `Entity -> [TargetEntity, ...]` list form of outgoing connections |
+| `_IncomingEntityConnections` | object | `Entity -> { SourceEntity -> ColumnName }` adjacency map |
+| `_IncomingEntityConnectionLists` | object | `Entity -> [SourceEntity, ...]` list form of incoming connections |
 | `_GraphSolutionMap` | object | Cached solved graph solutions keyed by `EdgeTraversalEndpoints` |
 | `_DefaultHints` | object | Default hints loaded from constructor options |
 | `_DefaultManualPaths` | object | Default manual paths loaded from constructor options |

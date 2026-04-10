@@ -71,17 +71,17 @@ _GraphClient.addEntityToDataModel(
     });
 
 console.log(_GraphClient._KnownEntities);
-// → { Book: {...}, Author: {...}, BookAuthorJoin: {...} }
+// -> { Book: {...}, Author: {...}, BookAuthorJoin: {...} }
 
 console.log(_GraphClient._OutgoingEntityConnectionLists.BookAuthorJoin);
-// → ['Book', 'Author']
+// -> ['Book', 'Author']
 ```
 
 ## Join Column Handling
 
 Each column with a `Join` field becomes a directed edge:
 
-- The join target is derived from the `Join` field's value. If it starts with `ID`, the `ID` prefix is stripped (e.g., `"Join": "IDBook"` → target entity `Book`). Otherwise the field value is used as-is.
+- The join target is derived from the `Join` field's value. If it starts with `ID`, the `ID` prefix is stripped (e.g., `"Join": "IDBook"` -> target entity `Book`). Otherwise the field value is used as-is.
 - Two parallel edges are added: an outgoing edge on the source entity and an incoming edge on the target entity.
 - The column name itself is kept as the label of the edge so the solver can reference it later when generating filter expressions.
 
@@ -95,7 +95,7 @@ _GraphClient.addEntityToDataModel(
             [
                 { Column: 'IDReview', DataType: 'ID' },
                 { Column: 'Rating', DataType: 'Numeric' },
-                { Column: 'IDBook', DataType: 'Numeric', Join: 'IDBook' }       // → Book
+                { Column: 'IDBook', DataType: 'Numeric', Join: 'IDBook' }       // -> Book
             ]
     });
 
@@ -132,6 +132,6 @@ They're registered in `_KnownEntities` for filter purposes (you can still filter
 
 ## Related
 
-- [loadDataModel](api-loadDataModel.md) — load an entire schema at once
-- [cleanMissingEntityConnections](api-cleanMissingEntityConnections.md) — clean up dangling edges if you add entities in a non-deterministic order
-- [Core Concepts § Entity](concepts.md#entity) — what makes something an entity in this module
+- [loadDataModel](api-loadDataModel.md) -- load an entire schema at once
+- [cleanMissingEntityConnections](api-cleanMissingEntityConnections.md) -- clean up dangling edges if you add entities in a non-deterministic order
+- [Core Concepts § Entity](concepts.md#entity) -- what makes something an entity in this module

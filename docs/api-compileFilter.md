@@ -1,6 +1,6 @@
 # compileFilter
 
-Run the full compile pipeline on a filter object: lint → parse → solve graph paths for each required entity → assemble an executable request plan. This is one level below `get()` — it produces the plan without actually executing it against the transport.
+Run the full compile pipeline on a filter object: lint -> parse -> solve graph paths for each required entity -> assemble an executable request plan. This is one level below `get()` -- it produces the plan without actually executing it against the transport.
 
 ## Signature
 
@@ -28,8 +28,8 @@ The compiled object has this shape:
     },
     RequestPaths:
     {
-        Author: { /* solved graph connection object for Book → Author */ },
-        BookPrice: { /* solved graph connection object for Book → BookPrice */ }
+        Author: { /* solved graph connection object for Book -> Author */ },
+        BookPrice: { /* solved graph connection object for Book -> BookPrice */ }
     },
     Requests:
         [
@@ -89,7 +89,7 @@ if (!tmpCompiled)
 }
 
 console.log('Required entities:', tmpCompiled.ParsedFilter.RequiredEntities);
-// → ['Book', 'Author', 'BookPrice']
+// -> ['Book', 'Author', 'BookPrice']
 
 console.log('Request plan:');
 for (let tmpRequest of tmpCompiled.Requests)
@@ -138,7 +138,7 @@ compileFilter(pFilterObject)
     │
     ├─► for each RequiredEntity ≠ pivotal:
     │       solveGraphConnections(pivotal, entity, hints)
-    │       → store in RequestPaths[entity]
+    │       -> store in RequestPaths[entity]
     │
     ├─► for each RequiredEntity ≠ pivotal:
     │       build Request object:
@@ -149,7 +149,7 @@ compileFilter(pFilterObject)
     └─► return compiled object
 ```
 
-Each stage is a separate public method — you can replicate the pipeline manually if you need to intercept one of the stages.
+Each stage is a separate public method -- you can replicate the pipeline manually if you need to intercept one of the stages.
 
 ## Code Example: Dry-Run Explain
 
@@ -160,7 +160,7 @@ function explainQuery(pGraphClient, pFilterObject)
 
     if (!tmpCompiled)
     {
-        return { error: 'Filter failed to compile — check logs' };
+        return { error: 'Filter failed to compile -- check logs' };
     }
 
     let tmpExplanation =
@@ -219,7 +219,7 @@ The compiled `Requests` array only includes entries for **non-pivotal** required
 
 ## Related
 
-- [get](api-get.md) — the full execute path that calls `compileFilter` and then runs the plan
-- [parseFilterObject](api-parseFilterObject.md) — the stage that populates `ParsedFilter`
-- [solveGraphConnections](api-solveGraphConnections.md) — the stage that populates `RequestPaths`
-- [convertFilterObjectToFilterString](api-convertFilterObjectToFilterString.md) — the helper that emits the `MeadowFilter` strings
+- [get](api-get.md) -- the full execute path that calls `compileFilter` and then runs the plan
+- [parseFilterObject](api-parseFilterObject.md) -- the stage that populates `ParsedFilter`
+- [solveGraphConnections](api-solveGraphConnections.md) -- the stage that populates `RequestPaths`
+- [convertFilterObjectToFilterString](api-convertFilterObjectToFilterString.md) -- the helper that emits the `MeadowFilter` strings

@@ -1,6 +1,6 @@
 # Filter DSL Reference
 
-Every query to `meadow-graph-client` is a filter object with two required fields — `Entity` and `Filter` — and one optional `Options` block. This page is the exhaustive reference for every shape the `Filter` inner object can take.
+Every query to `meadow-graph-client` is a filter object with two required fields -- `Entity` and `Filter` -- and one optional `Options` block. This page is the exhaustive reference for every shape the `Filter` inner object can take.
 
 ## Top-Level Shape
 
@@ -21,7 +21,7 @@ If `Filter` is omitted, `lintFilterObject` inserts an empty object. If `Options`
 
 ## Filter Entries
 
-Each key in `Filter` is a *hash* — it doesn't need to match the column name; it just needs to be unique within the filter object. The value describes what to compare and how.
+Each key in `Filter` is a *hash* -- it doesn't need to match the column name; it just needs to be unique within the filter object. The value describes what to compare and how.
 
 There are three forms:
 
@@ -37,7 +37,7 @@ There are three forms:
 }
 ```
 
-The hash key (`Title`) is interpreted as a column on the pivotal entity (`Book`). The default operator comes from the column's meadow data type — `LIKE` for `String`/`Text` columns, `=` for everything else. Resolves internally to:
+The hash key (`Title`) is interpreted as a column on the pivotal entity (`Book`). The default operator comes from the column's meadow data type -- `LIKE` for `String`/`Text` columns, `=` for everything else. Resolves internally to:
 
 ```javascript
 {
@@ -105,7 +105,7 @@ Use longhand when:
 
 - You need to override the default operator (e.g., `NE` instead of `=`)
 - You need to override the connector (`Or` instead of `And`)
-- You want the hash key to be different from the column name — useful when building filters dynamically from UI form state where two widgets might reference the same column
+- You want the hash key to be different from the column name -- useful when building filters dynamically from UI form state where two widgets might reference the same column
 - You want to be explicit about which entity the filter targets when the column name is ambiguous
 
 Any missing fields are filled in:
@@ -115,25 +115,25 @@ Any missing fields are filled in:
 | `Entity` | The pivotal entity from the outer filter |
 | `Operator` | Based on the column's data type (`LIKE` for String/Text, `=` for everything else) |
 | `Connector` | `'And'` |
-| `MeadowFilterType` | Derived from the connector and operator — see [Meadow Filter Types](#meadow-filter-types) below |
+| `MeadowFilterType` | Derived from the connector and operator -- see [Meadow Filter Types](#meadow-filter-types) below |
 
 ## Supported Operators
 
 | Operator | Meaning | Meadow Opcode | Default For |
 |----------|---------|---------------|-------------|
 | `=` | Equal | `EQ` | All numeric, boolean, ID types |
-| `!=` | Not equal | `NE` | — |
-| `>` | Greater than | `GT` | — |
-| `>=` | Greater than or equal | `GE` | — |
-| `<` | Less than | `LT` | — |
-| `<=` | Less than or equal | `LE` | — |
+| `!=` | Not equal | `NE` | -- |
+| `>` | Greater than | `GT` | -- |
+| `>=` | Greater than or equal | `GE` | -- |
+| `<` | Less than | `LT` | -- |
+| `<=` | Less than or equal | `LE` | -- |
 | `LIKE` | SQL LIKE (with `%` wildcards) | `LK` | String, Text types |
-| `NOT LIKE` | SQL NOT LIKE | `NLK` | — |
-| `IS NULL` | Is NULL | `IN` | — |
-| `IS NOT NULL` | Is not NULL | `NN` | — |
-| `IN` | SQL IN (comma-separated values) | `INN` | — |
-| `(` | Open parenthesis (filter group) | `FOP` | — |
-| `)` | Close parenthesis (filter group) | `FCP` | — |
+| `NOT LIKE` | SQL NOT LIKE | `NLK` | -- |
+| `IS NULL` | Is NULL | `IN` | -- |
+| `IS NOT NULL` | Is not NULL | `NN` | -- |
+| `IN` | SQL IN (comma-separated values) | `INN` | -- |
+| `(` | Open parenthesis (filter group) | `FOP` | -- |
+| `)` | Close parenthesis (filter group) | `FCP` | -- |
 
 The `getDefaultFilterExpressionOperator(pDataType)` method resolves a column's data type to the default operator; `getFilterComparisonOperator(pOperator)` converts a user-facing operator like `>=` to the meadow opcode `GE`.
 
@@ -175,10 +175,10 @@ The internal `MeadowFilterType` field maps to a meadow-endpoints filter opcode:
 
 `getMeadowFilterType(pConnector, pOperator)` does the mapping:
 
-- `pOperator === '('` → `FOP`
-- `pOperator === ')'` → `FCP`
-- `pConnector === 'OR'` → `FBVOR`
-- Otherwise → `FBV`
+- `pOperator === '('` -> `FOP`
+- `pOperator === ')'` -> `FCP`
+- `pConnector === 'OR'` -> `FBVOR`
+- Otherwise -> `FBV`
 
 ## Options Block
 
@@ -189,7 +189,7 @@ Fields on `pFilterObject.Options`:
 | `RecordLimit` | `10000` | Max records per entity in the query |
 | `PageSize` | `100` | Page size for paged requests |
 
-These are applied by the data-request transport when building the final URL. The graph client doesn't enforce them directly — it passes them through.
+These are applied by the data-request transport when building the final URL. The graph client doesn't enforce them directly -- it passes them through.
 
 ## Hints Array
 
@@ -205,7 +205,7 @@ An optional `Hints` array steers the solver toward preferred entity names:
 
 When `compileFilter()` runs the solver for each required non-pivotal entity, it passes these hints as the third argument to `solveGraphConnections`. Matching entities in the candidate path get a large weight bonus (`HintWeight`, default `+200000`).
 
-Hints can also be registered globally via the `DefaultHints` constructor option — see [Hints and Manual Paths](hints-and-manual-paths.md).
+Hints can also be registered globally via the `DefaultHints` constructor option -- see [Hints and Manual Paths](hints-and-manual-paths.md).
 
 ## Meadow Filter String Output
 
@@ -221,7 +221,7 @@ Multiple expressions are joined with tildes:
 FBV~Genre~LK~Fiction~FBVOR~Genre~LK~Mystery~FBV~PublicationYear~GE~2000
 ```
 
-This is the string that gets embedded in the URL when the transport makes a request to `meadow-endpoints`. You don't usually need to emit this yourself — `compileFilter()` and `get()` handle the conversion — but it's exposed via `convertFilterObjectToFilterString()` for cases where you want to hand-build a URL.
+This is the string that gets embedded in the URL when the transport makes a request to `meadow-endpoints`. You don't usually need to emit this yourself -- `compileFilter()` and `get()` handle the conversion -- but it's exposed via `convertFilterObjectToFilterString()` for cases where you want to hand-build a URL.
 
 ## Examples
 
@@ -300,4 +300,4 @@ This is the string that gets embedded in the URL when the transport makes a requ
 }
 ```
 
-If the schema looks like `Book ← CartDetail ← Cart → Customer`, the solver will walk `Book → CartDetail → Cart → Customer`, emit one request per intermediate hop, and use each result as the input filter for the next.
+If the schema looks like `Book <- CartDetail <- Cart -> Customer`, the solver will walk `Book -> CartDetail -> Cart -> Customer`, emit one request per intermediate hop, and use each result as the input filter for the next.

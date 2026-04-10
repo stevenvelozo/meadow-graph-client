@@ -18,7 +18,7 @@ parseFilterObject(pFilterObject)
 |-------|------|-------------|
 | `Entity` | string | The pivotal entity, copied from the input |
 | `SourceFilterObject` | object | The original input filter object (minus any self-reference) |
-| `FilterExpressionSet` | object | Map of `EntityName → array of canonical filter expressions` |
+| `FilterExpressionSet` | object | Map of `EntityName -> array of canonical filter expressions` |
 | `RequiredEntities` | array | List of entity names that appear in `FilterExpressionSet` |
 | `SolutionMap` | object | Empty object to be populated by the graph solver later |
 
@@ -47,16 +47,16 @@ let tmpParsed = _GraphClient.parseFilterObject(
     });
 
 console.log(tmpParsed.RequiredEntities);
-// → [ 'Book', 'Author', 'BookPrice' ]
+// -> [ 'Book', 'Author', 'BookPrice' ]
 
 console.log(tmpParsed.FilterExpressionSet.Author);
-// → [ { Entity: 'Author', Column: 'IDAuthor', Value: 107, Operator: '=', ... } ]
+// -> [ { Entity: 'Author', Column: 'IDAuthor', Value: 107, Operator: '=', ... } ]
 
 console.log(tmpParsed.FilterExpressionSet.Book);
-// → [ { Entity: 'Book', Column: 'Title', Value: 'The%', Operator: 'LIKE', ... } ]
+// -> [ { Entity: 'Book', Column: 'Title', Value: 'The%', Operator: 'LIKE', ... } ]
 
 console.log(tmpParsed.FilterExpressionSet.BookPrice);
-// → [ { Entity: 'BookPrice', Column: 'Discountable', Value: true, Operator: '=', ... } ]
+// -> [ { Entity: 'BookPrice', Column: 'Discountable', Value: true, Operator: '=', ... } ]
 ```
 
 ## How It Groups Expressions
@@ -116,7 +116,7 @@ console.log(JSON.stringify(tmpImpact, null, 2));
 
 If `buildFilterExpression` returns `false` for any entry (unknown entity, unknown column, missing `Value`), that entry is silently skipped. The error is logged via `buildFilterExpression` itself. Check the logs after parsing if you expect all entries to succeed.
 
-The core entity always gets an empty array in `FilterExpressionSet` even if no filters target it — this ensures `RequiredEntities` always includes the pivotal entity.
+The core entity always gets an empty array in `FilterExpressionSet` even if no filters target it -- this ensures `RequiredEntities` always includes the pivotal entity.
 
 ## Source Filter Object Cleanup
 
@@ -124,7 +124,7 @@ If the input filter object already has a `SourceFilterObject` field (from a prev
 
 ## Related
 
-- [lintFilterObject](api-lintFilterObject.md) — always call this first to ensure the input has `Filter` and `Options`
-- [buildFilterExpression](api-buildFilterExpression.md) — the per-entry worker called by `parseFilterObject`
-- [compileFilter](api-compileFilter.md) — the full pipeline that includes `parseFilterObject`
+- [lintFilterObject](api-lintFilterObject.md) -- always call this first to ensure the input has `Filter` and `Options`
+- [buildFilterExpression](api-buildFilterExpression.md) -- the per-entry worker called by `parseFilterObject`
+- [compileFilter](api-compileFilter.md) -- the full pipeline that includes `parseFilterObject`
 - [Filter DSL Reference](filter-dsl.md)

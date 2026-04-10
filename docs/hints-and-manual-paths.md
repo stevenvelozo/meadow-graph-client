@@ -12,7 +12,7 @@ Book --- Rating --- Author                (Rating has both IDBook and IDAuthor f
 Book --- Cart --- CartDetail --- Transaction --- Customer --- Author   (a nonsense route through purchase history)
 ```
 
-Without guidance, the solver will enumerate all three paths, score them, and pick the highest-weight one. The short routes win on hop count, but the scorer can't know that `BookAuthorJoin` is "the right answer" semantically — both `BookAuthorJoin` and `Rating` are two hops and have the same weight.
+Without guidance, the solver will enumerate all three paths, score them, and pick the highest-weight one. The short routes win on hop count, but the scorer can't know that `BookAuthorJoin` is "the right answer" semantically -- both `BookAuthorJoin` and `Rating` are two hops and have the same weight.
 
 This is where hints come in.
 
@@ -28,10 +28,10 @@ Pass hints as the third argument to `solveGraphConnections`:
 let tmpSolution = _GraphClient.solveGraphConnections('Book', 'Author', ['BookAuthorJoin']);
 
 console.log(tmpSolution.OptimalSolutionPath.EdgeAddress);
-// → 'Book-->BookAuthorJoin-->Author'
+// -> 'Book-->BookAuthorJoin-->Author'
 
 console.log(tmpSolution.OptimalSolutionPath.HintWeight);
-// → 200000
+// -> 200000
 ```
 
 Or include them in the filter object passed to `compileFilter` / `get`:
@@ -93,23 +93,23 @@ let tmpSolution = _GraphClient.solveGraphConnections('Book', 'Author', ['ReviewA
 console.log(tmpSolution.EntityPathHints);
 ```
 
-The union is deduplicated — a hint that appears in both places is counted once.
+The union is deduplicated -- a hint that appears in both places is counted once.
 
 ### Hint Scoring
 
-A hint only contributes its weight bonus when the candidate path actually contains the hinted entity. Hints for entities that the candidate path doesn't visit add nothing, so it's safe to list many hints for a single traversal — only the ones that match will score.
+A hint only contributes its weight bonus when the candidate path actually contains the hinted entity. Hints for entities that the candidate path doesn't visit add nothing, so it's safe to list many hints for a single traversal -- only the ones that match will score.
 
 Each matching hint adds `HintWeight` (default `200000`). Multiple matches stack:
 
 ```
-path: Book → BookAuthorJoin → Author
+path: Book -> BookAuthorJoin -> Author
 hints: ['BookAuthorJoin', 'Author']
 hintWeight: 200000 × 2 = 400000
 ```
 
 ### When Hints Aren't Enough
 
-Hints bias the solver but don't replace it. If the graph simply has no valid path between two entities — because the join isn't on an ID column, or because the schema is missing an intermediate table the solver needs — hints can't manifest a solution out of thin air. That's when you need a manual path.
+Hints bias the solver but don't replace it. If the graph simply has no valid path between two entities -- because the join isn't on an ID column, or because the schema is missing an intermediate table the solver needs -- hints can't manifest a solution out of thin air. That's when you need a manual path.
 
 ## Manual Paths
 
@@ -193,13 +193,13 @@ let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient',
 let tmpSolution = _GraphClient.solveGraphConnections('Book', 'Publisher');
 
 console.log(tmpSolution.FromManualPath);
-// → true
+// -> true
 
 console.log(tmpSolution.PotentialSolutions);
-// → [ { Weight: 999999, EdgeAddress: 'Book-->PublisherCatalog-->Publisher', ... } ]
+// -> [ { Weight: 999999, EdgeAddress: 'Book-->PublisherCatalog-->Publisher', ... } ]
 
 console.log(tmpSolution.OptimalSolutionPath.EdgeAddress);
-// → 'Book-->PublisherCatalog-->Publisher'
+// -> 'Book-->PublisherCatalog-->Publisher'
 ```
 
 The `FromManualPath: true` field is how you tell at runtime whether the solver short-circuited.
@@ -250,7 +250,7 @@ let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient',
 
 ### Getting the RequestPath Format Right
 
-The easiest way to produce a manual path is to let the solver build one for you with a similar schema, then hand-edit it. Inspect `tmpSolution.OptimalSolutionPath.RequestPath` from a working search and use it as a template — change the entity names and filter columns to match your real path.
+The easiest way to produce a manual path is to let the solver build one for you with a similar schema, then hand-edit it. Inspect `tmpSolution.OptimalSolutionPath.RequestPath` from a working search and use it as a template -- change the entity names and filter columns to match your real path.
 
 ## Choosing Hints vs Manual Paths
 
@@ -264,11 +264,11 @@ The easiest way to produce a manual path is to let the solver build one for you 
 | Hot query where you want absolute stability | **Manual Path** |
 | Ambiguous wildcards in a production query | **Default Hints** |
 
-Start with hints — they're cheaper to maintain because the solver continues to track schema evolution. Move to manual paths only when hints can't express what you need.
+Start with hints -- they're cheaper to maintain because the solver continues to track schema evolution. Move to manual paths only when hints can't express what you need.
 
 ## Related
 
-- [solveGraphConnections](api-solveGraphConnections.md) — where hints and manual paths take effect
-- [Configuration Reference § Default Hints](configuration.md#default-hints) — constructor option reference
-- [Configuration Reference § Default Manual Paths](configuration.md#default-manual-paths) — constructor option reference
+- [solveGraphConnections](api-solveGraphConnections.md) -- where hints and manual paths take effect
+- [Configuration Reference § Default Hints](configuration.md#default-hints) -- constructor option reference
+- [Configuration Reference § Default Manual Paths](configuration.md#default-manual-paths) -- constructor option reference
 - [Core Concepts § Hint and Manual Path](concepts.md#hint)

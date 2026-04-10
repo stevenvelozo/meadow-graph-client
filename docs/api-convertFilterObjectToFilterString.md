@@ -1,6 +1,6 @@
 # convertFilterObjectToFilterString
 
-Convert an array of canonical filter expressions into a meadow-endpoints filter string — the tilde-delimited format that meadow's REST API consumes in URLs.
+Convert an array of canonical filter expressions into a meadow-endpoints filter string -- the tilde-delimited format that meadow's REST API consumes in URLs.
 
 ## Signature
 
@@ -56,7 +56,7 @@ let tmpExpressions =
 
 let tmpString = _GraphClient.convertFilterObjectToFilterString(tmpExpressions);
 console.log(tmpString);
-// → 'FBV~IDAuthor~EQ~107'
+// -> 'FBV~IDAuthor~EQ~107'
 ```
 
 ## Code Example: Multiple Expressions AND-Joined
@@ -71,7 +71,7 @@ let tmpExpressions =
 
 let tmpString = _GraphClient.convertFilterObjectToFilterString(tmpExpressions);
 console.log(tmpString);
-// → 'FBV~Title~LK~The%~FBV~PublicationYear~GE~1990~FBV~PublicationYear~LE~1999'
+// -> 'FBV~Title~LK~The%~FBV~PublicationYear~GE~1990~FBV~PublicationYear~LE~1999'
 ```
 
 ## Code Example: Mixed AND/OR
@@ -84,7 +84,7 @@ let tmpExpressions =
     ];
 
 console.log(_GraphClient.convertFilterObjectToFilterString(tmpExpressions));
-// → 'FBV~Genre~LK~Fiction~FBVOR~Genre~LK~Mystery'
+// -> 'FBV~Genre~LK~Fiction~FBVOR~Genre~LK~Mystery'
 ```
 
 ## Code Example: Chaining With parseFilterObject
@@ -104,13 +104,13 @@ let tmpParsed = _GraphClient.parseFilterObject(
 let tmpBookString = _GraphClient.convertFilterObjectToFilterString(
     tmpParsed.FilterExpressionSet.Book);
 console.log('Book filter string:', tmpBookString);
-// → 'FBV~Title~LK~The%'
+// -> 'FBV~Title~LK~The%'
 
 // Convert the Author filter expressions to a string
 let tmpAuthorString = _GraphClient.convertFilterObjectToFilterString(
     tmpParsed.FilterExpressionSet.Author);
 console.log('Author filter string:', tmpAuthorString);
-// → 'FBV~IDAuthor~EQ~107'
+// -> 'FBV~IDAuthor~EQ~107'
 ```
 
 ## Operator Opcode Mapping
@@ -148,7 +148,7 @@ let tmpFilterString = _GraphClient.convertFilterObjectToFilterString(tmpFilterAr
 let tmpURL = `https://api.example.com/${tmpEntity}s/FilteredTo/${encodeURIComponent(tmpFilterString)}/0/1000`;
 
 console.log(tmpURL);
-// → https://api.example.com/Books/FilteredTo/FBV~IDAuthor~EQ~107/0/1000
+// -> https://api.example.com/Books/FilteredTo/FBV~IDAuthor~EQ~107/0/1000
 ```
 
 This is exactly the URL shape `meadow-endpoints` expects for a filtered list request with pagination `(offset, limit)` = `(0, 1000)`.
@@ -157,12 +157,12 @@ This is exactly the URL shape `meadow-endpoints` expects for a filtered list req
 
 - **Empty input:** returns `''`
 - **Not an array:** returns `''`
-- **Expression missing `Value`:** the string will contain `undefined` in place of the value — sanitize upstream
-- **Value contains `~`:** the tilde in the value is not escaped; meadow-endpoints will treat it as a field separator. Currently there's no escape mechanism — avoid tildes in filter values or preprocess them
+- **Expression missing `Value`:** the string will contain `undefined` in place of the value -- sanitize upstream
+- **Value contains `~`:** the tilde in the value is not escaped; meadow-endpoints will treat it as a field separator. Currently there's no escape mechanism -- avoid tildes in filter values or preprocess them
 
 ## Related
 
-- [buildFilterExpression](api-buildFilterExpression.md) — build an individual expression that becomes an element of the input array
-- [parseFilterObject](api-parseFilterObject.md) — the normal producer of expression arrays
-- [compileFilter](api-compileFilter.md) — uses this method to populate the `MeadowFilter` field of each `Request`
+- [buildFilterExpression](api-buildFilterExpression.md) -- build an individual expression that becomes an element of the input array
+- [parseFilterObject](api-parseFilterObject.md) -- the normal producer of expression arrays
+- [compileFilter](api-compileFilter.md) -- uses this method to populate the `MeadowFilter` field of each `Request`
 - [Filter DSL Reference § Meadow Filter String Output](filter-dsl.md#meadow-filter-string-output)

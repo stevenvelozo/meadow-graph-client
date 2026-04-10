@@ -46,13 +46,13 @@ For actual query execution, use [`compileFilter`](api-compileFilter.md) or [`get
 let tmpSolution = _GraphClient.solveGraphConnections('BookAuthorJoin', 'Book');
 
 console.log(tmpSolution.OptimalSolutionPath.EdgeAddress);
-// → 'BookAuthorJoin-->Book'
+// -> 'BookAuthorJoin-->Book'
 
 console.log(tmpSolution.OptimalSolutionPath.Weight);
-// → 99925 (StartingWeight - TraversalHopWeight + OutgoingJoinWeight + JoinInTableNameWeight bonus)
+// -> 99925 (StartingWeight - TraversalHopWeight + OutgoingJoinWeight + JoinInTableNameWeight bonus)
 
 console.log(tmpSolution.PotentialSolutions.length);
-// → 1
+// -> 1
 ```
 
 `BookAuthorJoin` has a direct outgoing join to `Book` (via `IDBook`), so the solver finds it in one hop.
@@ -63,10 +63,10 @@ console.log(tmpSolution.PotentialSolutions.length);
 let tmpSolution = _GraphClient.solveGraphConnections('Book', 'Author');
 
 console.log(tmpSolution.OptimalSolutionPath.EdgeAddress);
-// → 'Book-->BookAuthorJoin-->Author'
+// -> 'Book-->BookAuthorJoin-->Author'
 
 console.log(tmpSolution.OptimalSolutionPath.RequestPath);
-// → [
+// -> [
 //     { Entity: 'Author', Depth: 3, DataSet: 'Book-->BookAuthorJoin-->Author', ... },
 //     { Entity: 'BookAuthorJoin', Depth: 2, DataSet: 'Book-->BookAuthorJoin', FilterValueColumn: 'IDAuthor', ... },
 //     { Entity: 'Book', Depth: 1, DataSet: 'Book', FilterValueColumn: 'IDBook', ... }
@@ -81,14 +81,14 @@ The `RequestPath` array describes the concrete hops in reverse (destination firs
 // Without hints
 let tmpNoHints = _GraphClient.solveGraphConnections('Book', 'Author');
 console.log('No hints:', tmpNoHints.OptimalSolutionPath.Weight);
-// → 99850 (approx.)
+// -> 99850 (approx.)
 
 // With a hint for BookAuthorJoin
 let tmpWithHints = _GraphClient.solveGraphConnections('Book', 'Author', ['BookAuthorJoin']);
 console.log('With hint:', tmpWithHints.OptimalSolutionPath.Weight);
-// → 299850 (approx. — hint bonus of +200000)
+// -> 299850 (approx. -- hint bonus of +200000)
 console.log('Hint weight:', tmpWithHints.OptimalSolutionPath.HintWeight);
-// → 200000
+// -> 200000
 ```
 
 Hints add a big weight bonus (`HintWeight`, default `200000`) for every hinted entity in the final path. This nearly always floats hinted paths to the top of the potential-solutions list.
@@ -124,7 +124,7 @@ if (!tmpSolution.OptimalSolutionPath)
 }
 ```
 
-When the solver can't reach the destination, `OptimalSolutionPath` is `false` and `PotentialSolutions` is empty. The `AttemptedPaths`, `AttemptedRouteHashes`, and `AttemptedEntities` maps show every edge the solver tried — useful for understanding why it gave up.
+When the solver can't reach the destination, `OptimalSolutionPath` is `false` and `PotentialSolutions` is empty. The `AttemptedPaths`, `AttemptedRouteHashes`, and `AttemptedEntities` maps show every edge the solver tried -- useful for understanding why it gave up.
 
 ## Code Example: Maximum Traversal Depth
 
@@ -150,9 +150,9 @@ Lowering `MaximumTraversalDepth` can help you catch queries that reach across to
 
 Hints can come from three sources:
 
-1. **Per-call** — the third argument to `solveGraphConnections`
-2. **DefaultHints** — constructor option keyed by `EdgeTraversalEndpoints` (e.g., `'Book-->Author'`)
-3. **Per-filter** — the `Hints` array on the filter object (passed through `compileFilter`)
+1. **Per-call** -- the third argument to `solveGraphConnections`
+2. **DefaultHints** -- constructor option keyed by `EdgeTraversalEndpoints` (e.g., `'Book-->Author'`)
+3. **Per-filter** -- the `Hints` array on the filter object (passed through `compileFilter`)
 
 At the base call, per-call hints are unioned with `DefaultHints[EdgeTraversalEndpoints]` (if any) to produce the final hint list, which is stored on `EntityPathHints` of the base graph connection and propagated to every recursive call.
 
@@ -178,9 +178,9 @@ let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient',
 let tmpSolution = _GraphClient.solveGraphConnections('Book', 'Publisher');
 
 console.log(tmpSolution.FromManualPath);
-// → true
+// -> true
 console.log(tmpSolution.OptimalSolutionPath.EdgeAddress);
-// → 'Book-->PublisherCatalog-->Publisher'
+// -> 'Book-->PublisherCatalog-->Publisher'
 ```
 
 See [Hints and Manual Paths](hints-and-manual-paths.md) for the full manual path format.
@@ -195,17 +195,17 @@ solutionWeight = StartingWeight
                + HintWeight × (hint matches in path)
 ```
 
-All five knobs are configurable — see [Configuration Reference § Weight Tuning](configuration.md#weight-tuning).
+All five knobs are configurable -- see [Configuration Reference § Weight Tuning](configuration.md#weight-tuning).
 
 ## Caveats
 
-- **Recursion is not fast but is cached per call chain.** The comment in the source says "Coded for readability as the first metric." Don't call `solveGraphConnections` in a hot loop — cache its result.
+- **Recursion is not fast but is cached per call chain.** The comment in the source says "Coded for readability as the first metric." Don't call `solveGraphConnections` in a hot loop -- cache its result.
 - **The `_GraphSolutionMap` cache is currently disabled** in the source due to concerns about caching hints correctly. Every call to `solveGraphConnections` with the same parameters does a fresh search.
 - **The recursion is depth-first on each branch** but visits outgoing joins before incoming joins, so it'll find direct routes faster than routes that require an inbound hop.
 
 ## Related
 
-- [compileFilter](api-compileFilter.md) — the main caller that invokes this once per required entity
-- [Hints and Manual Paths](hints-and-manual-paths.md) — how to steer the solver
-- [Configuration Reference § Weight Tuning](configuration.md#weight-tuning) — tune the scoring formula
-- [Core Concepts § Graph Connection](concepts.md#graph-connection) — what the returned object looks like
+- [compileFilter](api-compileFilter.md) -- the main caller that invokes this once per required entity
+- [Hints and Manual Paths](hints-and-manual-paths.md) -- how to steer the solver
+- [Configuration Reference § Weight Tuning](configuration.md#weight-tuning) -- tune the scoring formula
+- [Core Concepts § Graph Connection](concepts.md#graph-connection) -- what the returned object looks like

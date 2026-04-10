@@ -28,10 +28,10 @@ Meadow Graph Client is a small amount of actual logic wrapped in a Fable service
                               └─────────────┘
 ```
 
-- **Fable** — standard service-provider framework with logging, config, and lifecycle
-- **MeadowGraphClient** — the main class; holds the data model and exposes every public method
-- **Connection Maps** — two parallel `Object` adjacency representations of the join graph: `_OutgoingEntityConnections` (from → to) and `_IncomingEntityConnections` (to → from), each paired with a list form for stable iteration
-- **MeadowGraphDataRequest** — a stub sub-service that defines `getJSON` / `postJSON` / `putJSON` as overrideable template methods. The default stub returns `null` — you're expected to either subclass it or swap in your own transport via the `DataRequestClientService` option
+- **Fable** -- standard service-provider framework with logging, config, and lifecycle
+- **MeadowGraphClient** -- the main class; holds the data model and exposes every public method
+- **Connection Maps** -- two parallel `Object` adjacency representations of the join graph: `_OutgoingEntityConnections` (from -> to) and `_IncomingEntityConnections` (to -> from), each paired with a list form for stable iteration
+- **MeadowGraphDataRequest** -- a stub sub-service that defines `getJSON` / `postJSON` / `putJSON` as overrideable template methods. The default stub returns `null` -- you're expected to either subclass it or swap in your own transport via the `DataRequestClientService` option
 
 ## The Data Model
 
@@ -39,12 +39,12 @@ When `loadDataModel()` is called, the client walks every table in the supplied m
 
 1. Registers the table name in `_KnownEntities` with a column map
 2. For every column that has a `Join` property (and isn't an audit column), registers both an outgoing connection on the source table and an incoming connection on the target table
-3. Ignores `CreatingIDUser`, `UpdatingIDUser`, `DeletingIDUser`, and `IDCustomer` — these are star/spoke audit joins, not graph edges
+3. Ignores `CreatingIDUser`, `UpdatingIDUser`, `DeletingIDUser`, and `IDCustomer` -- these are star/spoke audit joins, not graph edges
 
 The meadow convention that the solver relies on:
 
-- **ID columns are prefaced with `ID`** — `IDBook`, `IDAuthor`, etc. The column name correlates with the table name.
-- **Join tables are suffixed with `Join`** — `BookAuthorJoin`, `ProductCategoryJoin`. This lets the solver apply a weight bonus to traversals that pass through join tables (which are usually the "right" answer).
+- **ID columns are prefaced with `ID`** -- `IDBook`, `IDAuthor`, etc. The column name correlates with the table name.
+- **Join tables are suffixed with `Join`** -- `BookAuthorJoin`, `ProductCategoryJoin`. This lets the solver apply a weight bonus to traversals that pass through join tables (which are usually the "right" answer).
 
 ```mermaid
 graph LR
@@ -60,9 +60,9 @@ graph LR
     Review -->|IDBook| Book
 ```
 
-The arrows are *outgoing joins* — they point from the entity holding the `IDFoo` column toward the entity it references. The solver uses these in both directions: `Book → BookAuthorJoin` is an *incoming* lookup from Book's perspective.
+The arrows are *outgoing joins* -- they point from the entity holding the `IDFoo` column toward the entity it references. The solver uses these in both directions: `Book -> BookAuthorJoin` is an *incoming* lookup from Book's perspective.
 
-## Request Lifecycle — `get()` End to End
+## Request Lifecycle -- `get()` End to End
 
 ```mermaid
 sequenceDiagram
@@ -113,7 +113,7 @@ sequenceDiagram
     Client-->>Caller: fCallback(null, pCompiledGraphRequest)
 ```
 
-Every stage can be called directly if you need finer control — `lintFilterObject`, `parseFilterObject`, `solveGraphConnections`, and `compileFilter` are all public methods that can be composed outside the `get()` flow for testing or dry-run diagnostics.
+Every stage can be called directly if you need finer control -- `lintFilterObject`, `parseFilterObject`, `solveGraphConnections`, and `compileFilter` are all public methods that can be composed outside the `get()` flow for testing or dry-run diagnostics.
 
 ## Graph Solver Internals
 
@@ -153,7 +153,7 @@ Each recursion step:
 1. Computes the current edge address (`Book-->BookAuthorJoin`, etc.) and adds it to the attempted-paths set
 2. Checks depth; bails out if we're past `MaximumTraversalDepth`
 3. If we're *at* the destination entity, records a potential solution with its weight
-4. Otherwise, walks outgoing joins first (direct `IDFoo → Foo`), then incoming joins (`Foo ← SomethingJoin`), recursing each time
+4. Otherwise, walks outgoing joins first (direct `IDFoo -> Foo`), then incoming joins (`Foo <- SomethingJoin`), recursing each time
 5. At the base call, sorts all `PotentialSolutions` by weight descending and picks the highest as `OptimalSolutionPath`
 
 ### Weight Formula
@@ -199,9 +199,9 @@ Each filter entry walks through `buildFilterExpression`, which resolves its enti
 The default `MeadowGraphDataRequest` stub provides template-method pairs for GET, POST, and PUT:
 
 ```
-getJSON  → onBeforeGetJSON  → doGetJSON  → onAfterGetJSON  → fCallback
-postJSON → onBeforePostJSON → doPostJSON → onAfterPostJSON → fCallback
-putJSON  → onBeforePutJSON  → doPutJSON  → onAfterPutJSON  → fCallback
+getJSON  -> onBeforeGetJSON  -> doGetJSON  -> onAfterGetJSON  -> fCallback
+postJSON -> onBeforePostJSON -> doPostJSON -> onAfterPostJSON -> fCallback
+putJSON  -> onBeforePutJSON  -> doPutJSON  -> onAfterPutJSON  -> fCallback
 ```
 
 Override `doGetJSON` / `doPostJSON` / `doPutJSON` to plug in a real HTTP/IPC client. Override the `onBefore*` / `onAfter*` hooks to add cross-cutting concerns (auth headers, retry logic, tracing). The base-class `*JSON` controller methods chain them together so the override surface stays minimal.
@@ -215,7 +215,7 @@ Overkill for the use case. The solver only needs to know which entity connects t
 Different deployments want different things. A data warehouse with many join tables wants to favor the direct join-table path; a thin normalized model with few joins wants the shortest path; a specific business application may know that `BookAuthorJoin` is the canonical traversal even when `Rating` could also connect the dots. Weights let the solver accommodate all of these with configuration rather than forks of the code.
 
 **Why not use `http-proxy` or a real HTTP client by default?**
-Because the graph client is deployable in non-HTTP contexts — in-process IPC, test fakes, or custom transports. Bundling an HTTP client would force a dependency on every consumer. The stub-and-override pattern keeps the package footprint tiny.
+Because the graph client is deployable in non-HTTP contexts -- in-process IPC, test fakes, or custom transports. Bundling an HTTP client would force a dependency on every consumer. The stub-and-override pattern keeps the package footprint tiny.
 
 **Why cache graph solutions per-instance instead of per-call?**
 Solving a graph is cheap (tens of microseconds) but repeatable queries against the same model benefit from reusing the same solution object. The cache currently lives in `_GraphSolutionMap` and is keyed by the edge-traversal endpoint string plus a hint hash. A future version may expose cache invalidation for dynamic schema updates.
@@ -249,7 +249,7 @@ sequenceDiagram
     GraphClient->>GraphClient: initialize _OutgoingEntityConnections,<br/>_IncomingEntityConnections,<br/>_KnownEntities, _GraphSolutionMap
     alt options.DataModel present
         GraphClient->>GraphClient: loadDataModel(options.DataModel)
-        GraphClient->>GraphClient: for each Table → addEntityToDataModel
+        GraphClient->>GraphClient: for each Table -> addEntityToDataModel
     end
     GraphClient-->>App: instance ready
 ```

@@ -33,7 +33,7 @@ A meadow schema has the shape:
 }
 ```
 
-Each column entry needs at minimum `Column` and `DataType`. Columns with a `Join` property are registered as graph edges (unless they're audit columns — see [Ignored Columns](#ignored-columns)).
+Each column entry needs at minimum `Column` and `DataType`. Columns with a `Join` property are registered as graph edges (unless they're audit columns -- see [Ignored Columns](#ignored-columns)).
 
 ## Data Request Service
 
@@ -73,7 +73,7 @@ The solver scores candidate paths using a weight formula. Tune these to bias the
 |--------|------|---------|-------------|
 | `StartingWeight` | number | `100000` | Every solved path starts here. Higher = more headroom for penalties. |
 | `TraversalHopWeight` | number | `-100` | Added per hop; default is negative so shorter paths score higher. |
-| `OutgoingJoinWeight` | number | `25` | Bonus added when the solver takes a direct outgoing join edge (e.g., `BookPrice → Book` via `IDBook`). Direct outgoing joins are usually the most natural traversal. |
+| `OutgoingJoinWeight` | number | `25` | Bonus added when the solver takes a direct outgoing join edge (e.g., `BookPrice -> Book` via `IDBook`). Direct outgoing joins are usually the most natural traversal. |
 | `JoinInTableNameWeight` | number | `25` | Bonus added when the target entity name ends in `Join` (e.g., `BookAuthorJoin`). Favors traversal through explicit join tables. |
 | `HintWeight` | number | `200000` | Bonus added per matched hint in the candidate path. Deliberately very large so a single hint match dominates all other weight factors. |
 
@@ -89,27 +89,27 @@ finalWeight = StartingWeight
 
 ### Worked Example
 
-Consider the schema `Book ← BookAuthorJoin → Author` and the query `solveGraphConnections('Book', 'Author')`:
+Consider the schema `Book <- BookAuthorJoin -> Author` and the query `solveGraphConnections('Book', 'Author')`:
 
-- Path: `Book → BookAuthorJoin → Author` (2 hops)
+- Path: `Book -> BookAuthorJoin -> Author` (2 hops)
 - Starting weight: `100000`
 - Hops: `2 × -100 = -200`
-- Outgoing joins used: 1 (BookAuthorJoin → Author) → `+25`
-- `Join` in table name: yes (BookAuthorJoin ends in 'Join') → `+25`
-- No hints → `+0`
+- Outgoing joins used: 1 (BookAuthorJoin -> Author) -> `+25`
+- `Join` in table name: yes (BookAuthorJoin ends in 'Join') -> `+25`
+- No hints -> `+0`
 - **Final: 99850**
 
 With a hint (`['BookAuthorJoin']`):
 - Same as above, plus `+200000` for the hint match
 - **Final: 299850**
 
-The hint bonus dwarfs everything else, which is intentional — hints are meant to be decisive.
+The hint bonus dwarfs everything else, which is intentional -- hints are meant to be decisive.
 
 ## Default Hints
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `DefaultHints` | object | `{}` | Map of `EdgeTraversalEndpoints` → array of hint entity names. Merged with per-call hints during `solveGraphConnections`. |
+| `DefaultHints` | object | `{}` | Map of `EdgeTraversalEndpoints` -> array of hint entity names. Merged with per-call hints during `solveGraphConnections`. |
 
 Keys are the traversal endpoint string (e.g., `'Book-->Author'`) and values are arrays of entity names to prefer. These are union'd with any hints passed via the per-call `Hints` array, so you can set instance-wide defaults and still augment them per query.
 
@@ -130,9 +130,9 @@ let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient',
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `DefaultManualPaths` | object | `{}` | Map of `EdgeTraversalEndpoints` → fully-built path object. Bypasses the solver for these specific traversals. |
+| `DefaultManualPaths` | object | `{}` | Map of `EdgeTraversalEndpoints` -> fully-built path object. Bypasses the solver for these specific traversals. |
 
-Use manual paths when the automatic solver can't express something — typically joins on non-ID columns or traversals that require custom filter logic:
+Use manual paths when the automatic solver can't express something -- typically joins on non-ID columns or traversals that require custom filter logic:
 
 ```javascript
 let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient',
@@ -170,7 +170,7 @@ These column names are always skipped when building graph edges from the schema,
 | `DeletingIDUser` | Audit column (who soft-deleted this record) |
 | `IDCustomer` | Multi-tenancy column (customer/tenant owner) |
 
-Including these in the graph would make every entity one hop away from `User` and `Customer`, collapsing the graph to a star. There is currently no configuration option to disable this behavior — the filter is hard-coded in `addEntityToDataModel`.
+Including these in the graph would make every entity one hop away from `User` and `Customer`, collapsing the graph to a star. There is currently no configuration option to disable this behavior -- the filter is hard-coded in `addEntityToDataModel`.
 
 If you need a user relationship that the solver *should* use, add a separate column to your schema (e.g., `IDReviewer` distinct from `CreatingIDUser`) or declare a manual path.
 

@@ -1,15 +1,15 @@
 # Core Concepts
 
-The Meadow Graph Client has a small vocabulary. Once you understand these five terms — Entity, Filter, Pagination, Hint, Ignore — the rest of the API reference reads directly.
+The Meadow Graph Client has a small vocabulary. Once you understand these five terms -- Entity, Filter, Pagination, Hint, Ignore -- the rest of the API reference reads directly.
 
 ## Entity
 
 An **Entity** is a meadow table with a name, a column map, and zero or more `Join` columns that connect it to other entities. Entities are identified by their `TableName` in the meadow schema. Once loaded into the graph client, an entity becomes a node in two adjacency maps:
 
-- `_OutgoingEntityConnections[Entity] = { OtherEntity: 'IDOtherEntity', ... }` — entities this one references via its own `IDFoo` columns
-- `_IncomingEntityConnections[Entity] = { OtherEntity: 'IDEntity', ... }` — entities that reference *this* entity via their `IDEntity` columns
+- `_OutgoingEntityConnections[Entity] = { OtherEntity: 'IDOtherEntity', ... }` -- entities this one references via its own `IDFoo` columns
+- `_IncomingEntityConnections[Entity] = { OtherEntity: 'IDEntity', ... }` -- entities that reference *this* entity via their `IDEntity` columns
 
-Every query has a **pivotal entity** — the `Entity` field in your filter object. This is the entity whose records you ultimately want to receive. All other entities referenced by the filter are *required entities* that need to be visited during traversal in order to resolve the filter.
+Every query has a **pivotal entity** -- the `Entity` field in your filter object. This is the entity whose records you ultimately want to receive. All other entities referenced by the filter are *required entities* that need to be visited during traversal in order to resolve the filter.
 
 ### The Meadow Naming Conventions
 
@@ -18,7 +18,7 @@ The graph client relies on two meadow conventions:
 1. **ID columns are prefaced by `ID`** and the suffix correlates with the table name. `IDBook` is the primary key of `Book`; `IDAuthor` of `Author`; `IDBookAuthorJoin` of `BookAuthorJoin`.
 2. **Join tables are postfixed with `Join`.** `BookAuthorJoin` is the classic many-to-many bridge between `Book` and `Author`; `ProductCategoryJoin` between `Product` and `Category`.
 
-The solver uses (1) to discover edges and (2) to apply a bonus weight when a traversal passes through an entity whose name ends in `Join` — which is usually the "right" answer for many-to-many relationships.
+The solver uses (1) to discover edges and (2) to apply a bonus weight when a traversal passes through an entity whose name ends in `Join` -- which is usually the "right" answer for many-to-many relationships.
 
 ## Filter
 
@@ -44,7 +44,7 @@ The keys in the inner `Filter` object can take three forms:
 { 'Title': 'Breakfast%' }
 ```
 
-A key with no dot is interpreted as a column on the pivotal entity. The default operator comes from the column's data type — `LIKE` for String and Text columns, `=` for everything else.
+A key with no dot is interpreted as a column on the pivotal entity. The default operator comes from the column's data type -- `LIKE` for String and Text columns, `=` for everything else.
 
 ### 2. Dotted Cross-Entity Reference
 
@@ -94,7 +94,7 @@ Every filter object carries an **Options** block (automatically populated by `li
 }
 ```
 
-`RecordLimit` is a safety net — with large graphs you don't want a stray wildcard filter pulling 2 million records across 15 entities. The default of 10000 per entity is deliberately generous for dev use; production services typically tune it down.
+`RecordLimit` is a safety net -- with large graphs you don't want a stray wildcard filter pulling 2 million records across 15 entities. The default of 10000 per entity is deliberately generous for dev use; production services typically tune it down.
 
 ## Hint
 
@@ -199,10 +199,10 @@ A **GraphConnection** is the solver's internal object representing one node in i
 | `AttemptedPaths` | Map of every edge address tried (prevents loops) |
 | `AttemptedRouteHashes` | Map of `Start==>Dest` hashes tried (prevents redundant work) |
 | `PotentialSolutions` | Array of successful paths, each with a `Weight` and `RequestPath` |
-| `OptimalSolutionPath` | The `PotentialSolutions` entry with the highest weight — what the caller uses |
+| `OptimalSolutionPath` | The `PotentialSolutions` entry with the highest weight -- what the caller uses |
 | `EntityPathHints` | The hints active for this search |
 
-Most callers don't touch these internals directly — `compileFilter()` and `get()` abstract them away — but if you ever need to debug a confusing traversal, `solveGraphConnections()` returns the full `GraphConnection` object so you can inspect `PotentialSolutions` and understand why the solver picked what it picked.
+Most callers don't touch these internals directly -- `compileFilter()` and `get()` abstract them away -- but if you ever need to debug a confusing traversal, `solveGraphConnections()` returns the full `GraphConnection` object so you can inspect `PotentialSolutions` and understand why the solver picked what it picked.
 
 ## Request Plan
 
@@ -228,6 +228,6 @@ A **Request Plan** is the output of `compileFilter()`. It's an object with:
 }
 ```
 
-`Requests` is the actual execution plan — one entry per required non-pivotal entity, with a meadow filter string and a list of intermediate entities that need to be pulled to carry the filter forward.
+`Requests` is the actual execution plan -- one entry per required non-pivotal entity, with a meadow filter string and a list of intermediate entities that need to be pulled to carry the filter forward.
 
 The `get()` method takes a plan like this, walks the `Requests` array, and invokes the data-request service for each entry in turn.

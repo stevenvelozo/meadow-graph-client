@@ -31,7 +31,7 @@ _Fable.addServiceType('MeadowGraphClient', libMeadowGraphClient);
 
 let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient', {});
 
-// Load only two of three tables — Author is missing
+// Load only two of three tables -- Author is missing
 _GraphClient.addEntityToDataModel(
     {
         TableName: 'Book',
@@ -45,20 +45,20 @@ _GraphClient.addEntityToDataModel(
             [
                 { Column: 'IDBookAuthorJoin', DataType: 'ID' },
                 { Column: 'IDBook', DataType: 'Numeric', Join: 'IDBook' },
-                { Column: 'IDAuthor', DataType: 'Numeric', Join: 'IDAuthor' }  // → Author (missing!)
+                { Column: 'IDAuthor', DataType: 'Numeric', Join: 'IDAuthor' }  // -> Author (missing!)
             ]
     });
 
 // Before cleanup, BookAuthorJoin has a dangling edge to Author
 console.log(_GraphClient._OutgoingEntityConnectionLists.BookAuthorJoin);
-// → ['Book', 'Author']
+// -> ['Book', 'Author']
 
 // Clean up
 _GraphClient.cleanMissingEntityConnections();
 
 // After cleanup, the dangling Author edge is gone
 console.log(_GraphClient._OutgoingEntityConnectionLists.BookAuthorJoin);
-// → ['Book']
+// -> ['Book']
 ```
 
 You'll see a warning in the logs for every removed edge:
@@ -78,9 +78,9 @@ If all your schema loads come from complete, self-consistent meadow schemas (whi
 3. If not, deletes the target from both `_OutgoingEntityConnections[entity]` and removes it from `_OutgoingEntityConnectionLists[entity]`
 4. Logs a warning for each removal
 
-Note that it only cleans *outgoing* edges. Incoming edges are not pruned — this is a known limitation. If you need symmetric cleanup, call `cleanMissingEntityConnections` and then manually walk `_IncomingEntityConnections` for the same check.
+Note that it only cleans *outgoing* edges. Incoming edges are not pruned -- this is a known limitation. If you need symmetric cleanup, call `cleanMissingEntityConnections` and then manually walk `_IncomingEntityConnections` for the same check.
 
 ## Related
 
-- [loadDataModel](api-loadDataModel.md) — the method whose output this cleans up after
-- [addEntityToDataModel](api-addEntityToDataModel.md) — adds entities one at a time, which is where dangling edges tend to appear
+- [loadDataModel](api-loadDataModel.md) -- the method whose output this cleans up after
+- [addEntityToDataModel](api-addEntityToDataModel.md) -- adds entities one at a time, which is where dangling edges tend to appear

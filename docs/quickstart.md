@@ -8,7 +8,7 @@ Get a working graph-based query running in under five minutes against the sample
 npm install meadow-graph-client fable
 ```
 
-Add `fable` too — the graph client is a Fable service provider and needs a Fable instance to run.
+Add `fable` too -- the graph client is a Fable service provider and needs a Fable instance to run.
 
 ## 2. Wire It Up
 
@@ -68,7 +68,7 @@ Book incoming joins from: [ 'BookAuthorJoin', 'BookPrice', 'Review' ]
 BookAuthorJoin outgoing joins to: [ 'Book', 'Author' ]
 ```
 
-`Book` has no outgoing joins — the traversal to `Author` has to go through the `BookAuthorJoin` join table. That's exactly what the solver will figure out in the next step.
+`Book` has no outgoing joins -- the traversal to `Author` has to go through the `BookAuthorJoin` join table. That's exactly what the solver will figure out in the next step.
 
 ## 4. Solve a Simple Path
 
@@ -117,7 +117,7 @@ _GraphClient.get(
         for (let tmpRequest of pCompiledGraphRequest.Requests)
         {
             console.log(`  ${tmpRequest.Entity}: ${tmpRequest.MeadowFilter}`);
-            console.log(`    Graph chain: ${tmpRequest.GraphRequestChain.join(' → ')}`);
+            console.log(`    Graph chain: ${tmpRequest.GraphRequestChain.join(' -> ')}`);
         }
     });
 ```
@@ -137,7 +137,7 @@ Two downstream entity requests (`Author` and `BookPrice`), with a generated mead
 
 ## 6. Plug In a Real Transport
 
-Up to this point the default `MeadowGraphDataRequest` stub is being used, which doesn't actually send HTTP requests — it just returns `null` from its `doGetJSON`/`doPostJSON`/`doPutJSON` methods. To make real queries against a running meadow-endpoints server, either:
+Up to this point the default `MeadowGraphDataRequest` stub is being used, which doesn't actually send HTTP requests -- it just returns `null` from its `doGetJSON`/`doPostJSON`/`doPutJSON` methods. To make real queries against a running meadow-endpoints server, either:
 
 ### Option A: Override the base request service
 
@@ -181,7 +181,7 @@ let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient',
     });
 ```
 
-Either way, the graph solver and filter DSL stay identical — only the transport changes.
+Either way, the graph solver and filter DSL stay identical -- only the transport changes.
 
 ## 7. Add a Hint When Multiple Paths Exist
 
@@ -210,10 +210,10 @@ let _GraphClient = _Fable.instantiateServiceProvider('MeadowGraphClient',
 
 ## 8. Read the Next Sections
 
-- [Core Concepts](concepts.md) — the vocabulary (`Entity`, `Filter`, `Hint`, `ManualPath`, `EdgeAddress`) explained in detail
-- [Filter DSL Reference](filter-dsl.md) — every shape a filter can take with example inputs and outputs
-- [Architecture](architecture.md) — sequence diagrams for graph solving and request execution
-- [API Reference](api-reference.md) — one page per public method with code snippets
+- [Core Concepts](concepts.md) -- the vocabulary (`Entity`, `Filter`, `Hint`, `ManualPath`, `EdgeAddress`) explained in detail
+- [Filter DSL Reference](filter-dsl.md) -- every shape a filter can take with example inputs and outputs
+- [Architecture](architecture.md) -- sequence diagrams for graph solving and request execution
+- [API Reference](api-reference.md) -- one page per public method with code snippets
 
 ## Full Quickstart Script
 

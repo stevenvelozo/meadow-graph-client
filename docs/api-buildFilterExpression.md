@@ -14,7 +14,7 @@ buildFilterExpression(pPivotalEntity, pFilterKey, pFilterValue)
 | `pFilterKey` | string or object | Either a column name (optionally with `Entity.Column` dot notation) or a fully-specified expression object |
 | `pFilterValue` | any | The value to compare against. Required unless `pFilterKey` is already an object with a `Value` field. |
 
-**Returns:** a canonical filter expression object with `Entity`, `Column`, `Value`, `Operator`, `Connector`, and `MeadowFilterType` — or `false` if the entity/column is unknown or the expression is invalid.
+**Returns:** a canonical filter expression object with `Entity`, `Column`, `Value`, `Operator`, `Connector`, and `MeadowFilterType` -- or `false` if the entity/column is unknown or the expression is invalid.
 
 ## The Output Shape
 
@@ -85,7 +85,7 @@ let tmpExpression = _GraphClient.buildFilterExpression('Book',
         Value: 1990,
         Connector: 'And'
     });
-// Note: pFilterValue is not used when pFilterKey is an object —
+// Note: pFilterValue is not used when pFilterKey is an object --
 // the object should already contain the Value.
 
 console.log(tmpExpression);
@@ -107,7 +107,7 @@ Missing fields are filled in using the following rules:
 |-------|---------|
 | `Entity` | The dot-prefix of the key, or `pPivotalEntity` if no dot |
 | `Column` | The post-dot part of the key (or the whole key if no dot) |
-| `Operator` | Resolved from the column's `DataType` via `getDefaultFilterExpressionOperator` — `LIKE` for String/Text, `=` for everything else |
+| `Operator` | Resolved from the column's `DataType` via `getDefaultFilterExpressionOperator` -- `LIKE` for String/Text, `=` for everything else |
 | `Connector` | `'And'` |
 | `MeadowFilterType` | Derived from the connector and operator via `getMeadowFilterType` |
 
@@ -162,16 +162,16 @@ _GraphClient.get(tmpFilterObject, (pError, pResult) => {
 The operator default is supplied by `getDefaultFilterExpressionOperator`:
 
 ```javascript
-_GraphClient.getDefaultFilterExpressionOperator('String');   // → 'LIKE'
-_GraphClient.getDefaultFilterExpressionOperator('Text');     // → 'LIKE'
-_GraphClient.getDefaultFilterExpressionOperator('Numeric');  // → '='
-_GraphClient.getDefaultFilterExpressionOperator('Boolean');  // → '='
-_GraphClient.getDefaultFilterExpressionOperator('ID');       // → '='
-_GraphClient.getDefaultFilterExpressionOperator('DateTime'); // → '='
+_GraphClient.getDefaultFilterExpressionOperator('String');   // -> 'LIKE'
+_GraphClient.getDefaultFilterExpressionOperator('Text');     // -> 'LIKE'
+_GraphClient.getDefaultFilterExpressionOperator('Numeric');  // -> '='
+_GraphClient.getDefaultFilterExpressionOperator('Boolean');  // -> '='
+_GraphClient.getDefaultFilterExpressionOperator('ID');       // -> '='
+_GraphClient.getDefaultFilterExpressionOperator('DateTime'); // -> '='
 ```
 
 ## Related
 
-- [parseFilterObject](api-parseFilterObject.md) — bulk entry point that calls this per filter entry
-- [Filter DSL Reference § Filter Entries](filter-dsl.md#filter-entries) — all three input forms
-- [convertFilterObjectToFilterString](api-convertFilterObjectToFilterString.md) — turn an array of these into a meadow filter string
+- [parseFilterObject](api-parseFilterObject.md) -- bulk entry point that calls this per filter entry
+- [Filter DSL Reference § Filter Entries](filter-dsl.md#filter-entries) -- all three input forms
+- [convertFilterObjectToFilterString](api-convertFilterObjectToFilterString.md) -- turn an array of these into a meadow filter string

@@ -61,17 +61,17 @@ _GraphClient.get(
     });
 ```
 
-The `get()` call walks the schema, discovers that `Book → BookAuthorJoin → Author` and `Book → BookPrice` are the relevant traversals, emits an ordered request plan, and hands it to the data-request service. See [Quick Start](quickstart.md) for a complete walkthrough from schema load through record output.
+The `get()` call walks the schema, discovers that `Book -> BookAuthorJoin -> Author` and `Book -> BookPrice` are the relevant traversals, emits an ordered request plan, and hands it to the data-request service. See [Quick Start](quickstart.md) for a complete walkthrough from schema load through record output.
 
 ## Where to Go Next
 
-- [Quick Start](quickstart.md) — five-minute walkthrough using the bookstore sample schema
-- [Architecture](architecture.md) — sequence diagrams and design trade-offs
-- [Core Concepts](concepts.md) — entities, filters, pagination, hints, and ignores explained
-- [Filter DSL Reference](filter-dsl.md) — every filter shape with examples
-- [API Reference](api-reference.md) — one page per public method
-- [Hints and Manual Paths](hints-and-manual-paths.md) — steering the solver
-- [Data Request Service](data-request-service.md) — plugging in your transport
+- [Quick Start](quickstart.md) -- five-minute walkthrough using the bookstore sample schema
+- [Architecture](architecture.md) -- sequence diagrams and design trade-offs
+- [Core Concepts](concepts.md) -- entities, filters, pagination, hints, and ignores explained
+- [Filter DSL Reference](filter-dsl.md) -- every filter shape with examples
+- [API Reference](api-reference.md) -- one page per public method
+- [Hints and Manual Paths](hints-and-manual-paths.md) -- steering the solver
+- [Data Request Service](data-request-service.md) -- plugging in your transport
 
 ## Related Packages
 

@@ -1,16 +1,16 @@
 # Data Request Service
 
-Meadow Graph Client doesn't ship with a built-in HTTP client. Instead, it defines a tiny service interface — `MeadowGraphDataRequest` — with overrideable template methods for `getJSON`, `postJSON`, and `putJSON`, and delegates every outbound call to whichever implementation you've registered with Fable. This page explains how to plug in your own transport.
+Meadow Graph Client doesn't ship with a built-in HTTP client. Instead, it defines a tiny service interface -- `MeadowGraphDataRequest` -- with overrideable template methods for `getJSON`, `postJSON`, and `putJSON`, and delegates every outbound call to whichever implementation you've registered with Fable. This page explains how to plug in your own transport.
 
 ## Why This Design
 
 The graph client can run in wildly different environments:
 
-- **Node.js HTTP** — calling a remote meadow-endpoints server
-- **Node.js HTTPS** — same thing with TLS, client auth, or self-signed certs
-- **In-process** — skipping the network entirely and calling meadow directly
-- **Browser** — using `fetch` or `XMLHttpRequest`
-- **Test fakes** — returning canned records to drive unit tests
+- **Node.js HTTP** -- calling a remote meadow-endpoints server
+- **Node.js HTTPS** -- same thing with TLS, client auth, or self-signed certs
+- **In-process** -- skipping the network entirely and calling meadow directly
+- **Browser** -- using `fetch` or `XMLHttpRequest`
+- **Test fakes** -- returning canned records to drive unit tests
 
 Bundling an HTTP client would force a dependency on every consumer and still not cover all four cases. The stub-and-override pattern keeps the package footprint tiny and lets each consumer choose exactly the transport they need.
 
@@ -19,12 +19,12 @@ Bundling an HTTP client would force a dependency on every consumer and still not
 The module ships with `source/Meadow-Graph-Service-DataRequest.js`, which extends `fable-serviceproviderbase` and exposes three template-method pairs:
 
 ```
-getJSON  → onBeforeGetJSON  → doGetJSON  → onAfterGetJSON  → fCallback
-postJSON → onBeforePostJSON → doPostJSON → onAfterPostJSON → fCallback
-putJSON  → onBeforePutJSON  → doPutJSON  → onAfterPutJSON  → fCallback
+getJSON  -> onBeforeGetJSON  -> doGetJSON  -> onAfterGetJSON  -> fCallback
+postJSON -> onBeforePostJSON -> doPostJSON -> onAfterPostJSON -> fCallback
+putJSON  -> onBeforePutJSON  -> doPutJSON  -> onAfterPutJSON  -> fCallback
 ```
 
-The `do*JSON` methods are stubs that simply call `fCallback(null, null)` — they don't actually make a request. You override them with real transport logic. The `onBefore*` / `onAfter*` hooks are also overrideable for cross-cutting concerns like auth, logging, retries, or tracing.
+The `do*JSON` methods are stubs that simply call `fCallback(null, null)` -- they don't actually make a request. You override them with real transport logic. The `onBefore*` / `onAfter*` hooks are also overrideable for cross-cutting concerns like auth, logging, retries, or tracing.
 
 ## Method Surface
 
@@ -278,7 +278,7 @@ class AuthenticatedHTTPSGraphDataRequest extends HTTPSGraphDataRequest
                 headers:
                 {
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${this.authToken}`    // ← injected here
+                    'Authorization': `Bearer ${this.authToken}`    // <- injected here
                 }
             };
 
@@ -297,7 +297,7 @@ class FakeGraphDataRequest extends libMeadowGraphDataRequest
     constructor(pFable, pManifest, pServiceHash)
     {
         super(pFable, pManifest, pServiceHash);
-        this.responses = new Map();    // URL → response data
+        this.responses = new Map();    // URL -> response data
         this.callLog = [];              // record every call for assertions
     }
 
@@ -369,6 +369,6 @@ All `onBefore*` hooks take a no-argument callback (just `fCallback()`). All `onA
 
 ## Related
 
-- [get](api-get.md) — the method that ultimately calls your transport
-- [compileFilter](api-compileFilter.md) — builds the URLs that go into `doGetJSON`
-- [Configuration Reference § Data Request Service](configuration.md#data-request-service) — the `DataRequestClientService` option
+- [get](api-get.md) -- the method that ultimately calls your transport
+- [compileFilter](api-compileFilter.md) -- builds the URLs that go into `doGetJSON`
+- [Configuration Reference § Data Request Service](configuration.md#data-request-service) -- the `DataRequestClientService` option

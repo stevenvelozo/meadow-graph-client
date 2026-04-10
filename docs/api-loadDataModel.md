@@ -16,12 +16,12 @@ loadDataModel(pDataModel)
 
 ## When to Use It
 
-Use `loadDataModel` when you want to load an entire schema in one call. This is the most common approach — you typically have a full meadow schema JSON file and just want the graph client to consume it wholesale.
+Use `loadDataModel` when you want to load an entire schema in one call. This is the most common approach -- you typically have a full meadow schema JSON file and just want the graph client to consume it wholesale.
 
 There are two other ways to accomplish the same thing:
 
-1. Pass the schema as the `DataModel` constructor option — the constructor will call `loadDataModel` for you at instantiation time
-2. Call `addEntityToDataModel` for each table individually — useful when you're composing a schema from multiple sources at runtime
+1. Pass the schema as the `DataModel` constructor option -- the constructor will call `loadDataModel` for you at instantiation time
+2. Call `addEntityToDataModel` for each table individually -- useful when you're composing a schema from multiple sources at runtime
 
 ## Code Example
 
@@ -73,17 +73,17 @@ You can call `loadDataModel` multiple times to load schemas from different sourc
 
 ```javascript
 _GraphClient.loadDataModel(schemaA);    // adds Book, Author, BookAuthorJoin
-_GraphClient.loadDataModel(schemaB);    // adds Review, Rating (Book already exists — warning)
+_GraphClient.loadDataModel(schemaB);    // adds Review, Rating (Book already exists -- warning)
 ```
 
-If you want to replace an existing entity, delete it from `_KnownEntities` and the connection maps first — but this is rarely a good idea. Prefer building your composite schema object before loading.
+If you want to replace an existing entity, delete it from `_KnownEntities` and the connection maps first -- but this is rarely a good idea. Prefer building your composite schema object before loading.
 
 ## What It Does Internally
 
 1. Validates that the argument is an object and has a `Tables` property
 2. Iterates over `Object.keys(pDataModel.Tables)`
 3. Calls `addEntityToDataModel(pDataModel.Tables[tableName])` for each
-4. Returns `true` regardless of how many individual adds succeeded — check `_KnownEntities` after the call if you need to verify
+4. Returns `true` regardless of how many individual adds succeeded -- check `_KnownEntities` after the call if you need to verify
 
 Because `addEntityToDataModel` may fail for individual tables (missing `Columns`, duplicate, etc.) without stopping the batch, it's a good idea to call `cleanMissingEntityConnections()` after loading if you're unsure about the consistency of the input schemas.
 
@@ -98,6 +98,6 @@ Both return `false` and leave the graph state unchanged.
 
 ## Related
 
-- [addEntityToDataModel](api-addEntityToDataModel.md) — add individual tables
-- [cleanMissingEntityConnections](api-cleanMissingEntityConnections.md) — clean up after partial loads
-- [Configuration Reference § Data Model](configuration.md#data-model) — constructor-time equivalent
+- [addEntityToDataModel](api-addEntityToDataModel.md) -- add individual tables
+- [cleanMissingEntityConnections](api-cleanMissingEntityConnections.md) -- clean up after partial loads
+- [Configuration Reference § Data Model](configuration.md#data-model) -- constructor-time equivalent
