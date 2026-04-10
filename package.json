@@ -14,7 +14,7 @@
     "license": "MIT",
     "devDependencies": {
         "indoctrinate": "^1.0.9",
-        "pict-docuserve": "^0.1.1",
+        "pict-docuserve": "^0.1.5",
         "quackage": "^1.1.0",
         "stricture": "^1.0.36"
     },
