@@ -1,4 +1,4 @@
-# Meadow Graph Client <small>1</small>
+# Meadow Graph Client
 
 > Pull comprehensions of data from relational database graphs by filter, not by JOIN
 
