@@ -13,10 +13,10 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
-        "indoctrinate": "^1.0.9",
-        "pict-docuserve": "^0.1.5",
-        "quackage": "^1.1.0",
-        "stricture": "^1.0.36"
+        "indoctrinate": "^1.0.11",
+        "pict-docuserve": "^1.0.1",
+        "quackage": "^1.2.3",
+        "stricture": "^4.0.3"
     },
     "dependencies": {
         "fable-serviceproviderbase": "^3.0.19"
