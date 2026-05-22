@@ -1,94 +1,138 @@
 {
-	"Generated": "2026-04-10T17:21:37.166Z",
+	"Generated": "2026-05-22T05:40:22.818Z",
+	"Mode": "module",
 	"GitHubOrg": "stevenvelozo",
 	"DefaultBranch": "master",
-	"Groups": [
-		{
-			"Name": "Dist",
-			"Key": "dist",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "indoctrinate_content_staging",
-					"Repo": "indoctrinate_content_staging",
-					"Group": "dist",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
-			"Name": "Docs",
-			"Key": "docs",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "css",
-					"Repo": "css",
-					"Group": "docs",
-					"Branch": "master",
-					"HasDocs": true,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": [
-						"css/docuserve.css"
-					]
-				}
-			]
-		},
-		{
-			"Name": "Example_applications",
-			"Key": "example_applications",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "graph-explorer",
-					"Repo": "graph-explorer",
-					"Group": "example_applications",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
-			"Name": "Examples",
-			"Key": "examples",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "northwind",
-					"Repo": "northwind",
-					"Group": "examples",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		},
-		{
-			"Name": "Test",
-			"Key": "test",
-			"Description": "",
-			"Modules": [
-				{
-					"Name": "model",
-					"Repo": "model",
-					"Group": "test",
-					"Branch": "master",
-					"HasDocs": false,
-					"HasCover": false,
-					"Sidebar": [],
-					"DocFiles": []
-				}
-			]
-		}
-	]
+	"Module": {
+		"Name": "meadow-graph-client",
+		"Repo": "meadow-graph-client",
+		"Group": "",
+		"Branch": "master",
+		"HasDocs": true,
+		"HasCover": true,
+		"Sidebar": [
+			{
+				"Title": "Getting Started",
+				"Children": [
+					{
+						"Title": "Introduction",
+						"Path": "README.md"
+					},
+					{
+						"Title": "Quick Start",
+						"Path": "quickstart.md"
+					},
+					{
+						"Title": "Architecture",
+						"Path": "architecture.md"
+					}
+				]
+			},
+			{
+				"Title": "Core Concepts",
+				"Children": [
+					{
+						"Title": "Core Concepts",
+						"Path": "concepts.md"
+					},
+					{
+						"Title": "Filter DSL Reference",
+						"Path": "filter-dsl.md"
+					},
+					{
+						"Title": "Hints and Manual Paths",
+						"Path": "hints-and-manual-paths.md"
+					},
+					{
+						"Title": "Configuration Reference",
+						"Path": "configuration.md"
+					},
+					{
+						"Title": "Data Request Service",
+						"Path": "data-request-service.md"
+					}
+				]
+			},
+			{
+				"Title": "API Reference",
+				"Children": [
+					{
+						"Title": "API Index",
+						"Path": "api-reference.md"
+					},
+					{
+						"Title": "loadDataModel",
+						"Path": "api-loadDataModel.md"
+					},
+					{
+						"Title": "addEntityToDataModel",
+						"Path": "api-addEntityToDataModel.md"
+					},
+					{
+						"Title": "cleanMissingEntityConnections",
+						"Path": "api-cleanMissingEntityConnections.md"
+					},
+					{
+						"Title": "lintFilterObject",
+						"Path": "api-lintFilterObject.md"
+					},
+					{
+						"Title": "parseFilterObject",
+						"Path": "api-parseFilterObject.md"
+					},
+					{
+						"Title": "buildFilterExpression",
+						"Path": "api-buildFilterExpression.md"
+					},
+					{
+						"Title": "solveGraphConnections",
+						"Path": "api-solveGraphConnections.md"
+					},
+					{
+						"Title": "compileFilter",
+						"Path": "api-compileFilter.md"
+					},
+					{
+						"Title": "get",
+						"Path": "api-get.md"
+					},
+					{
+						"Title": "convertFilterObjectToFilterString",
+						"Path": "api-convertFilterObjectToFilterString.md"
+					}
+				]
+			}
+		],
+		"DocFiles": [
+			".nojekyll",
+			"README.md",
+			"_brand.json",
+			"_cover.md",
+			"_sidebar.md",
+			"_topbar.md",
+			"_version.json",
+			"api-addEntityToDataModel.md",
+			"api-buildFilterExpression.md",
+			"api-cleanMissingEntityConnections.md",
+			"api-compileFilter.md",
+			"api-convertFilterObjectToFilterString.md",
+			"api-get.md",
+			"api-lintFilterObject.md",
+			"api-loadDataModel.md",
+			"api-parseFilterObject.md",
+			"api-reference.md",
+			"api-solveGraphConnections.md",
+			"architecture.md",
+			"concepts.md",
+			"configuration.md",
+			"data-request-service.md",
+			"filter-dsl.md",
+			"hints-and-manual-paths.md",
+			"index.html",
+			"quickstart.md",
+			"retold-catalog.json",
+			"retold-keyword-index.json"
+		]
+	},
+	"Groups": []
 }
