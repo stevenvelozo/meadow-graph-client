@@ -1,5 +1,7 @@
 # Meadow Graph Client
 
+> **[&#9654; Read the Meadow-Graph-Client Documentation](https://stevenvelozo.github.io/meadow-graph-client/)** &mdash; interactive docs with the full API reference.
+
 > Pull comprehensions of data from relational database graphs by filter, not by JOIN
 
 Meadow Graph Client is a Fable service provider that lets you describe what records you want in terms of **entities and filters**, and it figures out the rest. Given a meadow schema, it builds an in-memory directed graph of every join relationship, then resolves a user filter -- even when the filter references columns on entities multiple hops away from the entity you're actually pulling -- into a concrete ordered series of requests to fetch the records. The request execution is delegated to a pluggable data-request service so the same client works against any meadow backend (HTTP API, IPC, in-memory, mocked).
