@@ -13,9 +13,9 @@
     "author": "steven velozo <steven@velozo.com>",
     "license": "MIT",
     "devDependencies": {
-        "indoctrinate": "^1.0.11",
-        "pict-docuserve": "^1.3.3",
-        "quackage": "^1.2.4",
+        "indoctrinate": "^1.0.12",
+        "pict-docuserve": "^1.4.4",
+        "quackage": "^1.3.0",
         "stricture": "^4.0.3"
     },
     "dependencies": {
