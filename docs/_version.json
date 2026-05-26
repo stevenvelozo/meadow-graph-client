@@ -2,6 +2,6 @@
 	"Name": "meadow-graph-client",
 	"Version": "1.0.2",
 	"Description": "Meadow graph client for pulling sets of records and comprehensions.",
-	"GeneratedAt": "2026-05-26T18:19:47.558Z",
-	"GitCommit": "1bb9de4"
+	"GeneratedAt": "2026-05-26T21:12:33.318Z",
+	"GitCommit": "052acbb"
 }
