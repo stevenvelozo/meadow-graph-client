@@ -75,8 +75,8 @@ The `get()` call walks the schema, discovers that `Book -> BookAuthorJoin -> Aut
 
 ## Related Packages
 
-- [meadow](https://github.com/stevenvelozo/meadow) - Meadow ORM that produces the schemas this client consumes
-- [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) - REST endpoints that a graph-client transport targets
-- [foxhound](https://github.com/stevenvelozo/foxhound) - Meadow query DSL
-- [stricture](https://github.com/stevenvelozo/stricture) - Meadow schema definitions
-- [fable](https://github.com/stevenvelozo/fable) - Application services framework
+- [meadow](https://github.com/fable-retold/meadow) - Meadow ORM that produces the schemas this client consumes
+- [meadow-endpoints](https://github.com/fable-retold/meadow-endpoints) - REST endpoints that a graph-client transport targets
+- [foxhound](https://github.com/fable-retold/foxhound) - Meadow query DSL
+- [stricture](https://github.com/fable-retold/stricture) - Meadow schema definitions
+- [fable](https://github.com/fable-retold/fable) - Application services framework

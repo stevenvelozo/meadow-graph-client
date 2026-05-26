@@ -8,5 +8,5 @@
 - Pluggable data-request transport for HTTP, IPC, or test fakes
 - First-class Fable service provider
 
-[GitHub](https://github.com/stevenvelozo/meadow-graph-client)
+[GitHub](https://github.com/fable-retold/meadow-graph-client)
 [Get Started](#meadow-graph-client)

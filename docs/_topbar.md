@@ -6,4 +6,4 @@
 - [Concepts](concepts.md)
 - [Filter DSL](filter-dsl.md)
 - [API Reference](api-reference.md)
-- [GitHub](https://github.com/stevenvelozo/meadow-graph-client)
+- [GitHub](https://github.com/fable-retold/meadow-graph-client)

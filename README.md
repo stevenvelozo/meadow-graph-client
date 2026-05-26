@@ -1,6 +1,6 @@
 # Meadow Graph Client
 
-> **[&#9654; Read the Meadow-Graph-Client Documentation](https://stevenvelozo.github.io/meadow-graph-client/)** &mdash; interactive docs with the full API reference.
+> **[&#9654; Read the Meadow-Graph-Client Documentation](https://fable-retold.github.io/meadow-graph-client/)** &mdash; interactive docs with the full API reference.
 
 > Pull comprehensions of data from relational database graphs by filter, not by JOIN
 
@@ -78,7 +78,7 @@ Read more in [Core Concepts](docs/concepts.md).
 
 ## Documentation
 
-Full documentation is available in the [`docs`](./docs) folder, or served locally via [pict-docuserve](https://github.com/stevenvelozo/pict-docuserve):
+Full documentation is available in the [`docs`](./docs) folder, or served locally via [pict-docuserve](https://github.com/fable-retold/pict-docuserve):
 
 - [Overview](docs/README.md) - What the module is, what it solves, how it fits together
 - [Quick Start](docs/quickstart.md) - End-to-end walkthrough with the bookstore sample schema
@@ -92,11 +92,11 @@ Full documentation is available in the [`docs`](./docs) folder, or served locall
 
 ## Related Packages
 
-- [meadow](https://github.com/stevenvelozo/meadow) - Meadow ORM that produces the schemas this client consumes
-- [meadow-endpoints](https://github.com/stevenvelozo/meadow-endpoints) - REST endpoints that a meadow-graph-client transport targets
-- [foxhound](https://github.com/stevenvelozo/foxhound) - Meadow query DSL
-- [stricture](https://github.com/stevenvelozo/stricture) - Meadow schema definitions
-- [fable](https://github.com/stevenvelozo/fable) - Application services framework
+- [meadow](https://github.com/fable-retold/meadow) - Meadow ORM that produces the schemas this client consumes
+- [meadow-endpoints](https://github.com/fable-retold/meadow-endpoints) - REST endpoints that a meadow-graph-client transport targets
+- [foxhound](https://github.com/fable-retold/foxhound) - Meadow query DSL
+- [stricture](https://github.com/fable-retold/stricture) - Meadow schema definitions
+- [fable](https://github.com/fable-retold/fable) - Application services framework
 
 ## License
 
