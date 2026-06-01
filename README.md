@@ -1,6 +1,6 @@
 # Meadow Graph Client
 
-> **[&#9654; Read the Meadow-Graph-Client Documentation](https://fable-retold.github.io/meadow-graph-client/)** &mdash; interactive docs with the full API reference.
+> **[Read the Meadow-Graph-Client Documentation](https://fable-retold.github.io/meadow-graph-client/)** - interactive docs with the full API reference.
 
 > Pull comprehensions of data from relational database graphs by filter, not by JOIN
 
