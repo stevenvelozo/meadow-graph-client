@@ -350,7 +350,7 @@ For example:
 Authors/FilteredTo/FBV~IDAuthor~EQ~107/0/10000
 ```
 
-The URL is relative; your transport is responsible for prepending the base URL (whether hardcoded, from environment, or from Fable settings). See the [meadow-endpoints](https://github.com/fable-retold/meadow-endpoints) documentation for the full URL format meadow-endpoints servers accept.
+The URL is relative; your transport is responsible for prepending the base URL (whether hardcoded, from environment, or from Fable settings). See the [meadow-endpoints](https://fable-retold.github.io/meadow-endpoints/) documentation for the full URL format meadow-endpoints servers accept.
 
 ## Before / After Hook Signatures (Reference)
 
