@@ -46,72 +46,15 @@ The meadow convention that the solver relies on:
 - **ID columns are prefaced with `ID`** -- `IDBook`, `IDAuthor`, etc. The column name correlates with the table name.
 - **Join tables are suffixed with `Join`** -- `BookAuthorJoin`, `ProductCategoryJoin`. This lets the solver apply a weight bonus to traversals that pass through join tables (which are usually the "right" answer).
 
-```mermaid
-graph LR
-    Book[Book]
-    Author[Author]
-    BookAuthorJoin[BookAuthorJoin]
-    BookPrice[BookPrice]
-    Review[Review]
-
-    BookAuthorJoin -->|IDBook| Book
-    BookAuthorJoin -->|IDAuthor| Author
-    BookPrice -->|IDBook| Book
-    Review -->|IDBook| Book
-```
+<!-- bespoke diagram: edit diagrams/the-data-model.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![The Data Model](diagrams/the-data-model.svg)
 
 The arrows are *outgoing joins* -- they point from the entity holding the `IDFoo` column toward the entity it references. The solver uses these in both directions: `Book -> BookAuthorJoin` is an *incoming* lookup from Book's perspective.
 
 ## Request Lifecycle -- `get()` End to End
 
-```mermaid
-sequenceDiagram
-    participant Caller
-    participant Client as MeadowGraphClient
-    participant Linter as lintFilterObject
-    participant Parser as parseFilterObject
-    participant Solver as solveGraphConnections
-    participant Compiler as compileFilter
-    participant DataReq as MeadowGraphDataRequest
-    participant Backend
-
-    Caller->>Client: get({Entity, Filter}, fCallback)
-    Client->>Compiler: compileFilter(pFilterObject)
-    Compiler->>Linter: lintFilterObject(pFilterObject)
-    Linter->>Linter: fill defaults (RecordLimit, PageSize, empty Filter)
-    Linter-->>Compiler: ok
-    Compiler->>Parser: parseFilterObject(pFilterObject)
-    Parser->>Parser: buildFilterExpression(...) for each key
-    Parser->>Parser: group by Entity into FilterExpressionSet
-    Parser-->>Compiler: { RequiredEntities, FilterExpressionSet, ... }
-
-    loop for each required entity ≠ pivotal
-        Compiler->>Solver: solveGraphConnections(pivotal, required, hints)
-        Solver->>Solver: recursive weighted path search
-        Solver-->>Compiler: { OptimalSolutionPath, PotentialSolutions }
-    end
-
-    Compiler->>Compiler: emit Requests[] (meadow filter strings + graph chain)
-    Compiler-->>Client: CompiledGraphRequest
-
-    Client->>Client: newAnticipate() for sequential execution
-
-    loop for each Request
-        Client->>DataReq: getJSON(url for Entity + MeadowFilter)
-        DataReq->>Backend: HTTP GET
-        Backend-->>DataReq: records
-        DataReq-->>Client: records into Request.Result
-        loop for each downstream hop in GraphRequestChain
-            Client->>DataReq: getJSON(url with downstream filter)
-            DataReq->>Backend: HTTP GET
-            Backend-->>DataReq: records
-            DataReq-->>Client: records
-        end
-    end
-
-    Client->>Client: final request for pivotal entity
-    Client-->>Caller: fCallback(null, pCompiledGraphRequest)
-```
+<!-- bespoke diagram: edit diagrams/request-lifecycle-get-end-to-end.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![Request Lifecycle -- get() End to End](diagrams/request-lifecycle-get-end-to-end.svg)
 
 Every stage can be called directly if you need finer control -- `lintFilterObject`, `parseFilterObject`, `solveGraphConnections`, and `compileFilter` are all public methods that can be composed outside the `get()` flow for testing or dry-run diagnostics.
 
@@ -119,34 +62,8 @@ Every stage can be called directly if you need finer control -- `lintFilterObjec
 
 The solver is recursive with two traversal directions at each step:
 
-```mermaid
-flowchart TD
-    Start([solveGraphConnections<br/>Entity=Book, Dest=Author])
-    IsMatch{EntityName ===<br/>Destination?}
-    AddPotential[Add to PotentialSolutions<br/>compute hint weight bonus]
-    CheckOutgoing[Check outgoing joins<br/>from current entity]
-    CheckIncoming[Check incoming joins<br/>to current entity]
-    Recurse1[Recurse on each<br/>outgoing target]
-    Recurse2[Recurse on each<br/>incoming source]
-    DepthCheck{Depth <<br/>MaxTraversalDepth?}
-    Bailout([return base connection])
-    FinalSort[Sort PotentialSolutions<br/>by Weight descending]
-    PickOptimal[OptimalSolutionPath =<br/>PotentialSolutions 0]
-    Return([return base graph connection])
-
-    Start --> DepthCheck
-    DepthCheck -->|no| Bailout
-    DepthCheck -->|yes| IsMatch
-    IsMatch -->|yes| AddPotential
-    IsMatch -->|no| CheckOutgoing
-    CheckOutgoing --> Recurse1
-    Recurse1 --> CheckIncoming
-    CheckIncoming --> Recurse2
-    AddPotential --> FinalSort
-    Recurse2 --> FinalSort
-    FinalSort --> PickOptimal
-    PickOptimal --> Return
-```
+<!-- bespoke diagram: edit diagrams/graph-solver-internals.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![Graph Solver Internals](diagrams/graph-solver-internals.svg)
 
 Each recursion step:
 
@@ -170,27 +87,8 @@ Tuning these knobs lets you bias the solver toward joining tables, avoiding join
 
 ## Filter Compilation
 
-```mermaid
-flowchart LR
-    Raw[Raw Filter Object<br/>{Entity, Filter: {...}}]
-    Lint[lintFilterObject]
-    Parse[parseFilterObject]
-    Build[buildFilterExpression<br/>per filter entry]
-    Group[Group by Entity into<br/>FilterExpressionSet]
-    Solve[solveGraphConnections<br/>for each non-pivotal entity]
-    Compile[compileFilter<br/>assembles Requests array]
-    Strings[convertFilterObjectToFilterString<br/>emit meadow filter strings]
-    Plan[CompiledGraphRequest]
-
-    Raw --> Lint
-    Lint --> Parse
-    Parse --> Build
-    Build --> Group
-    Group --> Solve
-    Solve --> Compile
-    Compile --> Strings
-    Strings --> Plan
-```
+<!-- bespoke diagram: edit diagrams/filter-compilation.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![Filter Compilation](diagrams/filter-compilation.svg)
 
 Each filter entry walks through `buildFilterExpression`, which resolves its entity + column, picks a default operator based on the column's data type (LIKE for strings, `=` for numerics), and assigns a meadow filter type. The parsed filter object then groups expressions by their owning entity so the compiler knows which entities need requests.
 
@@ -232,24 +130,5 @@ Developer ergonomics. The shorthand is good for 90% of real queries; the longhan
 
 ## What Happens At Instantiation
 
-```mermaid
-sequenceDiagram
-    participant App
-    participant Fable
-    participant GraphClient as MeadowGraphClient
-    participant DataReq as MeadowGraphDataRequest
-
-    App->>Fable: new libFable()
-    App->>Fable: addServiceType('MeadowGraphClient', libMeadowGraphClient)
-    App->>Fable: instantiateServiceProvider('MeadowGraphClient', { DataModel, DefaultHints, ... })
-    Fable->>GraphClient: new MeadowGraphClient(fable, options)
-    GraphClient->>GraphClient: merge defaults into options
-    GraphClient->>Fable: addAndInstantiateSingletonService(DataRequestClientService, ..., libGraphClientDataRequest)
-    Fable-->>DataReq: instantiated
-    GraphClient->>GraphClient: initialize _OutgoingEntityConnections,<br/>_IncomingEntityConnections,<br/>_KnownEntities, _GraphSolutionMap
-    alt options.DataModel present
-        GraphClient->>GraphClient: loadDataModel(options.DataModel)
-        GraphClient->>GraphClient: for each Table -> addEntityToDataModel
-    end
-    GraphClient-->>App: instance ready
-```
+<!-- bespoke diagram: edit diagrams/what-happens-at-instantiation.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![What Happens At Instantiation](diagrams/what-happens-at-instantiation.svg)

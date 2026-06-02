@@ -1,0 +1,26 @@
+flowchart TD
+    Start([solveGraphConnections<br/>Entity=Book, Dest=Author])
+    IsMatch{EntityName ===<br/>Destination?}
+    AddPotential[Add to PotentialSolutions<br/>compute hint weight bonus]
+    CheckOutgoing[Check outgoing joins<br/>from current entity]
+    CheckIncoming[Check incoming joins<br/>to current entity]
+    Recurse1[Recurse on each<br/>outgoing target]
+    Recurse2[Recurse on each<br/>incoming source]
+    DepthCheck{Depth <<br/>MaxTraversalDepth?}
+    Bailout([return base connection])
+    FinalSort[Sort PotentialSolutions<br/>by Weight descending]
+    PickOptimal[OptimalSolutionPath =<br/>PotentialSolutions 0]
+    Return([return base graph connection])
+
+    Start --> DepthCheck
+    DepthCheck -->|no| Bailout
+    DepthCheck -->|yes| IsMatch
+    IsMatch -->|yes| AddPotential
+    IsMatch -->|no| CheckOutgoing
+    CheckOutgoing --> Recurse1
+    Recurse1 --> CheckIncoming
+    CheckIncoming --> Recurse2
+    AddPotential --> FinalSort
+    Recurse2 --> FinalSort
+    FinalSort --> PickOptimal
+    PickOptimal --> Return

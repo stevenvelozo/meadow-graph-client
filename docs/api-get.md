@@ -132,40 +132,8 @@ _GraphClient.get(
 
 ## Execution Flow
 
-```mermaid
-sequenceDiagram
-    participant Caller
-    participant Get as get()
-    participant Compile as compileFilter
-    participant Anticipate as Fable Anticipate Chain
-    participant DataReq as MeadowGraphDataRequest
-    participant Backend
-
-    Caller->>Get: get(filterObject, fCallback)
-    Get->>Compile: compileFilter(filterObject)
-    Compile-->>Get: CompiledGraphRequest
-
-    alt CompiledGraphRequest is false
-        Get-->>Caller: fCallback(new Error('invalid'))
-    end
-
-    Get->>Anticipate: newAnticipate()
-
-    loop for each Request in compiled.Requests
-        Get->>Anticipate: anticipate(request handler)
-        loop for each downstream hop in GraphRequestChain
-            Get->>Anticipate: anticipate(downstream handler)
-        end
-    end
-
-    Anticipate->>DataReq: (each stage) getJSON(url)
-    DataReq->>Backend: HTTP GET
-    Backend-->>DataReq: records
-    DataReq-->>Anticipate: fNext()
-
-    Anticipate-->>Get: all stages complete (or error)
-    Get-->>Caller: fCallback(null, compiledGraphRequest)
-```
+<!-- bespoke diagram: edit diagrams/execution-flow.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![Execution Flow](diagrams/execution-flow.svg)
 
 ## What Actually Happens
 

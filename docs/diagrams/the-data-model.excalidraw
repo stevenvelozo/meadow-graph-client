@@ -1,0 +1,1078 @@
+{
+	"type": "excalidraw",
+	"version": 2,
+	"source": "pict-section-excalidraw/notebook-generator",
+	"elements": [
+		{
+			"id": "shape-Book-000000f5",
+			"type": "rectangle",
+			"x": 292,
+			"y": 117,
+			"width": 120,
+			"height": 56,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 545,
+			"version": 1,
+			"versionNonce": 545,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "label-Book-00000089",
+					"type": "text"
+				},
+				{
+					"id": "arrow-BookAuthorJoin-Book-000000m4",
+					"type": "arrow"
+				},
+				{
+					"id": "arrow-BookPrice-Book-000000dc",
+					"type": "arrow"
+				},
+				{
+					"id": "arrow-Review-Book-000000no",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-Book-00000089",
+			"type": "text",
+			"x": 300,
+			"y": 132.5,
+			"width": 104,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 297,
+			"version": 1,
+			"versionNonce": 297,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "Book",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 15,
+			"containerId": "shape-Book-000000f5",
+			"originalText": "Book",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "shape-Author-000000d8",
+			"type": "rectangle",
+			"x": 292,
+			"y": 228,
+			"width": 120,
+			"height": 56,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 476,
+			"version": 1,
+			"versionNonce": 476,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "label-Author-000000lw",
+					"type": "text"
+				},
+				{
+					"id": "arrow-BookAuthorJoin-Author-000000l4",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-Author-000000lw",
+			"type": "text",
+			"x": 300,
+			"y": 243.5,
+			"width": 104,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 788,
+			"version": 1,
+			"versionNonce": 788,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "Author",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 15,
+			"containerId": "shape-Author-000000d8",
+			"originalText": "Author",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "shape-BookAuthorJoin-000000gc",
+			"type": "rectangle",
+			"x": 16,
+			"y": 16,
+			"width": 186,
+			"height": 56,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 588,
+			"version": 1,
+			"versionNonce": 588,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "label-BookAuthorJoin-000000g8",
+					"type": "text"
+				},
+				{
+					"id": "arrow-BookAuthorJoin-Book-000000m4",
+					"type": "arrow"
+				},
+				{
+					"id": "arrow-BookAuthorJoin-Author-000000l4",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-BookAuthorJoin-000000g8",
+			"type": "text",
+			"x": 24,
+			"y": 31.5,
+			"width": 170,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 584,
+			"version": 1,
+			"versionNonce": 584,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "BookAuthorJoin",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 15,
+			"containerId": "shape-BookAuthorJoin-000000gc",
+			"originalText": "BookAuthorJoin",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "shape-BookPrice-000000ic",
+			"type": "rectangle",
+			"x": 44,
+			"y": 117,
+			"width": 131,
+			"height": 56,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 660,
+			"version": 1,
+			"versionNonce": 660,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "label-BookPrice-000000r8",
+					"type": "text"
+				},
+				{
+					"id": "arrow-BookPrice-Book-000000dc",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-BookPrice-000000r8",
+			"type": "text",
+			"x": 52,
+			"y": 132.5,
+			"width": 115,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 980,
+			"version": 1,
+			"versionNonce": 980,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "BookPrice",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 15,
+			"containerId": "shape-BookPrice-000000ic",
+			"originalText": "BookPrice",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "shape-Review-0000005h",
+			"type": "rectangle",
+			"x": 49,
+			"y": 218,
+			"width": 120,
+			"height": 56,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 197,
+			"version": 1,
+			"versionNonce": 197,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "label-Review-000000ow",
+					"type": "text"
+				},
+				{
+					"id": "arrow-Review-Book-000000no",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-Review-000000ow",
+			"type": "text",
+			"x": 57,
+			"y": 233.5,
+			"width": 104,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 896,
+			"version": 1,
+			"versionNonce": 896,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "Review",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 15,
+			"containerId": "shape-Review-0000005h",
+			"originalText": "Review",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "arrow-BookAuthorJoin-Book-000000m4",
+			"type": "arrow",
+			"x": 202,
+			"y": 38.026666666666664,
+			"width": 90,
+			"height": 98.01333333333332,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 796,
+			"version": 1,
+			"versionNonce": 796,
+			"isDeleted": false,
+			"boundElements": [],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"points": [
+				[
+					0,
+					0
+				],
+				[
+					16,
+					0
+				],
+				[
+					19.875171467764005,
+					0.873918609967987
+				],
+				[
+					23.519890260631,
+					3.3612254229538223
+				],
+				[
+					26.96296296296299,
+					7.260246913580254
+				],
+				[
+					30.233196159122116,
+					12.36930955647005
+				],
+				[
+					33.35939643347052,
+					18.48673982624601
+				],
+				[
+					36.37037037037038,
+					25.410864197530863
+				],
+				[
+					39.29492455418384,
+					32.94000914494743
+				],
+				[
+					42.161865569273004,
+					40.87250114311842
+				],
+				[
+					45,
+					49.00666666666667
+				],
+				[
+					47.83813443072705,
+					57.1408321902149
+				],
+				[
+					50.70507544581619,
+					65.07332418838593
+				],
+				[
+					53.62962962962962,
+					72.60246913580247
+				],
+				[
+					56.64060356652948,
+					79.52659350708734
+				],
+				[
+					59.76680384087797,
+					85.64402377686329
+				],
+				[
+					63.03703703703707,
+					90.75308641975309
+				],
+				[
+					66.48010973936903,
+					94.6521079103795
+				],
+				[
+					70.12482853223594,
+					97.13941472336532
+				],
+				[
+					74,
+					98.01333333333332
+				],
+				[
+					90,
+					98.01333333333332
+				]
+			],
+			"lastCommittedPoint": null,
+			"startBinding": {
+				"elementId": "shape-BookAuthorJoin-000000gc",
+				"focus": 0,
+				"gap": 8
+			},
+			"endBinding": {
+				"elementId": "shape-Book-000000f5",
+				"focus": 0,
+				"gap": 8
+			},
+			"startArrowhead": null,
+			"endArrowhead": "arrow",
+			"elbowed": false,
+			"index": null
+		},
+		{
+			"id": "edge-label-BookAuthorJoin-Book-00000090",
+			"type": "text",
+			"x": 221,
+			"y": 79,
+			"width": 52.800000000000004,
+			"height": 20,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 324,
+			"version": 1,
+			"versionNonce": 324,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "IDBook",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 12,
+			"containerId": null,
+			"originalText": "IDBook",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "arrow-BookAuthorJoin-Author-000000l4",
+			"type": "arrow",
+			"x": 202,
+			"y": 49.97333333333333,
+			"width": 90,
+			"height": 206.02666666666667,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 760,
+			"version": 1,
+			"versionNonce": 760,
+			"isDeleted": false,
+			"boundElements": [],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"points": [
+				[
+					0,
+					0
+				],
+				[
+					16,
+					0
+				],
+				[
+					19.875171467764005,
+					1.8370004572473633
+				],
+				[
+					23.519890260631,
+					7.06538637402835
+				],
+				[
+					26.96296296296299,
+					15.261234567901255
+				],
+				[
+					30.233196159122116,
+					26.000621856424317
+				],
+				[
+					33.35939643347052,
+					38.859625057155924
+				],
+				[
+					36.37037037037038,
+					53.41432098765432
+				],
+				[
+					39.29492455418384,
+					69.24078646547784
+				],
+				[
+					42.161865569273004,
+					85.91509830818472
+				],
+				[
+					45,
+					103.01333333333335
+				],
+				[
+					47.83813443072705,
+					120.11156835848195
+				],
+				[
+					50.70507544581619,
+					136.78588020118886
+				],
+				[
+					53.62962962962962,
+					152.61234567901235
+				],
+				[
+					56.64060356652948,
+					167.16704160951073
+				],
+				[
+					59.76680384087797,
+					180.02604481024235
+				],
+				[
+					63.03703703703707,
+					190.76543209876544
+				],
+				[
+					66.48010973936903,
+					198.96128029263835
+				],
+				[
+					70.12482853223594,
+					204.1896662094193
+				],
+				[
+					74,
+					206.02666666666667
+				],
+				[
+					90,
+					206.02666666666667
+				]
+			],
+			"lastCommittedPoint": null,
+			"startBinding": {
+				"elementId": "shape-BookAuthorJoin-000000gc",
+				"focus": 0,
+				"gap": 8
+			},
+			"endBinding": {
+				"elementId": "shape-Author-000000d8",
+				"focus": 0,
+				"gap": 8
+			},
+			"startArrowhead": null,
+			"endArrowhead": "arrow",
+			"elbowed": false,
+			"index": null
+		},
+		{
+			"id": "edge-label-BookAuthorJoin-Author-000000ig",
+			"type": "text",
+			"x": 212,
+			"y": 134,
+			"width": 70.4,
+			"height": 20,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 664,
+			"version": 1,
+			"versionNonce": 664,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "IDAuthor",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 12,
+			"containerId": null,
+			"originalText": "IDAuthor",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "arrow-BookPrice-Book-000000dc",
+			"type": "arrow",
+			"x": 175,
+			"y": 145,
+			"width": 117,
+			"height": 2.842170943040401e-14,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 480,
+			"version": 1,
+			"versionNonce": 480,
+			"isDeleted": false,
+			"boundElements": [],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"points": [
+				[
+					0,
+					0
+				],
+				[
+					16,
+					0
+				],
+				[
+					20.920438957475966,
+					0
+				],
+				[
+					25.770919067215317,
+					0
+				],
+				[
+					30.56018518518522,
+					2.842170943040401e-14
+				],
+				[
+					35.29698216735255,
+					0
+				],
+				[
+					39.99005486968451,
+					0
+				],
+				[
+					44.64814814814818,
+					2.842170943040401e-14
+				],
+				[
+					49.28000685871058,
+					0
+				],
+				[
+					53.894375857338815,
+					0
+				],
+				[
+					58.5,
+					0
+				],
+				[
+					63.10562414266121,
+					0
+				],
+				[
+					67.71999314128942,
+					0
+				],
+				[
+					72.35185185185185,
+					0
+				],
+				[
+					77.00994513031554,
+					0
+				],
+				[
+					81.70301783264745,
+					0
+				],
+				[
+					86.43981481481484,
+					0
+				],
+				[
+					91.22908093278465,
+					0
+				],
+				[
+					96.079561042524,
+					0
+				],
+				[
+					101,
+					0
+				],
+				[
+					117,
+					0
+				]
+			],
+			"lastCommittedPoint": null,
+			"startBinding": {
+				"elementId": "shape-BookPrice-000000ic",
+				"focus": 0,
+				"gap": 8
+			},
+			"endBinding": {
+				"elementId": "shape-Book-000000f5",
+				"focus": 0,
+				"gap": 8
+			},
+			"startArrowhead": null,
+			"endArrowhead": "arrow",
+			"elbowed": false,
+			"index": null
+		},
+		{
+			"id": "edge-label-BookPrice-Book-000000nx",
+			"type": "text",
+			"x": 207,
+			"y": 129,
+			"width": 52.800000000000004,
+			"height": 20,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 861,
+			"version": 1,
+			"versionNonce": 861,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "IDBook",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 12,
+			"containerId": null,
+			"originalText": "IDBook",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "arrow-Review-Book-000000no",
+			"type": "arrow",
+			"x": 169,
+			"y": 246,
+			"width": 123,
+			"height": 92.04000000000002,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 852,
+			"version": 1,
+			"versionNonce": 852,
+			"isDeleted": false,
+			"boundElements": [],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"points": [
+				[
+					0,
+					0
+				],
+				[
+					16,
+					0
+				],
+				[
+					21.267764060356598,
+					-0.8206584362140177
+				],
+				[
+					26.460631001371723,
+					-3.156378600823075
+				],
+				[
+					31.587962962962962,
+					-6.8177777777777635
+				],
+				[
+					36.65912208504804,
+					-11.615473251028789
+				],
+				[
+					41.6834705075446,
+					-17.360082304526742
+				],
+				[
+					46.67037037037039,
+					-23.862222222222186
+				],
+				[
+					51.62918381344309,
+					-30.932510288065828
+				],
+				[
+					56.569272976680395,
+					-38.38156378600826
+				],
+				[
+					61.5,
+					-46.02000000000001
+				],
+				[
+					66.43072702331963,
+					-53.65843621399176
+				],
+				[
+					71.37081618655691,
+					-61.107489711934164
+				],
+				[
+					76.32962962962961,
+					-68.17777777777778
+				],
+				[
+					81.3165294924554,
+					-74.67991769547325
+				],
+				[
+					86.34087791495202,
+					-80.4245267489712
+				],
+				[
+					91.41203703703707,
+					-85.22222222222223
+				],
+				[
+					96.53936899862828,
+					-88.88362139917695
+				],
+				[
+					101.73223593964332,
+					-91.21934156378603
+				],
+				[
+					107,
+					-92.04000000000002
+				],
+				[
+					123,
+					-92.04000000000002
+				]
+			],
+			"lastCommittedPoint": null,
+			"startBinding": {
+				"elementId": "shape-Review-0000005h",
+				"focus": 0,
+				"gap": 8
+			},
+			"endBinding": {
+				"elementId": "shape-Book-000000f5",
+				"focus": 0,
+				"gap": 8
+			},
+			"startArrowhead": null,
+			"endArrowhead": "arrow",
+			"elbowed": false,
+			"index": null
+		},
+		{
+			"id": "edge-label-Review-Book-000000hs",
+			"type": "text",
+			"x": 204,
+			"y": 180,
+			"width": 52.800000000000004,
+			"height": 20,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 640,
+			"version": 1,
+			"versionNonce": 640,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "IDBook",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "middle",
+			"baseline": 12,
+			"containerId": null,
+			"originalText": "IDBook",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		}
+	],
+	"appState": {
+		"viewBackgroundColor": "#FBF7EE",
+		"theme": "light",
+		"gridSize": null,
+		"exportBackground": true,
+		"exportEmbedScene": true,
+		"exportScale": 1,
+		"currentItemFontFamily": 5
+	},
+	"files": {}
+}

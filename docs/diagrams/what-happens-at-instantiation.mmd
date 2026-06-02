@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant App
+    participant Fable
+    participant GraphClient as MeadowGraphClient
+    participant DataReq as MeadowGraphDataRequest
+
+    App->>Fable: new libFable()
+    App->>Fable: addServiceType('MeadowGraphClient', libMeadowGraphClient)
+    App->>Fable: instantiateServiceProvider('MeadowGraphClient', { DataModel, DefaultHints, ... })
+    Fable->>GraphClient: new MeadowGraphClient(fable, options)
+    GraphClient->>GraphClient: merge defaults into options
+    GraphClient->>Fable: addAndInstantiateSingletonService(DataRequestClientService, ..., libGraphClientDataRequest)
+    Fable-->>DataReq: instantiated
+    GraphClient->>GraphClient: initialize _OutgoingEntityConnections,<br/>_IncomingEntityConnections,<br/>_KnownEntities, _GraphSolutionMap
+    alt options.DataModel present
+        GraphClient->>GraphClient: loadDataModel(options.DataModel)
+        GraphClient->>GraphClient: for each Table -> addEntityToDataModel
+    end
+    GraphClient-->>App: instance ready

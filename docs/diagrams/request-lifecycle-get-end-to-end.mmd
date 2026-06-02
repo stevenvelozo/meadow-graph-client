@@ -1,0 +1,46 @@
+sequenceDiagram
+    participant Caller
+    participant Client as MeadowGraphClient
+    participant Linter as lintFilterObject
+    participant Parser as parseFilterObject
+    participant Solver as solveGraphConnections
+    participant Compiler as compileFilter
+    participant DataReq as MeadowGraphDataRequest
+    participant Backend
+
+    Caller->>Client: get({Entity, Filter}, fCallback)
+    Client->>Compiler: compileFilter(pFilterObject)
+    Compiler->>Linter: lintFilterObject(pFilterObject)
+    Linter->>Linter: fill defaults (RecordLimit, PageSize, empty Filter)
+    Linter-->>Compiler: ok
+    Compiler->>Parser: parseFilterObject(pFilterObject)
+    Parser->>Parser: buildFilterExpression(...) for each key
+    Parser->>Parser: group by Entity into FilterExpressionSet
+    Parser-->>Compiler: { RequiredEntities, FilterExpressionSet, ... }
+
+    loop for each required entity ≠ pivotal
+        Compiler->>Solver: solveGraphConnections(pivotal, required, hints)
+        Solver->>Solver: recursive weighted path search
+        Solver-->>Compiler: { OptimalSolutionPath, PotentialSolutions }
+    end
+
+    Compiler->>Compiler: emit Requests[] (meadow filter strings + graph chain)
+    Compiler-->>Client: CompiledGraphRequest
+
+    Client->>Client: newAnticipate() for sequential execution
+
+    loop for each Request
+        Client->>DataReq: getJSON(url for Entity + MeadowFilter)
+        DataReq->>Backend: HTTP GET
+        Backend-->>DataReq: records
+        DataReq-->>Client: records into Request.Result
+        loop for each downstream hop in GraphRequestChain
+            Client->>DataReq: getJSON(url with downstream filter)
+            DataReq->>Backend: HTTP GET
+            Backend-->>DataReq: records
+            DataReq-->>Client: records
+        end
+    end
+
+    Client->>Client: final request for pivotal entity
+    Client-->>Caller: fCallback(null, pCompiledGraphRequest)

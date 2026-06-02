@@ -72,26 +72,8 @@ Underscore-prefixed properties are internal implementation details; rely on them
 
 ## Typical Usage Flow
 
-```mermaid
-flowchart LR
-    A[new MeadowGraphClient]
-    B[loadDataModel]
-    C[lintFilterObject]
-    D[parseFilterObject]
-    E[solveGraphConnections]
-    F[compileFilter]
-    G[get]
-
-    A --> B
-    B --> G
-    G --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-
-    style G fill:#fff3e0
-```
+<!-- bespoke diagram: edit diagrams/typical-usage-flow.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![Typical Usage Flow](diagrams/typical-usage-flow.svg)
 
 The orange box (`get`) is the primary entry point. Everything else is either a lifecycle step (`loadDataModel`), an internal stage the compiler runs for you, or a lower-level method you can call directly if you want finer control.
 

@@ -1,0 +1,19 @@
+flowchart LR
+    Raw[Raw Filter Object<br/>{Entity, Filter: {...}}]
+    Lint[lintFilterObject]
+    Parse[parseFilterObject]
+    Build[buildFilterExpression<br/>per filter entry]
+    Group[Group by Entity into<br/>FilterExpressionSet]
+    Solve[solveGraphConnections<br/>for each non-pivotal entity]
+    Compile[compileFilter<br/>assembles Requests array]
+    Strings[convertFilterObjectToFilterString<br/>emit meadow filter strings]
+    Plan[CompiledGraphRequest]
+
+    Raw --> Lint
+    Lint --> Parse
+    Parse --> Build
+    Build --> Group
+    Group --> Solve
+    Solve --> Compile
+    Compile --> Strings
+    Strings --> Plan

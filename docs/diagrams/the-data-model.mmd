@@ -1,0 +1,11 @@
+graph LR
+    Book[Book]
+    Author[Author]
+    BookAuthorJoin[BookAuthorJoin]
+    BookPrice[BookPrice]
+    Review[Review]
+
+    BookAuthorJoin -->|IDBook| Book
+    BookAuthorJoin -->|IDAuthor| Author
+    BookPrice -->|IDBook| Book
+    Review -->|IDBook| Book

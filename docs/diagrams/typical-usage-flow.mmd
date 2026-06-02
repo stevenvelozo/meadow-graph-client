@@ -1,0 +1,18 @@
+flowchart LR
+    A[new MeadowGraphClient]
+    B[loadDataModel]
+    C[lintFilterObject]
+    D[parseFilterObject]
+    E[solveGraphConnections]
+    F[compileFilter]
+    G[get]
+
+    A --> B
+    B --> G
+    G --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+
+    style G fill:#fff3e0
