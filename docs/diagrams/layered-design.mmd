@@ -1,0 +1,5 @@
+graph TD
+    Fable["Fable<br/>(Service manager, logging)"] --> MeadowGraphClient["MeadowGraphClient<br/>(Data model, solver, filter compiler)"]
+    MeadowGraphClient --> Maps["Outgoing/Incoming<br/>Connection Maps<br/>+ KnownEntities"]
+    MeadowGraphClient --> DataRequest["MeadowGraph<br/>DataRequest<br/>(pluggable)"]
+    DataRequest --> Backend["Your HTTP/<br/>IPC/test<br/>backend"]

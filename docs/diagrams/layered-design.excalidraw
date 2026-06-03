@@ -1,0 +1,1096 @@
+{
+	"type": "excalidraw",
+	"version": 2,
+	"source": "pict-section-excalidraw/notebook-generator",
+	"elements": [
+		{
+			"id": "shape-Fable-000000g9",
+			"type": "rectangle",
+			"x": 77,
+			"y": 16,
+			"width": 318,
+			"height": 78,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 585,
+			"version": 1,
+			"versionNonce": 585,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "arrow-Fable-MeadowGraphClient-0000005o",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-Fable-000000ek",
+			"type": "text",
+			"x": 77,
+			"y": 57.5,
+			"width": 318,
+			"height": 20,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 524,
+			"version": 1,
+			"versionNonce": 524,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "(Service manager, logging)",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "(Service manager, logging)",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "shape-MeadowGraphClient-000000bh",
+			"type": "rectangle",
+			"x": 16,
+			"y": 184,
+			"width": 440,
+			"height": 78,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 413,
+			"version": 1,
+			"versionNonce": 413,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "arrow-Fable-MeadowGraphClient-0000005o",
+					"type": "arrow"
+				},
+				{
+					"id": "arrow-MeadowGraphClient-Maps-00000068",
+					"type": "arrow"
+				},
+				{
+					"id": "arrow-MeadowGraphClient-DataRequest-00000030",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-MeadowGraphClient-000000o8",
+			"type": "text",
+			"x": 16,
+			"y": 225.5,
+			"width": 440,
+			"height": 20,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 872,
+			"version": 1,
+			"versionNonce": 872,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "(Data model, solver, filter compiler)",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "(Data model, solver, filter compiler)",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "shape-Maps-000000pi",
+			"type": "rectangle",
+			"x": 11,
+			"y": 352,
+			"width": 220,
+			"height": 103,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 918,
+			"version": 1,
+			"versionNonce": 918,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "arrow-MeadowGraphClient-Maps-00000068",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-Maps-0000007c",
+			"type": "text",
+			"x": 11,
+			"y": 396,
+			"width": 220,
+			"height": 40,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 264,
+			"version": 1,
+			"versionNonce": 264,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "Connection Maps\n+ KnownEntities",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "Connection Maps\n+ KnownEntities",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "shape-DataRequest-000000f8",
+			"type": "rectangle",
+			"x": 276,
+			"y": 352,
+			"width": 153,
+			"height": 103,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 548,
+			"version": 1,
+			"versionNonce": 548,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "arrow-MeadowGraphClient-DataRequest-00000030",
+					"type": "arrow"
+				},
+				{
+					"id": "arrow-DataRequest-Backend-000000mt",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-DataRequest-000000cs",
+			"type": "text",
+			"x": 276,
+			"y": 396,
+			"width": 153,
+			"height": 40,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 460,
+			"version": 1,
+			"versionNonce": 460,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "DataRequest\n(pluggable)",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "DataRequest\n(pluggable)",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "shape-Backend-00000038",
+			"type": "rectangle",
+			"x": 49,
+			"y": 545,
+			"width": 142,
+			"height": 103,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": {
+				"type": 3
+			},
+			"seed": 116,
+			"version": 1,
+			"versionNonce": 116,
+			"isDeleted": false,
+			"boundElements": [
+				{
+					"id": "arrow-DataRequest-Backend-000000mt",
+					"type": "arrow"
+				}
+			],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"index": null
+		},
+		{
+			"id": "label-Backend-0000004q",
+			"type": "text",
+			"x": 49,
+			"y": 589,
+			"width": 142,
+			"height": 40,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 170,
+			"version": 1,
+			"versionNonce": 170,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "IPC/test\nbackend",
+			"fontSize": 16,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "IPC/test\nbackend",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "arrow-Fable-MeadowGraphClient-0000005o",
+			"type": "arrow",
+			"x": 236,
+			"y": 94,
+			"width": 8.526512829121202e-14,
+			"height": 90,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 204,
+			"version": 1,
+			"versionNonce": 204,
+			"isDeleted": false,
+			"boundElements": [],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"points": [
+				[
+					0,
+					0
+				],
+				[
+					0,
+					16
+				],
+				[
+					0,
+					19.875171467764048
+				],
+				[
+					-2.842170943040401e-14,
+					23.519890260631
+				],
+				[
+					0,
+					26.962962962962962
+				],
+				[
+					0,
+					30.233196159122087
+				],
+				[
+					0,
+					33.35939643347051
+				],
+				[
+					2.842170943040401e-14,
+					36.37037037037038
+				],
+				[
+					5.684341886080802e-14,
+					39.29492455418384
+				],
+				[
+					0,
+					42.161865569272976
+				],
+				[
+					0,
+					45
+				],
+				[
+					0,
+					47.838134430727024
+				],
+				[
+					0,
+					50.70507544581619
+				],
+				[
+					0,
+					53.62962962962962
+				],
+				[
+					0,
+					56.64060356652948
+				],
+				[
+					0,
+					59.76680384087791
+				],
+				[
+					2.842170943040401e-14,
+					63.03703703703707
+				],
+				[
+					0,
+					66.480109739369
+				],
+				[
+					0,
+					70.12482853223594
+				],
+				[
+					0,
+					74
+				],
+				[
+					0,
+					90
+				]
+			],
+			"lastCommittedPoint": null,
+			"startBinding": {
+				"elementId": "shape-Fable-000000g9",
+				"focus": 0,
+				"gap": 8
+			},
+			"endBinding": {
+				"elementId": "shape-MeadowGraphClient-000000bh",
+				"focus": 0,
+				"gap": 8
+			},
+			"startArrowhead": null,
+			"endArrowhead": "arrow",
+			"elbowed": false,
+			"index": null
+		},
+		{
+			"id": "arrow-MeadowGraphClient-Maps-00000068",
+			"type": "arrow",
+			"x": 189.06666666666666,
+			"y": 262,
+			"width": 68.06666666666666,
+			"height": 90,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 224,
+			"version": 1,
+			"versionNonce": 224,
+			"isDeleted": false,
+			"boundElements": [],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"points": [
+				[
+					0,
+					0
+				],
+				[
+					0,
+					16
+				],
+				[
+					-0.6069044352994979,
+					19.875171467764062
+				],
+				[
+					-2.3342478280749788,
+					23.519890260630973
+				],
+				[
+					-5.04197530864198,
+					26.96296296296299
+				],
+				[
+					-8.590032007315955,
+					30.233196159122087
+				],
+				[
+					-12.83836305441244,
+					33.35939643347052
+				],
+				[
+					-17.64691358024686,
+					36.37037037037038
+				],
+				[
+					-22.875628715134866,
+					39.294924554183865
+				],
+				[
+					-28.384453589391853,
+					42.161865569273004
+				],
+				[
+					-34.03333333333333,
+					45
+				],
+				[
+					-39.68221307727478,
+					47.83813443072705
+				],
+				[
+					-45.1910379515318,
+					50.70507544581619
+				],
+				[
+					-50.419753086419746,
+					53.62962962962962
+				],
+				[
+					-55.22830361225422,
+					56.640603566529535
+				],
+				[
+					-59.47663465935071,
+					59.76680384087797
+				],
+				[
+					-63.02469135802468,
+					63.03703703703707
+				],
+				[
+					-65.73241883859167,
+					66.48010973936903
+				],
+				[
+					-67.45976223136718,
+					70.12482853223594
+				],
+				[
+					-68.06666666666666,
+					74
+				],
+				[
+					-68.06666666666666,
+					90
+				]
+			],
+			"lastCommittedPoint": null,
+			"startBinding": {
+				"elementId": "shape-MeadowGraphClient-000000bh",
+				"focus": 0,
+				"gap": 8
+			},
+			"endBinding": {
+				"elementId": "shape-Maps-000000pi",
+				"focus": 0,
+				"gap": 8
+			},
+			"startArrowhead": null,
+			"endArrowhead": "arrow",
+			"elbowed": false,
+			"index": null
+		},
+		{
+			"id": "arrow-MeadowGraphClient-DataRequest-00000030",
+			"type": "arrow",
+			"x": 282.9333333333333,
+			"y": 262,
+			"width": 69.56666666666672,
+			"height": 90,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 108,
+			"version": 1,
+			"versionNonce": 108,
+			"isDeleted": false,
+			"boundElements": [],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"points": [
+				[
+					0,
+					0
+				],
+				[
+					0,
+					16
+				],
+				[
+					0.6202789208961121,
+					19.875171467764062
+				],
+				[
+					2.385688157293032,
+					23.519890260630973
+				],
+				[
+					5.153086419753151,
+					26.96296296296299
+				],
+				[
+					8.779332418838578,
+					30.233196159122087
+				],
+				[
+					13.121284865112045,
+					33.35939643347052
+				],
+				[
+					18.03580246913583,
+					36.37037037037038
+				],
+				[
+					23.379743941472384,
+					39.294924554183865
+				],
+				[
+					29.00996799268404,
+					42.161865569273004
+				],
+				[
+					34.78333333333336,
+					45
+				],
+				[
+					40.55669867398262,
+					47.83813443072705
+				],
+				[
+					46.186922725194336,
+					50.70507544581619
+				],
+				[
+					51.53086419753089,
+					53.62962962962962
+				],
+				[
+					56.44538180155473,
+					56.640603566529535
+				],
+				[
+					60.787334247828085,
+					59.76680384087797
+				],
+				[
+					64.41358024691363,
+					63.03703703703707
+				],
+				[
+					67.18097850937363,
+					66.48010973936903
+				],
+				[
+					68.94638774577055,
+					70.12482853223594
+				],
+				[
+					69.56666666666672,
+					74
+				],
+				[
+					69.56666666666672,
+					90
+				]
+			],
+			"lastCommittedPoint": null,
+			"startBinding": {
+				"elementId": "shape-MeadowGraphClient-000000bh",
+				"focus": 0,
+				"gap": 8
+			},
+			"endBinding": {
+				"elementId": "shape-DataRequest-000000f8",
+				"focus": 0,
+				"gap": 8
+			},
+			"startArrowhead": null,
+			"endArrowhead": "arrow",
+			"elbowed": false,
+			"index": null
+		},
+		{
+			"id": "arrow-DataRequest-Backend-000000mt",
+			"type": "arrow",
+			"x": 276,
+			"y": 403.5,
+			"width": 85,
+			"height": 193,
+			"angle": 0,
+			"strokeColor": "#2E7D74",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 2,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 821,
+			"version": 1,
+			"versionNonce": 821,
+			"isDeleted": false,
+			"boundElements": [],
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"points": [
+				[
+					0,
+					0
+				],
+				[
+					-16,
+					0
+				],
+				[
+					-19.830589849108378,
+					1.7208504801096751
+				],
+				[
+					-23.348422496570663,
+					6.61865569272976
+				],
+				[
+					-26.592592592592553,
+					14.296296296296362
+				],
+				[
+					-29.602194787379972,
+					24.35665294924553
+				],
+				[
+					-32.41632373113856,
+					36.402606310013766
+				],
+				[
+					-35.07407407407405,
+					50.03703703703707
+				],
+				[
+					-37.61454046639224,
+					64.86282578875176
+				],
+				[
+					-40.07681755829904,
+					80.48285322359396
+				],
+				[
+					-42.5,
+					96.5
+				],
+				[
+					-44.92318244170099,
+					112.51714677640598
+				],
+				[
+					-47.3854595336077,
+					128.1371742112483
+				],
+				[
+					-49.925925925925924,
+					142.96296296296293
+				],
+				[
+					-52.58367626886144,
+					156.59739368998635
+				],
+				[
+					-55.39780521262003,
+					168.64334705075453
+				],
+				[
+					-58.40740740740739,
+					178.7037037037038
+				],
+				[
+					-61.65157750342934,
+					186.3813443072703
+				],
+				[
+					-65.16941015089162,
+					191.2791495198902
+				],
+				[
+					-69,
+					193
+				],
+				[
+					-85,
+					193
+				]
+			],
+			"lastCommittedPoint": null,
+			"startBinding": {
+				"elementId": "shape-DataRequest-000000f8",
+				"focus": 0,
+				"gap": 8
+			},
+			"endBinding": {
+				"elementId": "shape-Backend-00000038",
+				"focus": 0,
+				"gap": 8
+			},
+			"startArrowhead": null,
+			"endArrowhead": "arrow",
+			"elbowed": false,
+			"index": null
+		},
+		{
+			"id": "label-Fable-000000ek_title",
+			"type": "text",
+			"x": 77,
+			"y": 32.5,
+			"width": 318,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 664,
+			"version": 1,
+			"versionNonce": 524,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "Fable",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "Fable",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "label-MeadowGraphClient-000000o8_title",
+			"type": "text",
+			"x": 16,
+			"y": 200.5,
+			"width": 440,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 420,
+			"version": 1,
+			"versionNonce": 872,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "MeadowGraphClient",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "MeadowGraphClient",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "label-Maps-0000007c_title",
+			"type": "text",
+			"x": 11,
+			"y": 371,
+			"width": 220,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 393,
+			"version": 1,
+			"versionNonce": 264,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "Outgoing/Incoming",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "Outgoing/Incoming",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "label-DataRequest-000000cs_title",
+			"type": "text",
+			"x": 276,
+			"y": 371,
+			"width": 153,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 257,
+			"version": 1,
+			"versionNonce": 460,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "MeadowGraph",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "MeadowGraph",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		},
+		{
+			"id": "label-Backend-0000004q_title",
+			"type": "text",
+			"x": 49,
+			"y": 564,
+			"width": 142,
+			"height": 25,
+			"angle": 0,
+			"strokeColor": "#1B1F23",
+			"backgroundColor": "transparent",
+			"fillStyle": "solid",
+			"strokeWidth": 1,
+			"strokeStyle": "solid",
+			"roughness": 1,
+			"opacity": 100,
+			"groupIds": [],
+			"frameId": null,
+			"roundness": null,
+			"seed": 452,
+			"version": 1,
+			"versionNonce": 170,
+			"isDeleted": false,
+			"boundElements": null,
+			"updated": 1,
+			"link": null,
+			"locked": false,
+			"text": "Your HTTP/",
+			"fontSize": 20,
+			"fontFamily": 5,
+			"textAlign": "center",
+			"verticalAlign": "top",
+			"baseline": 15,
+			"containerId": null,
+			"originalText": "Your HTTP/",
+			"autoResize": true,
+			"lineHeight": 1.25,
+			"index": null
+		}
+	],
+	"appState": {
+		"viewBackgroundColor": "#FBF7EE",
+		"theme": "light",
+		"gridSize": null,
+		"exportBackground": true,
+		"exportEmbedScene": true,
+		"exportScale": 1,
+		"currentItemFontFamily": 5
+	},
+	"files": {}
+}

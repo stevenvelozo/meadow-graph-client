@@ -4,29 +4,8 @@ Meadow Graph Client is a small amount of actual logic wrapped in a Fable service
 
 ## Layered Design
 
-```
-┌─────────────────────────────────────────────┐
-│                   Fable                     │
-│        (Service manager, logging)           │
-└─────────────────────┬───────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────┐
-│            MeadowGraphClient                │
-│   (Data model, solver, filter compiler)     │
-└───────┬───────────────────────────────┬─────┘
-        │                               │
-┌───────▼──────────┐         ┌──────────▼────┐
-│ Outgoing/Incoming │         │ MeadowGraph    │
-│ Connection Maps   │         │ DataRequest    │
-│ + KnownEntities   │         │ (pluggable)    │
-└──────────────────┘         └────────────────┘
-                                     │
-                              ┌──────▼──────┐
-                              │ Your HTTP/  │
-                              │ IPC/test    │
-                              │ backend     │
-                              └─────────────┘
-```
+<!-- bespoke diagram: edit diagrams/layered-design.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![Layered Design](diagrams/layered-design.svg)
 
 - **Fable** -- standard service-provider framework with logging, config, and lifecycle
 - **MeadowGraphClient** -- the main class; holds the data model and exposes every public method
