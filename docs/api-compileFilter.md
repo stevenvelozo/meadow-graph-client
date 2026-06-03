@@ -127,27 +127,8 @@ console.log('  Hops:', tmpCompiled.RequestPaths.Author.OptimalSolutionPath.Reque
 
 ## The Pipeline
 
-```
-compileFilter(pFilterObject)
-    │
-    ├─► lintFilterObject(pFilterObject)
-    │       (fill in defaults, validate)
-    │
-    ├─► parseFilterObject(pFilterObject)
-    │       (group filter entries by entity, build expressions)
-    │
-    ├─► for each RequiredEntity ≠ pivotal:
-    │       solveGraphConnections(pivotal, entity, hints)
-    │       -> store in RequestPaths[entity]
-    │
-    ├─► for each RequiredEntity ≠ pivotal:
-    │       build Request object:
-    │           Entity
-    │           MeadowFilter = convertFilterObjectToFilterString(FilterExpressionSet[entity])
-    │           GraphRequestChain = intermediate hops (not pivotal or endpoint)
-    │
-    └─► return compiled object
-```
+<!-- bespoke diagram: edit diagrams/the-pipeline.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-graph-client/docs -->
+![The Pipeline](diagrams/the-pipeline.svg)
 
 Each stage is a separate public method -- you can replicate the pipeline manually if you need to intercept one of the stages.
 

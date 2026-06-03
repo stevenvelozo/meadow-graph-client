@@ -1,0 +1,19 @@
+compileFilter(pFilterObject)
+    │
+    ├─► lintFilterObject(pFilterObject)
+    │       (fill in defaults, validate)
+    │
+    ├─► parseFilterObject(pFilterObject)
+    │       (group filter entries by entity, build expressions)
+    │
+    ├─► for each RequiredEntity ≠ pivotal:
+    │       solveGraphConnections(pivotal, entity, hints)
+    │       -> store in RequestPaths[entity]
+    │
+    ├─► for each RequiredEntity ≠ pivotal:
+    │       build Request object:
+    │           Entity
+    │           MeadowFilter = convertFilterObjectToFilterString(FilterExpressionSet[entity])
+    │           GraphRequestChain = intermediate hops (not pivotal or endpoint)
+    │
+    └─► return compiled object
